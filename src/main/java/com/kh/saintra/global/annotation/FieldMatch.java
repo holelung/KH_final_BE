@@ -17,6 +17,7 @@ import jakarta.validation.Payload;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FieldMatch {
     String message() default "두 필드의 값이 일치하지 않습니다.";
+    
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
