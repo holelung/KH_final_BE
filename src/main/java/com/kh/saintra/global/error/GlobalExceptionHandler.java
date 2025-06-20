@@ -18,6 +18,7 @@ import com.kh.saintra.global.error.exceptions.InvalidValueException;
 import com.kh.saintra.global.error.exceptions.UnauthorizedAccessException;
 import com.kh.saintra.global.response.ApiResponse;
 
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -74,6 +75,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(FileNotAllowedException.class)
     public ResponseEntity<ApiResponse<Void>> handleFileNotAllowedException(FileNotAllowedException e) {
         return makeResponseEntity(e.getResponseCode(), e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleConstraintViolationException(ConstraintViolationException e) {
+        return makeResponseEntity(ResponseCode.INVALID_VALUE, e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     // 예시용. 
