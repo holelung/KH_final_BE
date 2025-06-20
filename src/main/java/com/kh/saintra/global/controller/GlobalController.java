@@ -16,11 +16,15 @@ import com.kh.saintra.global.response.ApiResponse;
 public class GlobalController {
 
 
+    
     @GetMapping
-    public ResponseEntity<ApiResponse<Object>> getRoot() {
-        throw new AuthenticateTimeOutException(ResponseCode.SERVER_ERROR, "히히 에러당!");
-
-        // return ResponseEntity.ok(ApiResponse.success(ResponseCode.SUCCESS, "루트 요청 성공입니다."));
+    public ResponseEntity<ApiResponse<Void>> getTest() {
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.SUCCESS, "루트 요청 성공입니다."));
     }
 
+
+    @GetMapping("/error")
+    public ResponseEntity<ApiResponse<Void>> getError() {
+        throw new AuthenticateTimeOutException(ResponseCode.SERVER_ERROR, "히히 에러당!13123");
+    }
 }
