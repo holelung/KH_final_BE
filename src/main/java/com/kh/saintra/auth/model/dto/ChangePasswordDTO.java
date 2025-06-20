@@ -1,4 +1,4 @@
-package com.kh.saintra.user.model.dto;
+package com.kh.saintra.auth.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,13 +8,13 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString
+public class ChangePasswordDTO {
 
-public class UserDTO {
-    
-    private Long id;
-    private String name;    
+    private String newPassword;
+    private String confirmPassword;
+    private String key;
     
 }

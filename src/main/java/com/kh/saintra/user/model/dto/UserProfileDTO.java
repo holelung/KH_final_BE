@@ -8,13 +8,14 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString
-
-public class UserDTO {
+public class UserProfileDTO {
     
-    private Long id;
-    private String name;    
+    private String realname;
+    private String phone;
+    private String address1;
+    private String address2;
     
 }

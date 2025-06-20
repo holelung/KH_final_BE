@@ -18,6 +18,6 @@ public class UserController {
     public ResponseEntity<ApiResponse<?>> getTest() {
         
 
-        return ResponseEntity.ok(ApiResponse.success(ResponseCode.SUCCESS, "데이터를 보내용~"));
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.GET_SUCCESS, "데이터를 보내용~"));
     }
 }

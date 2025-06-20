@@ -1,5 +1,7 @@
 package com.kh.saintra.user.model.dto;
 
+import java.sql.Date;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,10 +13,9 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-
-public class UserDTO {
+public class AttendanceDTO {
     
-    private Long id;
-    private String name;    
-    
+    private String username;
+    private Date startDate;
+    private Date endDate; 
 }

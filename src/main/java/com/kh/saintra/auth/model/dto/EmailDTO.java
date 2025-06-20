@@ -1,4 +1,4 @@
-package com.kh.saintra.user.model.dto;
+package com.kh.saintra.auth.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,10 +11,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-
-public class UserDTO {
+public class EmailDTO {
     
-    private Long id;
-    private String name;    
-    
+    private String email;
 }
