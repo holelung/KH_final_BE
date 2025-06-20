@@ -1,4 +1,4 @@
-package com.kh.saintra.member.model.dto;
+package com.kh.saintra.user.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
