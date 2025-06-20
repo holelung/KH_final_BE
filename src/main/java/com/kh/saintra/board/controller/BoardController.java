@@ -14,9 +14,11 @@ import com.kh.saintra.global.enums.ResponseCode;
 import com.kh.saintra.global.response.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
-@RequestMapping("/api/boards")
+@RequestMapping("api/boards")
 @RequiredArgsConstructor
 public class BoardController {
     
@@ -32,10 +34,12 @@ public class BoardController {
 	 * @return 조건에 맞는 게시물 정보
 	 */
 	@GetMapping
-	public ResponseEntity<?> getBoardList(@RequestParam String type,
-										  @RequestParam int page,
-										  @RequestParam(required = false) String condition,
-										  @RequestParam(required = false) String keyword) {
+	public ResponseEntity<?> getBoardList(@RequestParam(name = "type") String type,
+										  @RequestParam(name = "page", defaultValue = "1") String page,
+										  @RequestParam(name = "condition", required = false) String condition,
+										  @RequestParam(name = "keyword", required = false) String keyword) {
+		
+		log.info("type : {}", type);
 		
 		// 게시판 조회 정보 DTO에 담아서 전달
 		BoardListDTO boardListInfo = new BoardListDTO(type, page, condition, keyword, 0, 0);

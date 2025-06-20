@@ -13,7 +13,9 @@ import com.kh.saintra.global.enums.ResponseCode;
 import com.kh.saintra.global.error.exceptions.InvalidValueException;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BoardServiceImpl implements BoardService {
@@ -26,8 +28,10 @@ public class BoardServiceImpl implements BoardService {
 	 */
 	private void checkBoardType(String type) {
 
+		log.info("type : {}", type);
+		
 		// 공지사항, 자유, 익명 게시판인지 확인
-		if(type == "bulletin" || type == "free" || type == "anonymous") {
+		if("bulletin".equals(type) || "free".equals(type) || "anonymous".equals(type)) {
 			
 			return;
 		}
@@ -62,7 +66,7 @@ public class BoardServiceImpl implements BoardService {
 		checkBoardType(type);
 		
 		// 게시판에 존재하는 게시물 목록 페이징 처리
-		int page = boardListInfo.getPage();
+		int page = Integer.parseInt(boardListInfo.getPage());
 		int totalBoardCount = boardMapper.selectTotalBoardCount(boardListInfo);
 		int boardLimit = 10;
 		int buttonLimit = 10;

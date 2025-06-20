@@ -14,7 +14,7 @@ import lombok.ToString;
 public class BoardListDTO {
 
 	private String type;
-	private int page;
+	private String page;
 	private String condition;
 	private String keyword;
 	private int limit;
