@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.saintra.global.enums.ResponseCode;
 import com.kh.saintra.global.error.exceptions.AuthenticateTimeOutException;
-import com.kh.saintra.global.error.exceptions.DataAccessException;
 import com.kh.saintra.global.response.ApiResponse;
 
 

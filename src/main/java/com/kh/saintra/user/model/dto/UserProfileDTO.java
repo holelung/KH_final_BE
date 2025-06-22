@@ -13,9 +13,10 @@ import lombok.ToString;
 @ToString
 public class UserProfileDTO {
     
+    private String userId;
     private String realname;
     private String phone;
     private String address1;
     private String address2;
-    
+
 }

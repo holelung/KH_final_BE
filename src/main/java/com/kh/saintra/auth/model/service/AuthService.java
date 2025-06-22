@@ -2,8 +2,6 @@ package com.kh.saintra.auth.model.service;
 
 import java.util.Map;
 
-import org.springframework.stereotype.Service;
-
 import com.kh.saintra.auth.model.dto.ChangePasswordDTO;
 import com.kh.saintra.auth.model.dto.FindPasswordDTO;
 import com.kh.saintra.global.response.ApiResponse;
