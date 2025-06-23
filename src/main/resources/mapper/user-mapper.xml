@@ -2,4 +2,29 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.saintra.user.model.dao.UserMapper">
 
+    <insert id="join"
+            parameterType="User">
+        <![CDATA[
+        INSERT INTO TB_USER (
+            USERNAME,
+            REALNAME,
+            PASSWORD,
+            EMAIL,
+            ADDRESS_1,
+            ADDRESS_2,
+            PHONE,
+            SSN
+        )
+        VALUES (
+            #{username},
+            #{realname},
+            #{password},
+            #{email},
+            #{address1},
+            C##SAINTRA.CRYPTO.ENCRYPT_AES(#{address2, jdbcType=VARCHAR}),
+            C##SAINTRA.CRYPTO.ENCRYPT_AES(#{phone, jdbcType=VARCHAR}),
+            C##SAINTRA.CRYPTO.ENCRYPT_AES(#{ssn, jdbcType=VARCHAR})
+        )
+        ]]>
+    </insert>
 </mapper>

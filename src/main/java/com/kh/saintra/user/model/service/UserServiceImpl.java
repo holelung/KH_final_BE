@@ -49,10 +49,11 @@ public class UserServiceImpl implements UserService {
                 .ssn(user.getSsn())
                 .build();
         
+
         try {
             userMapper.join(userValue);
         } catch (Exception e) {
-            throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "회원가입 정보 입력 실패");
+            throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "회원가입 정보 입력 실패"+e.getStackTrace());
         }
 
         return ApiResponse.success(ResponseCode.INSERT_SUCCESS, "회원가입 요청 성공");

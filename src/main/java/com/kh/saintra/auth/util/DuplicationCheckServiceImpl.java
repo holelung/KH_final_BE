@@ -28,6 +28,10 @@ public class DuplicationCheckServiceImpl implements DuplicationCheckService{
     }
 
     @Override
+    @Transactional(
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public void isEmailDuplicate(String email) {
         
         if (authMapper.isEmailDuplicate(email) > 0) {

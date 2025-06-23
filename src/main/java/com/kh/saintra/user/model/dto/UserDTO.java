@@ -30,7 +30,7 @@ public class UserDTO {
     private String password;
 
     @NotBlank(message = "성함을 입력해주세요")
-    @Pattern(regexp = "/^[가-힣]{2,6}$/\n", message="이름은 한글로 2-6글자입니다.")
+    @Pattern(regexp = "^[가-힣]{2,6}$", message="이름은 한글로 2-6글자입니다.")
     private String realname;
 
     @NotBlank(message = "이메일을 입력해주세요")
@@ -43,11 +43,11 @@ public class UserDTO {
     private String address2;
 
     @NotBlank(message = "전화번호를 입력해주세요")
-    @Pattern(regexp = "/^010-\\d{4}-\\d{4}$/", message = "전화번호 형식에 맞지 않습니다.")
+    @Pattern(regexp = "^010-\\d{4}-\\d{4}$", message = "전화번호 형식에 맞지 않습니다.")
     private String phone;
 
     @NotBlank(message = "주민번호를 입력해주세요")
-    @Pattern(regexp = "/^\\d{6}-[1-4]\\d{6}$/\n", message = "주민번호 형식에 맞지 않습니다.")
+    @Pattern(regexp = "^\\d{6}-[1-4]\\d{6}$", message = "주민번호 형식에 맞지 않습니다.")
     private String ssn;
 
     private String jobId;
