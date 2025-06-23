@@ -61,61 +61,53 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ApiResponse<Object> getUserList(UserSearchDTO userSearch) {
-        // TODO Auto-generated method stub
+        
         throw new UnsupportedOperationException("Unimplemented method 'getUserList'");
     }
 
     @Override
     public ApiResponse<Void> updateUserByAdmin(UserUpdateDTO userUpdate) {
-        // TODO Auto-generated method stub
+        
         throw new UnsupportedOperationException("Unimplemented method 'updateUserByAdmin'");
     }
 
     @Override
     public ApiResponse<Void> updateUser(UserProfileDTO userProfile) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'updateUser'");
     }
 
     @Override
     public ApiResponse<Void> updateUserProfileImage(MultipartFile file) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'updateUserProfileImage'");
     }
 
     @Override
     public ApiResponse<Void> updateEmail(EmailDTO email) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'updateEmail'");
     }
 
     @Override
     public ApiResponse<Void> deleteUser(String password) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteUser'");
     }
 
     @Override
     public ApiResponse<Void> deleteUserByAdmin(String username) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteUserByAdmin'");
     }
 
     @Override
     public ApiResponse<Object> getAttendance(AttendanceDTO attendance) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getAttendance'");
     }
 
     @Override
     public ApiResponse<Void> checkIn() {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'checkIn'");
     }
 
     @Override
     public ApiResponse<Void> checkOut() {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'checkOut'");
     }
 }

@@ -4,13 +4,14 @@ import java.util.Map;
 
 import com.kh.saintra.auth.model.dto.ChangePasswordDTO;
 import com.kh.saintra.auth.model.dto.FindPasswordDTO;
+import com.kh.saintra.auth.model.dto.LoginFormDTO;
 import com.kh.saintra.global.response.ApiResponse;
 import com.kh.saintra.user.model.dto.UserDTO;
 
 public interface AuthService {
 
     // 로그인
-    ApiResponse<Map<String,Object>> login(UserDTO user);
+    ApiResponse<Map<String,Object>> login(LoginFormDTO login);
     // 로그아웃
     ApiResponse<Void> logout();
 

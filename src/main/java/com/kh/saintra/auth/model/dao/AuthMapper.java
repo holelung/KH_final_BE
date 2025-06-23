@@ -1,6 +1,7 @@
 package com.kh.saintra.auth.model.dao;
 
 import org.apache.ibatis.annotations.Mapper;
+import com.kh.saintra.auth.model.dto.LoginFormDTO;
 
 @Mapper
 public interface AuthMapper {
@@ -28,4 +29,6 @@ public interface AuthMapper {
      * @return int COUNT(*)
      */
     int isEmailDuplicate(String email);
+
+    
 }
