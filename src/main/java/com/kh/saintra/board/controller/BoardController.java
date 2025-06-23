@@ -1,18 +1,25 @@
 package com.kh.saintra.board.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kh.saintra.board.model.dto.BoardDTO;
 import com.kh.saintra.board.model.dto.BoardListDTO;
 import com.kh.saintra.board.model.service.BoardService;
+import com.kh.saintra.board.model.vo.BoardVO;
 import com.kh.saintra.global.enums.ResponseCode;
 import com.kh.saintra.global.response.ApiResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,15 +44,34 @@ public class BoardController {
 	public ResponseEntity<?> getBoardList(@RequestParam(name = "type") String type,
 										  @RequestParam(name = "page", defaultValue = "1") String page,
 										  @RequestParam(name = "condition", required = false) String condition,
-										  @RequestParam(name = "keyword", required = false) String keyword) {
-		
-		log.info("type : {}", type);
-		
+										  @RequestParam(name = "keyword", required = false) String keyword) {		
 		// 게시판 조회 정보 DTO에 담아서 전달
 		BoardListDTO boardListInfo = new BoardListDTO(type, page, condition, keyword, 0, 0);
 		
 		Map<String, Object> boards = boardService.getBoards(boardListInfo);
 		
 		return ResponseEntity.ok(ApiResponse.success(ResponseCode.SUCCESS, boards, "게시물 목록 응답 성공"));
-	};
+	}
+	
+	@PostMapping
+	public ResponseEntity<?> insertBoard(@RequestPart @Valid BoardDTO boardInfo, @RequestPart(name = "files", required = false) List<Long> files) {
+		
+		
+		
+		return null;
+	}
+	
+	@GetMapping("/detail")
+	public ResponseEntity<?> getBoardDetail(@RequestParam(name = "type") String type,
+											@RequestParam(name = "id") String id) {
+		// 게시물 정보 반환
+		BoardVO boardDetail = boardService.getBoardDetail(type, id);
+		
+		return ResponseEntity.ok(ApiResponse.success(ResponseCode.SUCCESS, boardDetail, "게시물 정보 응답 성공"));
+	}
+	
+	@PutMapping
+	public ResponseEntity<?> updateBoardDetail() {
+		
+	}
 }

@@ -7,9 +7,12 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.kh.saintra.board.model.dao.BoardMapper;
+import com.kh.saintra.board.model.dto.BoardDTO;
 import com.kh.saintra.board.model.dto.BoardListDTO;
 import com.kh.saintra.board.model.vo.BoardVO;
 import com.kh.saintra.global.enums.ResponseCode;
+import com.kh.saintra.global.error.exceptions.DatabaseOperationException;
+import com.kh.saintra.global.error.exceptions.EntityNotFoundException;
 import com.kh.saintra.global.error.exceptions.InvalidValueException;
 
 import lombok.RequiredArgsConstructor;
@@ -19,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class BoardServiceImpl implements BoardService {
-
+	
 	private final BoardMapper boardMapper;
 	
 	/**
@@ -27,9 +30,6 @@ public class BoardServiceImpl implements BoardService {
 	 * @param type 게시판 종류
 	 */
 	private void checkBoardType(String type) {
-
-		log.info("type : {}", type);
-		
 		// 공지사항, 자유, 익명 게시판인지 확인
 		if("bulletin".equals(type) || "free".equals(type) || "anonymous".equals(type)) {
 			
@@ -40,9 +40,11 @@ public class BoardServiceImpl implements BoardService {
 		int id = 0;
 		
 		try {
+			
 			id = Integer.parseInt(type);
 			
 		} catch (RuntimeException e) {
+			
 			throw new InvalidValueException(ResponseCode.SERVER_ERROR, "존재하지 않는 게시판 입니다.");
 		}
 
@@ -92,5 +94,61 @@ public class BoardServiceImpl implements BoardService {
 		boards.put("endButton", endButton);
 		
 		return boards;
+	}
+
+	@Override
+	public void insertBoard(BoardDTO boardInfo, List<Long> files) {
+		// 게시판 종류 확인
+		String type = boardInfo.getType();
+		
+		checkBoardType(type);
+		
+		// 작성자 정보 토큰에서 꺼내 DTO에 삽입(나중에 작업)
+		
+		// 게시물 내용 첨부 파일 관련 편집(나중에 작업)
+		
+		// 게시물 정보 DB에 삽입
+		if(boardMapper.insertBoard(boardInfo) != 1) {
+			
+			throw new DatabaseOperationException(ResponseCode.SERVER_ERROR, "게시물 등록에 실패 했습니다.");
+		}
+		
+		// 게시물 번호 가져오기
+		Long boardId = boardMapper.selectLatestBoardIdByConditions(boardInfo);
+		
+		// 게시물 첨부 파일 정보 DB에 삽입
+		for(Long file : files) {
+			
+		}
+	}
+	
+	@Override
+	public BoardVO getBoardDetail(String type, String id) {
+		
+		// 게시판 종류 확인
+		checkBoardType(type);
+		
+		// 게시물 번호 파싱하기
+		Long boardId = (long)0;
+		
+		try {
+			
+			boardId = Long.parseLong(id);
+			
+		} catch (RuntimeException e) {
+			
+			throw new InvalidValueException(ResponseCode.SERVER_ERROR, "잘못된 게시물 번호 입니다.");
+		}
+		
+		// 게시물 정보 가져오기
+		BoardVO board = boardMapper.selectBoardDetail(type, boardId);
+		
+		// 게시물이 존재하는지 검사
+		if(board == null) {
+			
+			throw new EntityNotFoundException(ResponseCode.SERVER_ERROR, "존재하지 않는 게시물 입니다.");
+		}
+		
+		return board;
 	}
 }

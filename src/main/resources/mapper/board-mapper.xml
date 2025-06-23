@@ -128,4 +128,126 @@
 			B.CREATE_DATE DESC
 		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY;
 	</select>
+	
+	<select id="selectBoardDetail"
+			resultType="com.kh.saintra.board.model.vo.BoardVO">
+		SELECT
+			B.ID id,
+			U.USERNAME username,
+			U.REALNAME realname,
+			B.TITLE title,
+			B.CONTENT content,
+			B.CREATE_DATE createDate
+		FROM
+		<choose>
+			<when test="type = bulletin">
+				TB_BOARD_BULLETIN B
+			</when>
+			<when test="type = free">
+				TB_BOARD_FREE B
+			</when>
+			<when test="type = anonymous">
+				TB_BOARD_ANONYMOUS B
+			</when>
+			<otherwise>
+				TB_BOARD_DEPARTMENT B
+			</otherwise>
+		</choose>
+		JOIN
+			TB_USER U ON (U.ID = B.USER_ID)
+		WHERE
+			B.IS_ACTIVE = 'Y'
+		AND
+			B.ID = #{boardId}
+	</select>
+	
+	<insert id="insertBoard"
+			parameterType="com.kh.saintra.board.model.dto.BoardDTO">
+		INSERT INTO
+		<choose>
+			<when test="type = bulletin">
+				TB_BOARD_BULLETIN
+			</when>
+			<when test="type = free">
+				TB_BOARD_FREE
+			</when>
+			<when test="type = anonymous">
+				TB_BOARD_ANONYMOUS
+			</when>
+			<otherwise>
+				TB_BOARD_DEPARTMENT
+			</otherwise>
+		</choose>
+			(
+				USER_ID,
+				TITLE,
+				CONTENT,
+				CREATE_DATE,
+				IS_ACTIVE
+			)
+		VALUES
+			(
+				#{userId},
+				#{title},
+				#{content},
+				DEFAULT,
+				DEFAULT
+			)
+	</insert>
+	
+	<select id="selectLatestBoardIdByConditions"
+			parameterType="com.kh.saintra.board.model.dto.BoardDTO"
+			resultType="long">
+		SELECT
+			ID
+		FROM
+			(
+				SELECT *
+				FROM
+				<choose>
+					<when test="type = bulletin">
+						TB_BOARD_BULLETIN
+					</when>
+					<when test="type = free">
+						TB_BOARD_FREE
+					</when>
+					<when test="type = anonymous">
+						TB_BOARD_ANONYMOUS
+					</when>
+					<otherwise>
+						TB_BOARD_DEPARTMENT
+					</otherwise>
+				</choose>
+				WHERE
+					TITLE = #{title}
+				AND
+					USER_ID = #{userId}
+				ORDER BY
+					ID DESC
+			)
+		WHERE
+			ROWNUM = 1
+	</select>
+	
+	<insert id="insertBoardFile">
+		INSERT INTO
+		<choose>
+			<when test="type = bulletin">
+				TB_FILE_BULLETIN
+			</when>
+			<when test="type = free">
+				TB_FILE_FREE
+			</when>
+			<when test="type = anonymous">
+				TB_FILE_ANONYMOUS
+			</when>
+			<otherwise>
+				TB_FILE_DEPARTMENT
+			</otherwise>
+		</choose>
+			(
+				
+			)
+		VALUES
+	</insert>
 </mapper>
