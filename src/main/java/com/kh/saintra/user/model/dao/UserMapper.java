@@ -17,5 +17,23 @@ public interface UserMapper {
      */
     int join(User user);
 
+    /**
+     * <pre>
+     * 회원정보 가져오기
+     * 회원정보중 IS_ACTIVE 컬럼의 값이 'Y'인 행의 데이터를 불러옴
+     * </pre>
+     * @param username
+     * @return
+     */
     UserDTO getUserByUsername(String username);
+    
+    /**
+     * <pre>
+     * 회원정보 가져오기
+     * 회원정보중 IS_ACTIVE 컬럼의 값이 'N'인 행의 데이터를 불러옴
+     * </pre>
+     * @param username USER PK
+     * @return UserDTO
+     */
+    UserDTO getUserByUsernameForApprove(String username);
 }

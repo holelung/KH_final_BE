@@ -2,9 +2,10 @@ package com.kh.saintra.user.model.service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
+import com.kh.saintra.auth.model.dao.AuthMapper;
 import com.kh.saintra.auth.model.dto.EmailDTO;
 import com.kh.saintra.auth.util.DuplicationCheckService;
 import com.kh.saintra.global.enums.ResponseCode;
@@ -28,6 +29,7 @@ public class UserServiceImpl implements UserService {
     private final DuplicationCheckService duplicationService;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
+    private final AuthMapper authMapper;
 
     @Override
     @Transactional
@@ -37,6 +39,8 @@ public class UserServiceImpl implements UserService {
         duplicationService.isIdDuplicate(user.getUsername());
         // 이메일 중복검사
         duplicationService.isEmailDuplicate(user.getEmail());
+
+        //이메일 인증 
 
         User userValue = User.builder()
                 .username(user.getUsername())
@@ -54,6 +58,15 @@ public class UserServiceImpl implements UserService {
             userMapper.join(userValue);
         } catch (Exception e) {
             throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "회원가입 정보 입력 실패"+e.getStackTrace());
+        }
+
+        Long userId = getUserByUsernameForApprove(userValue.getUsername()).getId();
+
+        // 가입신청 테이블 삽입
+        try {
+            authMapper.insertJoin(userId);
+        } catch (Exception e) {
+            throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "가입신청 실패..");
         }
 
         return ApiResponse.success(ResponseCode.INSERT_SUCCESS, "회원가입 요청 성공");
@@ -110,4 +123,13 @@ public class UserServiceImpl implements UserService {
     public ApiResponse<Void> checkOut() {
         throw new UnsupportedOperationException("Unimplemented method 'checkOut'");
     }
+
+    @Transactional(
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
+    private UserDTO getUserByUsernameForApprove(String username){
+        return userMapper.getUserByUsernameForApprove(username);
+    }
+
 }

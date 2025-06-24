@@ -6,7 +6,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.kh.saintra.auth.model.dao.AuthMapper;
 import com.kh.saintra.auth.model.dto.ChangePasswordDTO;
 import com.kh.saintra.auth.model.dto.FindPasswordDTO;
@@ -15,6 +17,8 @@ import com.kh.saintra.auth.model.vo.CustomUserDetails;
 import com.kh.saintra.auth.model.vo.LoginInfo;
 import com.kh.saintra.global.enums.ResponseCode;
 import com.kh.saintra.global.error.exceptions.AuthenticateFailException;
+import com.kh.saintra.global.error.exceptions.DatabaseOperationException;
+import com.kh.saintra.global.error.exceptions.InvalidAccessException;
 import com.kh.saintra.global.response.ApiResponse;
 import com.kh.saintra.global.util.token.model.service.TokenService;
 import lombok.RequiredArgsConstructor;
@@ -56,38 +60,69 @@ public class AuthServiceImpl implements AuthService{
 
     @Override
     public ApiResponse<Void> logout() {
-        // TODO Auto-generated method stub
+        
         throw new UnsupportedOperationException("Unimplemented method 'logout'");
     }
 
     @Override
     public ApiResponse<Object> getApproveList() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getApproveList'");
+        
+        // 가입 요청 목록조회
+        return null;
     }
 
     @Override
-    public ApiResponse<Void> approveJoin(Long username) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'approveJoin'");
+    @Transactional
+    public ApiResponse<Void> approveJoin(Long userId) {
+        
+        // 인사팀 관리자인지 확인
+        // if(getUserDetails().getJobId() != "인사팀코드"){
+        //     throw new InvalidAccessException(ResponseCode.INVALID_ACCESS, "접근 권한이 없습니다!");
+        // }
+
+        // 회원가입 승인
+        try {
+            authMapper.approveJoin(userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "회원가입 승인 실패");
+        }
+
+        // 가입 요청 삭제
+        try {
+            authMapper.deleteJoin(userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "가입요청 테이블 행 삭제 실패");
+        }
+
+        return ApiResponse.success(ResponseCode.UPDATE_SUCCESS, "회원가입 승인 성공");
     }
 
     @Override
     public ApiResponse<Void> findPassword(FindPasswordDTO findPassword) {
-        // TODO Auto-generated method stub
+        
         throw new UnsupportedOperationException("Unimplemented method 'findPassword'");
     }
 
     @Override
     public ApiResponse<Void> changePasswordByKey(ChangePasswordDTO changePassword) {
-        // TODO Auto-generated method stub
+        
         throw new UnsupportedOperationException("Unimplemented method 'changePasswordByKey'");
     }
 
     @Override
     public ApiResponse<Void> changePassword(ChangePasswordDTO changePassword) {
-        // TODO Auto-generated method stub
+        
         throw new UnsupportedOperationException("Unimplemented method 'changePassword'");
     }
+
+    @Override
+    public CustomUserDetails getUserDetails() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
+        return user;
+    }
+    
     
 }

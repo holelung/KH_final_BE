@@ -29,6 +29,6 @@ public class UserController {
         
         userService.join(user);
 
-        return ResponseEntity.ok(ApiResponse.success(ResponseCode.GET_SUCCESS, "데이터를 보내용~"));
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.INSERT_SUCCESS, "회원가입 성공"));
     }
 }

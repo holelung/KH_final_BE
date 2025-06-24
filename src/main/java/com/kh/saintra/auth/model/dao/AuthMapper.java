@@ -30,5 +30,30 @@ public interface AuthMapper {
      */
     int isEmailDuplicate(String email);
 
+    /**
+     * 가입신청 테이블에 데이터 추가
+     * 
+     * @param id USER 테이블 PK
+     */
+    void insertJoin(Long id);
+
+    /**
+     * <pre>
+     * 가입 승인
+     * 유저의 PK를 받아서 IS_APPROVE 컬럼의 값을 'Y'로 변경한다.
+     * </pre>
+     * @param id USER 테이블 PK
+     */
+    void approveJoin(Long id);
+    
+    /**
+     * <pre>
+     * TB_JOIN 테이블(가입요청)의 행 삭제
+     * 가입 승인이 완료된 후 가입요청 테이블을 삭제한다.
+     * </pre>
+     * @param id USER 테이블 PK
+     */
+    void deleteJoin(Long id);
+
     
 }

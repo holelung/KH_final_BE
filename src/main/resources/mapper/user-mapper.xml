@@ -54,4 +54,31 @@
         AND
             IS_ACTIVE = 'Y'
     </select>
+
+    <select id="getUserByUsernameForApprove"
+            parameterType="string"
+            resultType="UserDTO">
+        SELECT
+            ID,
+            USERNAME,
+            PASSWORD,
+            REALNAME,
+            EMAIL,
+            PHONE,
+            ENROLL_DATE enrollDate,
+            ROLE,
+            SSN,
+            ADDRESS_1 address1,
+            ADDRESS_2 address2,
+            JOB_ID jobId,
+            DEPT_ID deptId,
+            TEAM_ID teamId,
+            IS_ACTIVE isActive
+        FROM
+            TB_USER
+        WHERE
+            USERNAME = #{username}
+        AND
+            IS_ACTIVE = 'N'
+    </select>
 </mapper>
