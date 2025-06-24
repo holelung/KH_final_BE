@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.kh.saintra.meetingroom.model.MeetingRoomMapper">
+
+  <select id="getWeeklyReservations" resultType="com.kh.saintra.meetingroom.dto.ReservationDTO">
+    SELECT
+      r.RESERVATION_ID         AS reservationId,
+      r.ROOM_ID                AS roomId,
+      mr.ROOM_NAME             AS roomName,
+      mr.ROOM_LOCATION         AS roomLocation,
+      mr.CAPACITY              AS capacity,
+      r.RESERVE_DATE           AS reserveDate,
+      r.START_TIME             AS startTime,
+      r.END_TIME               AS endTime,
+      r.PURPOSE                AS purpose,
+      r.RESERVE_STATUS         AS status,
+      rs.RESERVER_TYPE         AS reserverType,
+      rs.RESERVER_ID           AS reserverId,
+      CASE
+        WHEN rs.RESERVER_TYPE = 'USER' THEN u.USER_NAME
+        WHEN rs.RESERVER_TYPE = 'TEAM' THEN t.TEAM_NAME
+        ELSE NULL
+      END                      AS reserverName
+    FROM
+      TB_RESERVATION r
+    JOIN
+      TB_MEETING_ROOM mr ON r.ROOM_ID = mr.ID
+    JOIN
+      TB_RESERVER rs ON r.RESERVATION_ID = rs.RESERVATION_ID
+    LEFT JOIN
+      TB_USER_RESERVER ur ON rs.RESERVER_TYPE = 'USER' AND rs.RESERVER_ID = ur.RESERVER_ID
+    LEFT JOIN
+      TB_USER u ON ur.USER_ID = u.ID
+    LEFT JOIN
+      TB_TEAM_RESERVER tr ON rs.RESERVER_TYPE = 'TEAM' AND rs.RESERVER_ID = tr.RESERVER_ID
+    LEFT JOIN
+      TB_TEAM t ON tr.TEAM_ID = t.ID
+    WHERE
+      r.RESERVE_DATE BETWEEN #{startDate} AND #{endDate}
+      AND r.RESERVE_STATUS = 'Y'
+    ORDER BY
+      r.RESERVE_DATE, r.START_TIME
+  </select>
+
+</mapper>
