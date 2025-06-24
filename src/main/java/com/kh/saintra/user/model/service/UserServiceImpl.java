@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import com.kh.saintra.auth.model.dao.AuthMapper;
 import com.kh.saintra.auth.model.dto.EmailDTO;
-import com.kh.saintra.auth.util.DuplicationCheckService;
+import com.kh.saintra.duplication.model.service.DuplicationCheckService;
 import com.kh.saintra.global.enums.ResponseCode;
 import com.kh.saintra.global.error.exceptions.DatabaseOperationException;
 import com.kh.saintra.global.error.exceptions.DuplicateDataException;

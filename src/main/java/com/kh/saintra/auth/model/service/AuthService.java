@@ -1,5 +1,6 @@
 package com.kh.saintra.auth.model.service;
 
+import java.util.List;
 import java.util.Map;
 
 import com.kh.saintra.auth.model.dto.ChangePasswordDTO;
@@ -8,6 +9,7 @@ import com.kh.saintra.auth.model.dto.LoginFormDTO;
 import com.kh.saintra.auth.model.vo.CustomUserDetails;
 import com.kh.saintra.global.response.ApiResponse;
 import com.kh.saintra.user.model.dto.UserDTO;
+import com.kh.saintra.user.model.vo.User;
 
 public interface AuthService {
 
@@ -37,9 +39,9 @@ public interface AuthService {
      * 회원가입 요청 목록 조회
      * 관리자가 회원가입 요청한 사용자의 정보를
      * 확인 할 수 있도록 List를 반환한다.
-     * @return List<UserDTO>
+     * @return List<User>
      */
-    ApiResponse<Object> getApproveList();
+    ApiResponse<List<UserDTO>> getApproveList();
 
     /**
      * <pre>

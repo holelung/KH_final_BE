@@ -1,7 +1,11 @@
 package com.kh.saintra.auth.model.dao;
 
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import com.kh.saintra.auth.model.dto.LoginFormDTO;
+import com.kh.saintra.user.model.dto.UserDTO;
+import com.kh.saintra.user.model.dto.UserSearchDTO;
+import com.kh.saintra.user.model.vo.User;
 
 @Mapper
 public interface AuthMapper {
@@ -55,5 +59,14 @@ public interface AuthMapper {
      */
     void deleteJoin(Long id);
 
-    
+    /**
+     * <pre>
+     * 가입 요청 목록 조회
+     * 
+     * </pre>
+     * 
+     * @return List<User>
+     */
+    List<UserDTO> getApproveList();
+
 }

@@ -6,6 +6,7 @@ import com.kh.saintra.auth.model.dto.LoginFormDTO;
 import com.kh.saintra.auth.model.service.AuthService;
 import com.kh.saintra.global.response.ApiResponse;
 import com.kh.saintra.user.model.dto.UserDTO;
+import com.kh.saintra.user.model.vo.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import java.util.List;
@@ -31,7 +32,8 @@ public class AuthController {
     
     @GetMapping("/approve")
     public ResponseEntity<ApiResponse<List<UserDTO>>> getApproveList(){
-        return null;
+        
+        return ResponseEntity.ok(authService.getApproveList());
     }
 
     @PostMapping("/approve")

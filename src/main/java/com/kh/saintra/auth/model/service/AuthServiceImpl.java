@@ -1,6 +1,7 @@
 package com.kh.saintra.auth.model.service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,9 +19,9 @@ import com.kh.saintra.auth.model.vo.LoginInfo;
 import com.kh.saintra.global.enums.ResponseCode;
 import com.kh.saintra.global.error.exceptions.AuthenticateFailException;
 import com.kh.saintra.global.error.exceptions.DatabaseOperationException;
-import com.kh.saintra.global.error.exceptions.InvalidAccessException;
 import com.kh.saintra.global.response.ApiResponse;
 import com.kh.saintra.global.util.token.model.service.TokenService;
+import com.kh.saintra.user.model.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -65,10 +66,9 @@ public class AuthServiceImpl implements AuthService{
     }
 
     @Override
-    public ApiResponse<Object> getApproveList() {
+    public ApiResponse<List<UserDTO>> getApproveList() {
         
-        // 가입 요청 목록조회
-        return null;
+        return ApiResponse.success(ResponseCode.GET_SUCCESS, authMapper.getApproveList(), "가입요청 목록 조회 성공");
     }
 
     @Override
@@ -76,7 +76,7 @@ public class AuthServiceImpl implements AuthService{
     public ApiResponse<Void> approveJoin(Long userId) {
         
         // 인사팀 관리자인지 확인
-        // if(getUserDetails().getJobId() != "인사팀코드"){
+        // if(getUserDetails().getDeptId() != "1"){
         //     throw new InvalidAccessException(ResponseCode.INVALID_ACCESS, "접근 권한이 없습니다!");
         // }
 

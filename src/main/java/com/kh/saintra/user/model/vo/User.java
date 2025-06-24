@@ -2,8 +2,6 @@ package com.kh.saintra.user.model.vo;
 
 import java.time.LocalDateTime;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -30,4 +28,6 @@ public class User {
     private String role;
     private LocalDateTime enrollDate;
     private String isActive;    
+
+    private LocalDateTime issueDate;
 }

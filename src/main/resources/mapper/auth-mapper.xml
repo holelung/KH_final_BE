@@ -61,4 +61,27 @@
             USER_ID = #{id}
     </delete>
 
+
+    <!-- 회원가입 요청 목록 조회 -->
+    <select id="getApproveList"
+            resultType="UserDTO">
+        SELECT
+            U.ID,
+            U.USERNAME,
+            U.PASSWORD,
+            U.REALNAME,
+            U.EMAIL,
+            U.PHONE,
+            U.SSN,
+            U.ADDRESS_1 address1,
+            U.ADDRESS_2 address2,
+            U.IS_ACTIVE isActive,
+            J.ISSUE_DATE issueDate
+        FROM
+            TB_JOIN J
+        LEFT JOIN
+            TB_USER U ON (U.ID = J.USER_ID)
+        ORDER BY
+            ISSUE_DATE ASC
+    </select>
 </mapper>
