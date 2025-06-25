@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div style="width:100%; background:#f4f4f4; padding:20px; font-family:Arial,sans-serif;">
+  <div style="max-width:600px; margin:0 auto; background:#fff; border-radius:8px; overflow:hidden;">
+    <div style="background:#B1CEE3; color:#fff; padding:20px; text-align:center;">
+      <h1>Saintra 이메일 인증</h1>
+    </div>
+    <div style="padding:20px; color:#333;">
+      <p>안녕하세요,</p>
+      <p>아래 인증 코드를 입력하여 이메일 인증을 완료해주세요.</p>
+      <div style="text-align:center; margin:20px 0;">
+        <span style="display:inline-block; font-size:24px; font-weight:bold; color:#B1CEE3;
+                      padding:10px 20px; border:2px dashed #B1CEE3; border-radius:4px;">
+          {{verifyCode}}
+        </span>
+      </div>
+      <p>인증 코드는 <strong>5분</strong> 동안 유효합니다.</p>
+      <p>감사합니다.</p>
+    </div>
+  </div>
+</div>
+</html>

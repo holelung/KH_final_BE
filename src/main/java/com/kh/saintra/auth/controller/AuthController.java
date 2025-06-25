@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.kh.saintra.auth.model.dto.LoginFormDTO;
 import com.kh.saintra.auth.model.service.AuthService;
+import com.kh.saintra.auth.model.vo.ApproveUser;
 import com.kh.saintra.global.response.ApiResponse;
 import com.kh.saintra.user.model.dto.UserDTO;
 import com.kh.saintra.user.model.vo.User;
@@ -31,7 +32,7 @@ public class AuthController {
     }
     
     @GetMapping("/approve")
-    public ResponseEntity<ApiResponse<List<UserDTO>>> getApproveList(){
+    public ResponseEntity<ApiResponse<List<ApproveUser>>> getApproveList(){
         
         return ResponseEntity.ok(authService.getApproveList());
     }

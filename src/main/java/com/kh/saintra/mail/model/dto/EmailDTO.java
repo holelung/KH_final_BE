@@ -1,4 +1,4 @@
-package com.kh.saintra.auth.model.dto;
+package com.kh.saintra.mail.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,4 +14,5 @@ import lombok.ToString;
 public class EmailDTO {
     
     private String email;
+    private String verifyCode;
 }

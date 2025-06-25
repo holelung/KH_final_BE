@@ -14,6 +14,7 @@ import com.kh.saintra.auth.model.dao.AuthMapper;
 import com.kh.saintra.auth.model.dto.ChangePasswordDTO;
 import com.kh.saintra.auth.model.dto.FindPasswordDTO;
 import com.kh.saintra.auth.model.dto.LoginFormDTO;
+import com.kh.saintra.auth.model.vo.ApproveUser;
 import com.kh.saintra.auth.model.vo.CustomUserDetails;
 import com.kh.saintra.auth.model.vo.LoginInfo;
 import com.kh.saintra.global.enums.ResponseCode;
@@ -66,7 +67,7 @@ public class AuthServiceImpl implements AuthService{
     }
 
     @Override
-    public ApiResponse<List<UserDTO>> getApproveList() {
+    public ApiResponse<List<ApproveUser>> getApproveList() {
         
         return ApiResponse.success(ResponseCode.GET_SUCCESS, authMapper.getApproveList(), "가입요청 목록 조회 성공");
     }

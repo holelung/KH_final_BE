@@ -17,9 +17,10 @@ import com.kh.saintra.global.error.exceptions.FileNotAllowedException;
 import com.kh.saintra.global.error.exceptions.FileStreamException;
 import com.kh.saintra.global.error.exceptions.InvalidAccessException;
 import com.kh.saintra.global.error.exceptions.InvalidValueException;
+import com.kh.saintra.global.error.exceptions.MailServiceException;
 import com.kh.saintra.global.error.exceptions.UnauthorizedAccessException;
 import com.kh.saintra.global.response.ApiResponse;
-
+import com.kh.saintra.mail.model.service.MailService;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -95,6 +96,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BindException.class)
     public ResponseEntity<ApiResponse<Void>> handleBindException(BindException e) {
         return makeResponseEntity(ResponseCode.INVALID_VALUE, e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MailServiceException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMailServiceException(MailServiceException e){
+        return makeResponseEntity(e.getResponseCode(), e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     // 예시용. 
