@@ -12,5 +12,5 @@ public final class Regexp {
     public static final String REAL_NAME = "^[가-힣]{2,6}$";
     public static final String PHONE = "^010-\\d{4}-\\d{4}$";
     public static final String SSN = "^\\d{6}-[1-4]\\d{6}$";
-    
+    public static final String VERIFY_CODE = "^[A-Z0-9]{6}";
 }
