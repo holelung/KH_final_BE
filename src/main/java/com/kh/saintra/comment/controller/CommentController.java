@@ -36,7 +36,7 @@ public class CommentController {
 		
 		Map<String, Object> commentMap = commentService.getCommentList(commentListInfo);
 		
-		return ResponseEntity.ok(ApiResponse.success(ResponseCode.SUCCESS, commentMap, "댓글 목록 응답 성공"));
+		return ResponseEntity.ok(ApiResponse.success(ResponseCode.GET_SUCCESS, commentMap, "댓글 목록 응답 성공"));
 	}
 	
 	@PostMapping
@@ -44,7 +44,7 @@ public class CommentController {
 		
 		commentService.insertComment(commentInsertInfo);
 		
-		return ResponseEntity.ok(ApiResponse.success(ResponseCode.SUCCESS, "댓글 등록 성공"));
+		return ResponseEntity.ok(ApiResponse.success(ResponseCode.INSERT_SUCCESS, "댓글 등록 성공"));
 	}
 	
 	@PutMapping
@@ -52,7 +52,7 @@ public class CommentController {
 		
 		commentService.updateComment(commentUpdateInfo);
 		
-		return ResponseEntity.ok(ApiResponse.success(ResponseCode.SUCCESS, "댓글 수정 성공"));
+		return ResponseEntity.ok(ApiResponse.success(ResponseCode.UPDATE_SUCCESS, "댓글 수정 성공"));
 	}
 	
 	@DeleteMapping
@@ -60,6 +60,6 @@ public class CommentController {
 		
 		commentService.deleteComment(commentDeleteInfo);
 		
-		return ResponseEntity.ok(ApiResponse.success(ResponseCode.SUCCESS, "댓글 삭제 성공"));
+		return ResponseEntity.ok(ApiResponse.success(ResponseCode.DELETE_SUCCESS, "댓글 삭제 성공"));
 	}
 }

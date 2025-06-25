@@ -18,7 +18,6 @@ import com.kh.saintra.board.model.dto.BoardInsertDTO;
 import com.kh.saintra.board.model.dto.BoardListDTO;
 import com.kh.saintra.board.model.dto.BoardUpdateDTO;
 import com.kh.saintra.board.model.service.BoardService;
-import com.kh.saintra.board.model.vo.BoardVO;
 import com.kh.saintra.global.enums.ResponseCode;
 import com.kh.saintra.global.response.ApiResponse;
 
@@ -45,7 +44,7 @@ public class BoardController {
 		
 		Map<String, Object> boardMap = boardService.getBoards(boardListInfo);
 		
-		return ResponseEntity.ok(ApiResponse.success(ResponseCode.SUCCESS, boardMap, "게시물 목록 응답 성공"));
+		return ResponseEntity.ok(ApiResponse.success(ResponseCode.GET_SUCCESS, boardMap, "게시물 목록 응답 성공"));
 	}
 	
 	@PostMapping
@@ -53,7 +52,7 @@ public class BoardController {
 		
 		boardService.insertBoard(boardInsertInfo);
 		
-		return ResponseEntity.ok(ApiResponse.success(ResponseCode.SUCCESS, "게시물 등록 성공"));
+		return ResponseEntity.ok(ApiResponse.success(ResponseCode.INSERT_SUCCESS, "게시물 등록 성공"));
 	}
 	
 	@GetMapping("/detail")
@@ -61,7 +60,7 @@ public class BoardController {
 		
 		Map<String, Object> boardDetail = boardService.getBoardDetail(boardDetailInfo);
 		
-		return ResponseEntity.ok(ApiResponse.success(ResponseCode.SUCCESS, boardDetail, "게시물 정보 응답 성공"));
+		return ResponseEntity.ok(ApiResponse.success(ResponseCode.GET_SUCCESS, boardDetail, "게시물 정보 응답 성공"));
 	}
 	
 	@PutMapping
@@ -69,7 +68,7 @@ public class BoardController {
 		
 		boardService.updateBoard(boardUpdateInfo);
 		
-		return ResponseEntity.ok(ApiResponse.success(ResponseCode.SUCCESS, "게시물 수정 성공"));
+		return ResponseEntity.ok(ApiResponse.success(ResponseCode.UPDATE_SUCCESS, "게시물 수정 성공"));
 	}
 	
 	@DeleteMapping
@@ -77,6 +76,6 @@ public class BoardController {
 		
 		boardService.deleteBoard(boardDeleteInfo);
 		
-		return ResponseEntity.ok(ApiResponse.success(ResponseCode.SUCCESS, "게시물 삭제 성공"));
+		return ResponseEntity.ok(ApiResponse.success(ResponseCode.DELETE_SUCCESS, "게시물 삭제 성공"));
 	}
 }

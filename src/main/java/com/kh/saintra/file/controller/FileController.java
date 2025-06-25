@@ -34,7 +34,7 @@ public class FileController {
 		
 		FileVO fileInfo = fileService.uploadFileforProfile(file);
 		
-		return ResponseEntity.ok(ApiResponse.success(ResponseCode.SUCCESS, fileInfo, "프로필 사진 업로드 성공"));
+		return ResponseEntity.ok(ApiResponse.success(ResponseCode.INSERT_SUCCESS, fileInfo, "프로필 사진 업로드 성공"));
 	}
 
 	/**
@@ -47,7 +47,7 @@ public class FileController {
 		
 		FileVO fileInfo = fileService.uploadFileforBoard(file);
 		
-		return ResponseEntity.ok(ApiResponse.success(ResponseCode.SUCCESS, fileInfo, "게시물 첨부 파일 업로드 성공"));
+		return ResponseEntity.ok(ApiResponse.success(ResponseCode.INSERT_SUCCESS, fileInfo, "게시물 첨부 파일 업로드 성공"));
 	}
 	
 	/**
@@ -60,7 +60,7 @@ public class FileController {
 		
 		fileService.deleteFileforProfile(fileId);
 		
-		return ResponseEntity.ok(ApiResponse.success(ResponseCode.SUCCESS, "프로필 사진 삭제 성공"));
+		return ResponseEntity.ok(ApiResponse.success(ResponseCode.DELETE_SUCCESS, "프로필 사진 삭제 성공"));
 	}
 	
 	/**
@@ -73,6 +73,6 @@ public class FileController {
 		
 		fileService.deleteFileforBoard(fileId);
 		
-		return ResponseEntity.ok(ApiResponse.success(ResponseCode.SUCCESS, "게시물 첨부 파일 삭제 성공"));
+		return ResponseEntity.ok(ApiResponse.success(ResponseCode.DELETE_SUCCESS, "게시물 첨부 파일 삭제 성공"));
 	}
 }
