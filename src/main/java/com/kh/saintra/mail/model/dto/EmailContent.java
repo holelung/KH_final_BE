@@ -1,4 +1,4 @@
-package com.kh.saintra.auth.model.dto;
+package com.kh.saintra.mail.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +11,8 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class EmailDTO {
+public class EmailContent {
     
-    private String email;
+    private String subject;
+    private String content;
 }

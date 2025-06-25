@@ -1,17 +1,14 @@
-package com.kh.saintra.user.model.vo;
+package com.kh.saintra.auth.model.vo;
 
 import java.time.LocalDateTime;
-
 import lombok.Builder;
-import lombok.Getter;
 import lombok.ToString;
 import lombok.Value;
 
-@Getter
 @Value
 @Builder
 @ToString
-public class User {
+public class ApproveUser {
     private Long id;
     private String username;
     private String password;
@@ -21,11 +18,6 @@ public class User {
     private String address2;
     private String phone;
     private String ssn;
-    
-    private String jobId;
-    private String deptId;
-    private String teamId;
-    private String role;
-    private LocalDateTime enrollDate;
-    private String isActive;    
+    private String isActive;
+    private LocalDateTime issueDate;
 }

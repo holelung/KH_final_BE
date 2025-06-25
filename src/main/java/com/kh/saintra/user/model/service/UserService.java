@@ -1,9 +1,8 @@
 package com.kh.saintra.user.model.service;
 
 import org.springframework.web.multipart.MultipartFile;
-
-import com.kh.saintra.auth.model.dto.EmailDTO;
 import com.kh.saintra.global.response.ApiResponse;
+import com.kh.saintra.mail.model.dto.EmailDTO;
 import com.kh.saintra.user.model.dto.AttendanceDTO;
 import com.kh.saintra.user.model.dto.UserDTO;
 import com.kh.saintra.user.model.dto.UserProfileDTO;

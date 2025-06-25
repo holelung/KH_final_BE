@@ -1,4 +1,4 @@
-package com.kh.saintra.auth.util;
+package com.kh.saintra.duplication.model.service;
 
 public interface DuplicationCheckService {
 

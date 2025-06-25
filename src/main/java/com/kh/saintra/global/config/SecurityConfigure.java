@@ -39,11 +39,13 @@ public class SecurityConfigure {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(requests -> {
-                    requests.requestMatchers(HttpMethod.GET).permitAll();
-                    requests.requestMatchers(HttpMethod.POST).permitAll();
-                    requests.requestMatchers(HttpMethod.DELETE).permitAll();
-                    requests.requestMatchers(HttpMethod.PUT).permitAll();
-                    requests.requestMatchers(HttpMethod.PATCH).permitAll();
+                    requests.requestMatchers(HttpMethod.POST, "api/auth/password", "api/auth/tokens", "api/users/join").permitAll();
+                    requests.requestMatchers(HttpMethod.PATCH, "api/auth/password").permitAll();
+                    requests.requestMatchers(HttpMethod.POST).authenticated();
+                    requests.requestMatchers(HttpMethod.GET).authenticated();
+                    requests.requestMatchers(HttpMethod.DELETE).authenticated();
+                    requests.requestMatchers(HttpMethod.PUT).authenticated();
+                    requests.requestMatchers(HttpMethod.PATCH).authenticated();
                 })
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(coopFilter, UsernamePasswordAuthenticationFilter.class)
