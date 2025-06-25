@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.saintra.auth.model.dao.AuthMapper">
+
+    <!-- 아이디 중복검사 -->
+    <select id="isIdDuplicate"
+            parameterType="string">
+        SELECT
+            COUNT(*)
+        FROM
+            TB_USER
+        WHERE
+            username = #{username}
+    </select>
+
+    <!-- 이메일 중복검사 -->
+    <select id="isEmailDuplicate"
+            parameterType="string">
+        SELECT
+            COUNT(*)
+        FROM
+            TB_USER
+        WHERE
+            email = #{email}
+    </select>
+
+
+    <!-- 가입 신청 목록 추가 -->
+    <insert id="insertJoin"
+            parameterType="long">
+        INSERT INTO
+            TB_JOIN(
+                USER_ID,
+                ISSUE_DATE
+            )
+        VALUES(
+            #{id},
+            SYSDATE
+        )
+    </insert>
+
+    <!-- 가입 승인 -->
+    <update id="approveJoin"
+            parameterType="long">
+        UPDATE
+            TB_USER
+        SET
+            IS_ACTIVE = 'Y',
+            ENROLL_DATE = SYSDATE
+        WHERE
+            ID = #{id}
+    </update>
+
+    <!-- 가입요청 테이블 행 지우기 -->
+    <delete id="deleteJoin"
+            parameterType="long">
+        DELETE
+        FROM
+            TB_JOIN
+        WHERE
+            USER_ID = #{id}
+    </delete>
+
+
+    <!-- 회원가입 요청 목록 조회 -->
+    <select id="getApproveList"
+            resultType="ApproveUser">
+        SELECT
+            U.ID,
+            U.USERNAME,
+            U.PASSWORD,
+            U.REALNAME,
+            U.EMAIL,
+            U.PHONE,
+            U.SSN,
+            U.ADDRESS_1 address1,
+            U.ADDRESS_2 address2,
+            U.IS_ACTIVE isActive,
+            J.ISSUE_DATE issueDate
+        FROM
+            TB_JOIN J
+        LEFT JOIN
+            TB_USER U ON (U.ID = J.USER_ID)
+        ORDER BY
+            ISSUE_DATE ASC
+    </select>
+
+
+    <!-- 비밀번호 변경 AccessKey 확인 -->
+    <select id="confirmAccessKey"
+            parameterType="string"
+            resultType="_long">
+        SELECT
+            USER_ID
+        FROM 
+            TB_ACCESS_KEY
+        WHERE
+            ISSUE_DATE + 1/24/2 > SYSDATE
+        AND
+            ACCESS_KEY = #{accessKey}
+    </select>
+
+    <update id="changePassword"
+            parameterType="ChangePassword">
+        UPDATE
+            TB_USER
+        SET 
+            PASSWORD = #{password}
+        WHERE
+            ID = #{userId}
+    </update>
+</mapper>

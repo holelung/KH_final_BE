@@ -7,19 +7,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.saintra.global.enums.ResponseCode;
 import com.kh.saintra.global.error.exceptions.AuthenticateTimeOutException;
-import com.kh.saintra.global.error.exceptions.DataAccessException;
 import com.kh.saintra.global.response.ApiResponse;
 
 
 @RestController
 @RequestMapping("/api")
 public class GlobalController {
-
-
     
     @GetMapping
     public ResponseEntity<ApiResponse<Void>> getTest() {
-        return ResponseEntity.ok(ApiResponse.success(ResponseCode.SUCCESS, "루트 요청 성공입니다."));
+        return ResponseEntity.ok(ApiResponse.success(ResponseCode.GET_SUCCESS, "루트 요청 성공입니다."));
     }
 
 

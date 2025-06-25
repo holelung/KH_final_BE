@@ -28,16 +28,16 @@ public class FieldMatchValidator implements ConstraintValidator<FieldMatch, Obje
     public boolean isValid(Object value, ConstraintValidatorContext context) {
         
         try{
-            Object firstValue = 
-                BeanUtils.getPropertyDescriptor(value.getClass(), firstFieldName)
-                    .getReadMethod()
-                    .invoke(value);
-                    
-            Object secondValue =
-                BeanUtils.getPropertyDescriptor(value.getClass(), secondFieldName)
-                    .getReadMethod()
-                    .invoke(value);
-                    
+            var firstDescriptor = BeanUtils.getPropertyDescriptor(value.getClass(), firstFieldName);
+            var secondDescriptor = BeanUtils.getPropertyDescriptor(value.getClass(), secondFieldName);
+    
+            if (firstDescriptor == null || secondDescriptor == null) {
+                return false;
+            }
+    
+            Object firstValue = firstDescriptor.getReadMethod().invoke(value);
+            Object secondValue = secondDescriptor.getReadMethod().invoke(value);
+            
             return Objects.equals(firstValue, secondValue);
         } catch (Exception e) {
             return false;
