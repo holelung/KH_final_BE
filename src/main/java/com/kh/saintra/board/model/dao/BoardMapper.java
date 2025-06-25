@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.kh.saintra.board.model.dto.BoardDTO;
+import com.kh.saintra.board.model.dto.BoardDeleteDTO;
+import com.kh.saintra.board.model.dto.BoardInsertDTO;
 import com.kh.saintra.board.model.dto.BoardListDTO;
+import com.kh.saintra.board.model.dto.BoardUpdateDTO;
 import com.kh.saintra.board.model.vo.BoardVO;
 
 @Mapper
@@ -19,9 +21,19 @@ public interface BoardMapper {
 	
 	BoardVO selectBoardDetail(String type, Long boardId);
 	
-	int insertBoard(BoardDTO boardInfo);
+	List<Long> selectBoardFiles(String type, Long boardId);
 	
-	Long selectLatestBoardIdByConditions(BoardDTO boardInfo);
+	int insertBoard(BoardInsertDTO boardInsertInfo);
 	
-	int insertBoardFile(String type, Long fileId, Long boardId);
+	Long selectLatestBoardIdByConditions(BoardInsertDTO boardInsertInfo);
+	
+	int insertBoardFiles(String type, Long boardId, List<Long> files);
+	
+	int selectBoardCountByUserId(String type, Long boardId, Long userId);
+	
+	int deleteBoardFiles(String type, Long boardId);
+	
+	int updateBoard(BoardUpdateDTO boardUpdateInfo);
+	
+	int disableBoard(BoardDeleteDTO boardDeleteInfo);
 }

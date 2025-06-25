@@ -1,4 +1,4 @@
-package com.kh.saintra.board.model.dto;
+package com.kh.saintra.comment.model.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -14,23 +14,19 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class BoardListDTO {
+public class CommentInsertDTO {
 
 	@NotBlank
 	@Pattern(regexp = "^(bulletin|free|anonymous|\\d+)$", message = "허용되지 않은 게시판 식별값 입니다.")
 	private String type;
 	
 	@NotBlank
-	@Pattern(regexp = "^\\d+$", message = "허용되지 않은 페이지 번호 입니다.")
-	private String page;
+	private Long boardId;
 	
-	@Pattern(regexp = "^(title|content|writer)$", message = "허용되지 않은 검색 조건 입니다.")
-	private String condition;
+	@NotBlank
+	private Long userId;
 	
-	@Size(min = 2, message = "검색어가 너무 짧습니다.")
-	private String keyword;
-	
-	private int limit;
-	
-	private int offset;
+	@NotBlank
+	@Size(min = 2, message = "댓글 길이가 너무 짧습니다.")
+	private String content;
 }

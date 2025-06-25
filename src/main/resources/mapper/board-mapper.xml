@@ -130,6 +130,7 @@
 	</select>
 	
 	<select id="selectBoardDetail"
+			parameterType="com.kh.saintra.board.model.dto.BoardDetailDTO"
 			resultType="com.kh.saintra.board.model.vo.BoardVO">
 		SELECT
 			B.ID id,
@@ -161,8 +162,32 @@
 			B.ID = #{boardId}
 	</select>
 	
+	<select id="selectBoardFiles">
+		SELECT
+			FILE_ID
+		FROM
+		<choose>
+			<when test="type = bulletin">
+				TB_FILE_BULLETIN
+			</when>
+			<when test="type = free">
+				TB_FILE_FREE
+			</when>
+			<when test="type = anonymous">
+				TB_FILE_ANONYMOUS
+			</when>
+			<otherwise>
+				TB_FILE_DEPARTMENT
+			</otherwise>
+		</choose>
+		WHERE
+			BOARD_ID = #{boardId}
+		ORDER BY
+			CREATE_DATE ASC
+	</select>
+	
 	<insert id="insertBoard"
-			parameterType="com.kh.saintra.board.model.dto.BoardDTO">
+			parameterType="com.kh.saintra.board.model.dto.BoardInsertDTO">
 		INSERT INTO
 		<choose>
 			<when test="type = bulletin">
@@ -196,7 +221,7 @@
 	</insert>
 	
 	<select id="selectLatestBoardIdByConditions"
-			parameterType="com.kh.saintra.board.model.dto.BoardDTO"
+			parameterType="com.kh.saintra.board.model.dto.BoardInsertDTO"
 			resultType="long">
 		SELECT
 			ID
@@ -229,7 +254,7 @@
 			ROWNUM = 1
 	</select>
 	
-	<insert id="insertBoardFile">
+	<insert id="insertBoardFiles">
 		INSERT INTO
 		<choose>
 			<when test="type = bulletin">
@@ -246,8 +271,117 @@
 			</otherwise>
 		</choose>
 			(
-				
+				FILE_ID,
+				BOARD_ID,
+				CREATE_DATE
 			)
 		VALUES
+		<foreach collection="list" item="file" nullable="false">
+			(
+				#{file},
+				#{boardId},
+				DEFAULT
+			)
+		</foreach>
 	</insert>
+	
+	<select id="selectBoardCountByUserId">
+		SELECT
+			COUNT(*)
+		FROM
+		<choose>
+			<when test="type = bulletin">
+				TB_FILE_BULLETIN
+			</when>
+			<when test="type = free">
+				TB_FILE_FREE
+			</when>
+			<when test="type = anonymous">
+				TB_FILE_ANONYMOUS
+			</when>
+			<otherwise>
+				TB_FILE_DEPARTMENT
+			</otherwise>
+		</choose>
+		WHERE
+			ID = #{boardId}
+		AND
+			USER_ID = #{userId}
+		AND
+			IS_ACTIVE = 'Y'
+	</select>
+	
+	<delete id="deleteBoardFiles">
+		DELETE
+		FROM
+		<choose>
+			<when test="type = bulletin">
+				TB_FILE_BULLETIN
+			</when>
+			<when test="type = free">
+				TB_FILE_FREE
+			</when>
+			<when test="type = anonymous">
+				TB_FILE_ANONYMOUS
+			</when>
+			<otherwise>
+				TB_FILE_DEPARTMENT
+			</otherwise>
+		</choose>
+		WHERE
+			BOARD_ID = #{boardId}
+	</delete>
+	
+	<update id="updateBoard"
+			parameterType="com.kh.saintra.board.model.dto.BoardUpdateDTO">
+		UPDATE
+		<choose>
+			<when test="type = bulletin">
+				TB_BOARD_BULLETIN
+			</when>
+			<when test="type = free">
+				TB_BOARD_FREE
+			</when>
+			<when test="type = anonymous">
+				TB_BOARD_ANONYMOUS
+			</when>
+			<otherwise>
+				TB_BOARD_DEPARTMENT
+			</otherwise>
+		</choose>
+		SET
+			TITLE = #{title},
+			CONTENT = #{content}
+		WHERE
+			ID = #{boardId}
+		AND
+			IS_ACTIVE = 'Y'
+	</update>
+	
+	<update id="disableBoard"
+			parameterType="com.kh.saintra.board.model.dto.BoardDeleteDTO">
+		UPDATE
+		<choose>
+			<when test="type = bulletin">
+				TB_BOARD_BULLETIN
+			</when>
+			<when test="type = free">
+				TB_BOARD_FREE
+			</when>
+			<when test="type = anonymous">
+				TB_BOARD_ANONYMOUS
+			</when>
+			<otherwise>
+				TB_BOARD_DEPARTMENT
+			</otherwise>
+		</choose>
+		SET
+			IS_ACTIVE = 'N'
+		WHERE
+			ID = #{boardId}
+		AND
+			USER_ID = #{userId}
+		AND 
+			IS_ACTIVE = 'Y'
+	</update>
 </mapper>

@@ -1,19 +1,22 @@
 package com.kh.saintra.board.controller;
 
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kh.saintra.board.model.dto.BoardDTO;
+import com.kh.saintra.board.model.dto.BoardDeleteDTO;
+import com.kh.saintra.board.model.dto.BoardDetailDTO;
+import com.kh.saintra.board.model.dto.BoardInsertDTO;
 import com.kh.saintra.board.model.dto.BoardListDTO;
+import com.kh.saintra.board.model.dto.BoardUpdateDTO;
 import com.kh.saintra.board.model.service.BoardService;
 import com.kh.saintra.board.model.vo.BoardVO;
 import com.kh.saintra.global.enums.ResponseCode;
@@ -34,44 +37,46 @@ public class BoardController {
 	/**
 	 * 조건에 맞는 게시물 목록 정보를 페이지네이션 정보와 함께 반환
 	 * 
-	 * @param type 게시판 종류
-	 * @param page 게시물 목록 페이지 번호
-	 * @param condition 게시물 검색 조건
-	 * @param keyword 게시물 검색어
-	 * @return 조건에 맞는 게시물 정보
+	 * @param boardListInfo 게시판, 페이지 번호, 
+	 * @return 페이지네이션 규칙에 맞는 게시물 목록
 	 */
 	@GetMapping
-	public ResponseEntity<?> getBoardList(@RequestParam(name = "type") String type,
-										  @RequestParam(name = "page", defaultValue = "1") String page,
-										  @RequestParam(name = "condition", required = false) String condition,
-										  @RequestParam(name = "keyword", required = false) String keyword) {		
-		// 게시판 조회 정보 DTO에 담아서 전달
-		BoardListDTO boardListInfo = new BoardListDTO(type, page, condition, keyword, 0, 0);
+	public ResponseEntity<?> getBoardList(@ModelAttribute @Valid BoardListDTO boardListInfo) {
 		
-		Map<String, Object> boards = boardService.getBoards(boardListInfo);
+		Map<String, Object> boardMap = boardService.getBoards(boardListInfo);
 		
-		return ResponseEntity.ok(ApiResponse.success(ResponseCode.SUCCESS, boards, "게시물 목록 응답 성공"));
+		return ResponseEntity.ok(ApiResponse.success(ResponseCode.SUCCESS, boardMap, "게시물 목록 응답 성공"));
 	}
 	
 	@PostMapping
-	public ResponseEntity<?> insertBoard(@RequestPart @Valid BoardDTO boardInfo, @RequestPart(name = "files", required = false) List<Long> files) {
+	public ResponseEntity<?> insertBoard(@RequestBody @Valid BoardInsertDTO boardInsertInfo) {
 		
+		boardService.insertBoard(boardInsertInfo);
 		
-		
-		return null;
+		return ResponseEntity.ok(ApiResponse.success(ResponseCode.SUCCESS, "게시물 등록 성공"));
 	}
 	
 	@GetMapping("/detail")
-	public ResponseEntity<?> getBoardDetail(@RequestParam(name = "type") String type,
-											@RequestParam(name = "id") String id) {
-		// 게시물 정보 반환
-		BoardVO boardDetail = boardService.getBoardDetail(type, id);
+	public ResponseEntity<?> getBoardDetail(@ModelAttribute @Valid BoardDetailDTO boardDetailInfo) {
+		
+		Map<String, Object> boardDetail = boardService.getBoardDetail(boardDetailInfo);
 		
 		return ResponseEntity.ok(ApiResponse.success(ResponseCode.SUCCESS, boardDetail, "게시물 정보 응답 성공"));
 	}
 	
 	@PutMapping
-	public ResponseEntity<?> updateBoardDetail() {
+	public ResponseEntity<?> updateBoard(@RequestBody @Valid BoardUpdateDTO boardUpdateInfo) {
 		
+		boardService.updateBoard(boardUpdateInfo);
+		
+		return ResponseEntity.ok(ApiResponse.success(ResponseCode.SUCCESS, "게시물 수정 성공"));
+	}
+	
+	@DeleteMapping
+	public ResponseEntity<?> deleteBoard(@RequestBody @Valid BoardDeleteDTO boardDeleteInfo) {
+		
+		boardService.deleteBoard(boardDeleteInfo);
+		
+		return ResponseEntity.ok(ApiResponse.success(ResponseCode.SUCCESS, "게시물 삭제 성공"));
 	}
 }

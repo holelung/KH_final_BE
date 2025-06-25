@@ -7,12 +7,17 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.kh.saintra.board.model.dao.BoardMapper;
-import com.kh.saintra.board.model.dto.BoardDTO;
+import com.kh.saintra.board.model.dto.BoardDeleteDTO;
+import com.kh.saintra.board.model.dto.BoardDetailDTO;
+import com.kh.saintra.board.model.dto.BoardInsertDTO;
 import com.kh.saintra.board.model.dto.BoardListDTO;
+import com.kh.saintra.board.model.dto.BoardUpdateDTO;
 import com.kh.saintra.board.model.vo.BoardVO;
+import com.kh.saintra.file.model.dao.FileMapper;
 import com.kh.saintra.global.enums.ResponseCode;
 import com.kh.saintra.global.error.exceptions.DatabaseOperationException;
 import com.kh.saintra.global.error.exceptions.EntityNotFoundException;
+import com.kh.saintra.global.error.exceptions.InvalidAccessException;
 import com.kh.saintra.global.error.exceptions.InvalidValueException;
 
 import lombok.RequiredArgsConstructor;
@@ -24,12 +29,15 @@ import lombok.extern.slf4j.Slf4j;
 public class BoardServiceImpl implements BoardService {
 	
 	private final BoardMapper boardMapper;
+	private final FileMapper fileMapper;
 	
 	/**
 	 * 게시판 종류를 확인하여 존재하는 게시판인지 확인하고 아닐 경우 예외처리하는 메서드
 	 * @param type 게시판 종류
 	 */
-	private void checkBoardType(String type) {
+	@Override
+	public void checkBoardType(String type) {
+		
 		// 공지사항, 자유, 익명 게시판인지 확인
 		if("bulletin".equals(type) || "free".equals(type) || "anonymous".equals(type)) {
 			
@@ -97,9 +105,10 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public void insertBoard(BoardDTO boardInfo, List<Long> files) {
+	public void insertBoard(BoardInsertDTO boardInsertInfo) {
+		
 		// 게시판 종류 확인
-		String type = boardInfo.getType();
+		String type = boardInsertInfo.getType();
 		
 		checkBoardType(type);
 		
@@ -108,47 +117,142 @@ public class BoardServiceImpl implements BoardService {
 		// 게시물 내용 첨부 파일 관련 편집(나중에 작업)
 		
 		// 게시물 정보 DB에 삽입
-		if(boardMapper.insertBoard(boardInfo) != 1) {
+		if(boardMapper.insertBoard(boardInsertInfo) != 1) {
 			
 			throw new DatabaseOperationException(ResponseCode.SERVER_ERROR, "게시물 등록에 실패 했습니다.");
 		}
 		
-		// 게시물 번호 가져오기
-		Long boardId = boardMapper.selectLatestBoardIdByConditions(boardInfo);
-		
 		// 게시물 첨부 파일 정보 DB에 삽입
-		for(Long file : files) {
+		List<Long> files = boardInsertInfo.getFiles();
+		
+		if(files != null) {
 			
+			// 게시물 번호 가져오기
+			Long boardId = boardMapper.selectLatestBoardIdByConditions(boardInsertInfo);
+			
+			if(boardMapper.insertBoardFiles(type, boardId, files) != files.size()) {
+				
+				throw new DatabaseOperationException(ResponseCode.SERVER_ERROR, "게시물 첨부 파일 저장에 실패 했습니다.");
+			}
 		}
 	}
 	
 	@Override
-	public BoardVO getBoardDetail(String type, String id) {
+	public Map<String, Object> getBoardDetail(BoardDetailDTO boardDetailInfo) {
 		
 		// 게시판 종류 확인
+		String type = boardDetailInfo.getType();
+		
 		checkBoardType(type);
 		
-		// 게시물 번호 파싱하기
-		Long boardId = (long)0;
-		
-		try {
-			
-			boardId = Long.parseLong(id);
-			
-		} catch (RuntimeException e) {
-			
-			throw new InvalidValueException(ResponseCode.SERVER_ERROR, "잘못된 게시물 번호 입니다.");
-		}
-		
 		// 게시물 정보 가져오기
-		BoardVO board = boardMapper.selectBoardDetail(type, boardId);
+		BoardVO boardDetail = boardMapper.selectBoardDetail(type, boardDetailInfo.getBoardId());
 		
 		// 게시물이 존재하는지 검사
-		if(board == null) {
+		if(boardDetail == null) {
 			
 			throw new EntityNotFoundException(ResponseCode.SERVER_ERROR, "존재하지 않는 게시물 입니다.");
 		}
 		
-		return board;
+		// 게시물 기존 첨부 파일 정보 가져오기
+		Long boardId = boardDetail.getId();
+		
+		List<Long> files = boardMapper.selectBoardFiles(type, boardId);
+		
+		Map<String, Object> boardDetailMap = new HashMap<String, Object>();
+		
+		boardDetailMap.put("boardDetail", boardDetail);
+		boardDetailMap.put("files", files);
+		
+		return boardDetailMap;
+	}
+
+	@Override
+	public void updateBoard(BoardUpdateDTO boardUpdateInfo) {
+		
+		// 게시판 종류 확인
+		String type = boardUpdateInfo.getType();
+		
+		checkBoardType(type);
+		
+		// 작성자 정보 토큰에서 꺼내 DTO에 삽입(나중에 작업)
+		Long userId = boardUpdateInfo.getUserId();
+		
+		// 게시물의 작성자가 맞는지 확인
+		Long boardId = boardUpdateInfo.getBoardId();
+		
+		if(boardMapper.selectBoardCountByUserId(type, boardId, userId) != 1) {
+			
+			throw new InvalidAccessException(ResponseCode.SERVER_ERROR, "게시물 수정 권한이 없습니다.");
+		}
+		
+		// 게시물 기존 첨부 파일 정보 삭제
+		
+		List<Long> oldFiles = boardMapper.selectBoardFiles(type, boardId);
+		
+		if(boardMapper.deleteBoardFiles(type, boardId) != oldFiles.size()) {
+			
+			throw new DatabaseOperationException(ResponseCode.SERVER_ERROR, "게시물 첨부 파일 기존 정보 삭제에 실패 했습니다.");
+		}
+		
+		// 새로운 게시물 첨부 파일 정보 저장
+		List<Long> newFiles = boardUpdateInfo.getFiles();
+		
+		if(boardMapper.insertBoardFiles(type, boardId, newFiles) != newFiles.size()) {
+			
+			throw new DatabaseOperationException(ResponseCode.SERVER_ERROR, "게시물 첨부 파일 새로운 정보 저장에 실패 했습니다.");
+		}
+		
+		// 게시물 내용 첨부 파일 관련 편집(나중에 작업)
+		
+		// 게시물 DB 업데이트
+		if(boardMapper.updateBoard(boardUpdateInfo) != 1) {
+			
+			throw new DatabaseOperationException(ResponseCode.SERVER_ERROR, "게시물 수정에 실패 했습니다.");
+		}
+	}
+
+	@Override
+	public void deleteBoard(BoardDeleteDTO boardDeleteInfo) {
+		
+		// 게시판 종류 확인
+		String type = boardDeleteInfo.getType();
+		
+		checkBoardType(type);
+		
+		// 작성자 정보 토큰에서 꺼내 DTO에 삽입(나중에 작업)
+		Long userId = boardDeleteInfo.getUserId();
+		
+		// 게시물의 작성자가 맞는지 확인
+		Long boardId = boardDeleteInfo.getBoardId();
+		
+		if(boardMapper.selectBoardCountByUserId(type, boardId, userId) != 1) {
+			
+			throw new InvalidAccessException(ResponseCode.SERVER_ERROR, "게시물 수정 권한이 없습니다.");
+		}
+		
+		// 게시물 첨부 파일 버킷에서 삭제(나중에 작업)
+		List<Long> files = boardDeleteInfo.getFiles();
+		
+		// 게시물 첨부 파일 정보 삭제 1
+		for(Long fileId : files) {
+			
+			if(fileMapper.deleteFileInfo(fileId) != 1) {
+				
+				throw new DatabaseOperationException(ResponseCode.SERVER_ERROR, "게시물 첨부 파일 정보 삭제에 실패 했습니다.");
+			}
+		}
+		
+		// 게시물 첨부 파일 정보 삭제 2
+		if(boardMapper.deleteBoardFiles(type, boardId) != files.size()) {
+			
+			throw new DatabaseOperationException(ResponseCode.SERVER_ERROR, "게시물 첨부 파일 정보 삭제에 실패 했습니다.");
+		}
+		
+		// 게시물 삭제
+		if (boardMapper.disableBoard(boardDeleteInfo) != 1) {
+			
+			throw new DatabaseOperationException(ResponseCode.SERVER_ERROR, "게시물 삭제에 실패 했습니다.");
+		}
 	}
 }
