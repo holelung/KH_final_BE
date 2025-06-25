@@ -57,11 +57,51 @@ public interface AuthService {
      */
     ApiResponse<Void> approveJoin(Long userId);
 
-    // 비밀번호 찾기
-    ApiResponse<Void> findPassword(FindPasswordDTO findPassword);
-    // 비밀번호 변경(비로그인)
+
+    /**
+     * <pre>
+     * 비밀번호 찾기
+     * 
+     * 비밀번호 찾기 요청으로 매개변수를 받음
+     * 1. 존재하는 회원인지 확인
+     *  1-2. 회원 테이블에서 저장된 Email을 가져옴
+     * 2. 비밀번호 변경URL을 전송하는 MailService 호출
+     * </pre>
+     * 
+     * @param changePasswordInfo 사용자 아이디
+     * @return
+     */
+    ApiResponse<Void> findPassword(String username);
+    
+    /**
+     * <pre>
+     * 비밀번호 변경(비밀번호 찾기와 연결됨)
+     * 
+     * 비로그인 상태로 비밀번호를 변경하기 위해 
+     * Key값을 Body에 담아서 비밀번호 변경요청을 보냄
+     * 
+     * Key를 통해 USER 테이블 PK를 SELECT함
+     * PK를 가지고 해당 유저의 비밀번호를 변경함
+     * </pre>
+     * 
+     * @param changePassword 변경할 비밀번호(2번), KEY값
+     * @return
+     */
     ApiResponse<Void> changePasswordByKey(ChangePasswordDTO changePassword);
-    // 비밀번호 변경
+    
+    /**
+     * <pre>
+     * 비밀번호 변경(로그인)
+     * 
+     * 마이페이지에서 비밀번호 변경
+     * 1. AuthContext에서 로그인된 사용자 정보 가져옴
+     * 2. 비밀번호 변경 요청 수행
+     * 
+     * </pre>
+     * 
+     * @param changePassword
+     * @return
+     */
     ApiResponse<Void> changePassword(ChangePasswordDTO changePassword);
 
     /**

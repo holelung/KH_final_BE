@@ -4,12 +4,16 @@ package com.kh.saintra.mail.model.service;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
+import java.util.UUID;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StreamUtils;
+import com.kh.saintra.auth.model.dto.FindPasswordDTO;
 import com.kh.saintra.duplication.model.service.DuplicationCheckService;
 import com.kh.saintra.global.enums.ResponseCode;
 import com.kh.saintra.global.error.exceptions.AuthenticateTimeOutException;
@@ -30,6 +34,9 @@ public class MailServiceImpl implements MailService{
     private final JavaMailSender mailSender;
     private final DuplicationCheckService duplicationService;
     private final MailMapper mailMapper;
+
+    @Value("${url.find-password}")
+    private String findPasswordUrl;
 
     @Override
     @Transactional
@@ -64,9 +71,34 @@ public class MailServiceImpl implements MailService{
     }
 
     @Override
-    public ApiResponse<Void> sendPasswordFindEmail(EmailDTO email) {
+    @Transactional(
+        propagation = Propagation.REQUIRED
+    )
+    public void sendPasswordFindEmail(Long userId, String email) {
+        EmailDTO emailDto = new EmailDTO();
+        FindPasswordDTO findPassword = new FindPasswordDTO();
         
-        throw new UnsupportedOperationException("Unimplemented method 'sendPasswordFindEmail'");
+        emailDto.setEmail(email);
+
+        // 키를 생성
+        findPassword.setId(userId);
+        findPassword.setAccessKey(createAccessKey());
+
+        // 저장
+        try {
+            mailMapper.insertAccessKey(findPassword);        
+        } catch (Exception e) {
+            e.getStackTrace();
+            throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "비밀번호 발급키 저장 실패");
+        }
+
+
+        // url 생성
+        emailDto.setVerifyCode(findPasswordUrl + findPassword.getAccessKey());
+        // 메일 내용 생성
+        EmailContent emailContent = createFindPasswordEmail(emailDto.getVerifyCode());
+        // 메일 전송
+        sendMail(emailDto, emailContent);
     }
     
 
@@ -83,6 +115,12 @@ public class MailServiceImpl implements MailService{
         }
         
         return sb.toString();
+    }
+
+    // UUID 생성
+    private String createAccessKey(){
+        String uuid = UUID.randomUUID().toString();
+        return uuid;
     }
 
     // 인증 메일 내용 생성
@@ -110,8 +148,21 @@ public class MailServiceImpl implements MailService{
     }
 
     // 비밀번호 찾기 메일 내용생성
-    private EmailContent createFindPasswordEmail(EmailDTO email){
-        return null;
+    private EmailContent createFindPasswordEmail(String url){
+        EmailContent content = new EmailContent();
+        content.setSubject("Saintra 비밀번호 변경 메일입니다.");
+
+        String html;
+        try {
+            ClassPathResource res = new ClassPathResource("templates/mail/password-mail.html");
+            html = StreamUtils.copyToString(res.getInputStream(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new MailServiceException(ResponseCode.MAIL_TEMPLATE_ERROR, "이메일 템플릿 로드 실패" + e);
+        }
+
+        html = html.replace("{{url}}", url);
+        content.setContent(html);
+        return content;
     }
 
     // 메일 전송

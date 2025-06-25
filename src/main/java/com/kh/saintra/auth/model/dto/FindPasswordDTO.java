@@ -13,6 +13,7 @@ import lombok.ToString;
 @ToString
 public class FindPasswordDTO {
     
-    private String username;
-    private String email;
+    private Long id;
+    private String accessKey;
+
 }

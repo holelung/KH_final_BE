@@ -42,4 +42,21 @@
             VERIFY_CODE = #{verifyCode}
     </select>
 
+
+    <!-- 비밀번호 변경 엑세스키 저장 -->
+    <insert id="insertAccessKey"
+            parameterType="FindPasswordDTO">
+        INSERT 
+        INTO
+            TB_ACCESS_KEY(
+                USER_ID,
+                ACCESS_KEY,
+                ISSUE_DATE
+            )
+        VALUES(
+            #{id},
+            #{accessKey},
+            SYSDATE
+        )
+    </insert>
 </mapper>

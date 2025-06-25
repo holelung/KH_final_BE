@@ -84,4 +84,29 @@
         ORDER BY
             ISSUE_DATE ASC
     </select>
+
+
+    <!-- 비밀번호 변경 AccessKey 확인 -->
+    <select id="confirmAccessKey"
+            parameterType="string"
+            resultType="_long">
+        SELECT
+            USER_ID
+        FROM 
+            TB_ACCESS_KEY
+        WHERE
+            ISSUE_DATE + 1/24/2 > SYSDATE
+        AND
+            ACCESS_KEY = #{accessKey}
+    </select>
+
+    <update id="changePassword"
+            parameterType="ChangePassword">
+        UPDATE
+            TB_USER
+        SET 
+            PASSWORD = #{password}
+        WHERE
+            ID = #{userId}
+    </update>
 </mapper>

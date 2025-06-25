@@ -1,5 +1,6 @@
 package com.kh.saintra.mail.model.service;
 
+import com.kh.saintra.auth.model.dto.FindPasswordDTO;
 import com.kh.saintra.global.response.ApiResponse;
 import com.kh.saintra.mail.model.dto.EmailDTO;
 
@@ -32,5 +33,15 @@ public interface MailService {
      */
     ApiResponse<Void> confirmEmailVerification(EmailDTO email);
 
-    ApiResponse<Void> sendPasswordFindEmail(EmailDTO email);
+    /**
+     * <pre>
+     * 비밀번호 찾기(이메일전송)
+     * 
+     * 사용자의 이메일로 비밀번호 변경할 수 있는 페이지의 링크를 보내줌
+     * 링크에는 UUID로 생성한 KEY값이 포함되어있음
+     * </pre>
+     * @param email 사용자의 이메일
+     * @return 
+     */
+    void sendPasswordFindEmail(Long id, String email);
 }

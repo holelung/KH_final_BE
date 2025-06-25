@@ -4,6 +4,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import com.kh.saintra.auth.model.dto.LoginFormDTO;
 import com.kh.saintra.auth.model.vo.ApproveUser;
+import com.kh.saintra.auth.model.vo.ChangePassword;
 import com.kh.saintra.user.model.dto.UserDTO;
 import com.kh.saintra.user.model.dto.UserSearchDTO;
 import com.kh.saintra.user.model.vo.User;
@@ -70,4 +71,28 @@ public interface AuthMapper {
      */
     List<ApproveUser> getApproveList();
 
+    /**
+     * <pre>
+     * 비밀번호 변경 AccessKey 확인
+     * 
+     * DB에서 accessKey가 일치하는것이 있는지 확인
+     * 및 유효기간이 만료되지 않았는지 확인하여
+     * ID 값반환함
+     * </pre>
+     * 
+     * @param accessKey UUID 로 생성된 KEY값
+     * @return Long ID
+     */
+    Long confirmAccessKey(String accessKey);
+
+    /**
+     * <pre>
+     * <strong>비밀번호 변경<strong>
+     * 
+     * 유저의 PK와 변경할 비밀번호값을 매개변수로 받는다.
+     * PASSWORD 컬럼을 업데이트한다.
+     * </pre>
+     * @param ChangePassword changePassword 
+     */
+    void changePassword(ChangePassword changePassword);
 }
