@@ -8,5 +8,5 @@ public interface MailMapper {
     
     void insertVerifyCode(EmailDTO email);
 
-    EmailDTO selectVerifyCode(String email);
+    int selectVerifyCode(EmailDTO email);
 }

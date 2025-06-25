@@ -18,4 +18,26 @@
         )
     </insert>
 
+    <select id="selectVerifyCode"
+            parameterType="EmailDTO"
+            resultType="_int">
+        SELECT
+            COUNT(*)
+        FROM(
+            SELECT
+                EMAIL,
+                EMAIL_CODE,
+                ISSUE_DATE
+            FROM
+                EMAIL_CODES
+            WHERE
+                EMAIL = #{email}
+            ORDER BY
+                ISSUE_DATE ASC
+            FETCH FIRST 1 ROW ONLY
+        )
+        WHERE
+            ISSUE_DATE + 1/24/12 > SYSDATE
+    </select>
+
 </mapper>

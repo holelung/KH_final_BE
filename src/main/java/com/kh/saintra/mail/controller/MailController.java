@@ -23,4 +23,10 @@ public class MailController {
         
         return ResponseEntity.ok(mailService.sendVerificationEmail(email));
     }
+
+    @PostMapping("/verify")
+    public ResponseEntity<ApiResponse<Void>> confirmEmailCode(@RequestBody @Valid EmailDTO email){
+
+        return ResponseEntity.ok(mailService.confirmEmailVerification(email));
+    }
 }

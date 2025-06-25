@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StreamUtils;
 import com.kh.saintra.duplication.model.service.DuplicationCheckService;
 import com.kh.saintra.global.enums.ResponseCode;
+import com.kh.saintra.global.error.exceptions.AuthenticateTimeOutException;
 import com.kh.saintra.global.error.exceptions.DatabaseOperationException;
 import com.kh.saintra.global.error.exceptions.MailServiceException;
 import com.kh.saintra.global.response.ApiResponse;
@@ -55,7 +56,9 @@ public class MailServiceImpl implements MailService{
     public ApiResponse<Void> confirmEmailVerification(EmailDTO email) {
         
         // DB에서 일치하는게 있는지 확인
-
+        if(mailMapper.selectVerifyCode(email) == 0){
+            throw new AuthenticateTimeOutException(ResponseCode.VERIFIED_TIMEOUT, "인증코드가 틀렸거나 시간이 만료되었습니다!");
+        }
 
         return ApiResponse.success(ResponseCode.MAIL_VERIFIED, "이메일 인증 성공");
     }
