@@ -26,18 +26,20 @@
         FROM(
             SELECT
                 EMAIL,
-                EMAIL_CODE,
+                VERIFY_CODE,
                 ISSUE_DATE
             FROM
-                EMAIL_CODES
+                TB_VERIFY_CODE
             WHERE
                 EMAIL = #{email}
             ORDER BY
-                ISSUE_DATE ASC
+                ISSUE_DATE DESC
             FETCH FIRST 1 ROW ONLY
         )
         WHERE
             ISSUE_DATE + 1/24/12 > SYSDATE
+        AND
+            VERIFY_CODE = #{verifyCode}
     </select>
 
 </mapper>
