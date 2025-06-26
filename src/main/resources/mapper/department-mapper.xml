@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.saintra.department.model.dao.DepartmentMapper">
+
+	<select id="selectTotalDeptCount"
+			parameterType="com.kh.saintra.department.model.dto.DepartmentListDTO">
+		SELECT
+			COUNT(*)
+		FROM
+			TB_DEPARTMENT
+	</select>
+
+	<select id="selectDepartmentList"
+			parameterType="com.kh.saintra.department.model.dto.DepartmentListDTO"
+			resultType="com.kh.saintra.department.model.vo.DepartmentVO">
+		SELECT
+			ID id,
+			DEPT_NAME deptName,
+			PERSONNEL personnel,
+			INSPECT inspect,
+			IS_ACTIVE isActive
+		FROM
+			TB_DEPARTMENT
+		<if test="condition != null and keyword != null">
+			<choose>
+				<when test="condition = deptname">
+					WHERE
+						DEPT_NAME LIKE '%'||#{keyword}||'%'
+				</when>
+				<otherwise>
+				</otherwise>
+			</choose>
+		</if>
+		ORDER BY
+			ID DESC
+		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+	
+	<select id="selectDepartmentNameList">
+		SELECT
+			DEPT_NAME
+		FROM
+			TB_DEPARTMENT
+	</select>
+	
+	<select id="checkPersonnel">
+		SELECT
+			COUNT(*)
+		FROM
+			TB_DEPARTMENT
+		WHERE
+			PERSONNEL = 'Y'
+	</select>
+	
+	<select id="checkInspect">
+		SELECT
+			COUNT(*)
+		FROM
+			TB_DEPARTMENT
+		WHERE
+			INSPECT = 'Y'
+	</select>
+	
+	<insert id="insertDepartment"
+			parameterType="com.kh.saintra.department.model.dto.DepartmentInsertDTO">
+		INSERT INTO
+			TB_DEPARTMENT
+			(
+				DEPT_NAME,
+				PERSONNEL,
+				INSPECT,
+				IS_ACTIVE
+			)
+		VALUES
+			(
+				#{departmentName}
+		<choose>
+			<when test="personnel == 'Y'">
+				, 'Y'
+				, 'N'
+				, DEFAULT
+			</when>
+			<when test="inspect == 'Y'">
+				, 'N'
+				, 'Y'
+				, DEFAULT
+			</when>
+			<otherwise>
+				, DEFAULT
+				, DEFAULT
+				, DEFAULT
+			</otherwise>
+		</choose>
+			)
+	</insert>
+	
+	<select id="selectDepartmentById"
+			resultType="com.kh.saintra.department.model.vo.DepartmentVO">
+		SELECT
+			ID id,
+			DEPT_NAME deptName,
+			PERSONNEL personnel,
+			INSPECT inspect,
+			IS_ACTIVE isActive
+		FROM
+			TB_DEPARTMENT
+		WHERE
+			IS_ACTIVE = 'Y'
+		AND
+			ID = #{id}
+	</select>
+	
+	<update id="updatePersonnel">
+		UPDATE
+			TB_DEPARTMENT
+		SET
+			PERSONNEL = #{personnel}
+		WHERE
+			ID = #{deptId}
+		AND
+			IS_ACTIVE = 'Y'
+	</update>
+	
+	<update id="updateInspect">
+		UPDATE
+			TB_DEPARTMENT
+		SET
+			INSPECT = #{inspect}
+		WHERE
+			ID = #{deptId}
+		AND
+			IS_ACTIVE = 'Y'
+	</update>
+	
+	<update id="updateDepartment">
+		UPDATE
+			TB_DEPARTMENT
+		SET
+			DEPT_NAME = #{deptName}
+		WHERE
+			ID = #{deptId}
+		AND
+			IS_ACTIVE = 'Y'
+	</update>
+	
+	<update id="deleteDepartment">
+		UPDATE
+			TB_DEPARTMENT
+		SET
+			IS_ACTIVE = 'N'
+		WHERE
+			ID = #{deptId}
+	</update>
+	
+</mapper>

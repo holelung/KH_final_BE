@@ -72,7 +72,7 @@
 			B.ID = #{boardId}
 		ORDER BY
 			C.CREATE_DATE DESC
-		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY;
+		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
 	
 	<insert id="insertComment"

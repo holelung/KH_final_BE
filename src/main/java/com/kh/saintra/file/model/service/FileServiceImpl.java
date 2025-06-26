@@ -33,8 +33,8 @@ public class FileServiceImpl implements FileService {
 	);
 	
 	private static final List<String> ALLOWED_IMAGE_EXTENSION = Arrays.asList(
-			".jpg", ".jpeg", ".jpe", ".gif", ".png"
-		);
+		".jpg", ".jpeg", ".jpe", ".gif", ".png"
+	);
 	
 	private final FileMapper fileMapper;
 	
@@ -46,7 +46,7 @@ public class FileServiceImpl implements FileService {
 		
 		if(file.isEmpty()) {
 			
-			throw new FileStreamException(ResponseCode.SERVER_ERROR, "빈 파일은 업로드할 수 없습니다.");
+			throw new FileStreamException(ResponseCode.INVALID_VALUE, "빈 파일은 업로드할 수 없습니다.");
 		}
 	}
 	
@@ -61,7 +61,7 @@ public class FileServiceImpl implements FileService {
 		
 		if(origin == null || !origin.contains(".")) {
 			
-			throw new FileStreamException(ResponseCode.SERVER_ERROR, "올바르지 않은 파일명 입니다.");
+			throw new FileStreamException(ResponseCode.INVALID_VALUE, "올바르지 않은 파일명 입니다.");
 		} else {
 			
 			extension = origin.substring(origin.lastIndexOf(".")).toLowerCase();
@@ -69,7 +69,7 @@ public class FileServiceImpl implements FileService {
 		
 		if(NOT_ALLOWED_FILE_EXTENSION.contains(extension)) {
 			
-			throw new FileNotAllowedException(ResponseCode.SERVER_ERROR, "허용되지 않은 확장자 입니다.");
+			throw new FileNotAllowedException(ResponseCode.INVALID_VALUE, "허용되지 않은 확장자 입니다.");
 		}
 		
 		return extension;
@@ -83,7 +83,7 @@ public class FileServiceImpl implements FileService {
 		
 		if(!ALLOWED_IMAGE_EXTENSION.contains(extension)) {
 			
-			throw new FileNotAllowedException(ResponseCode.SERVER_ERROR, "이미지 파일이 아니거나, 허용된 파일 형식이 아닙니다.");
+			throw new FileNotAllowedException(ResponseCode.INVALID_VALUE, "이미지 파일이 아니거나, 허용된 파일 형식이 아닙니다.");
 		}
 		
 		return;
@@ -114,7 +114,7 @@ public class FileServiceImpl implements FileService {
 		
 		if(fileMapper.insertFileInfo(fileInfo) != 1) {
 			
-			throw new DatabaseOperationException(ResponseCode.SERVER_ERROR, "데이터베이스 오류 입니다.");
+			throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "데이터베이스 오류 입니다.");
 		}
 	}
 	
@@ -179,7 +179,7 @@ public class FileServiceImpl implements FileService {
 			
 		} catch (RuntimeException e) {
 			
-			throw new InvalidValueException(ResponseCode.SERVER_ERROR, "잘못된 파일 ID 입니다.");
+			throw new InvalidValueException(ResponseCode.INVALID_VALUE, "잘못된 파일 ID 입니다.");
 		}
 		
 		// DB에 저장된 파일 정보 가져오기
@@ -188,7 +188,7 @@ public class FileServiceImpl implements FileService {
 		// DB에 저장된 파일 정보 삭제
 		if(fileMapper.deleteFileInfo(id) != 1) {
 			
-			throw new DatabaseOperationException(ResponseCode.SERVER_ERROR, "파일 삭제에 실패 했습니다.");
+			throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "파일 삭제에 실패 했습니다.");
 		}
 		
 		// 버킷에 저장한 url 생성(나중에 작업)
@@ -209,7 +209,7 @@ public class FileServiceImpl implements FileService {
 			
 		} catch (RuntimeException e) {
 			
-			throw new InvalidValueException(ResponseCode.SERVER_ERROR, "잘못된 파일 ID 입니다.");
+			throw new InvalidValueException(ResponseCode.INVALID_VALUE, "잘못된 파일 ID 입니다.");
 		}
 		
 		// DB에 저장된 파일 정보 가져오기
@@ -218,7 +218,7 @@ public class FileServiceImpl implements FileService {
 		// DB에 저장된 파일 정보 삭제
 		if(fileMapper.deleteFileInfo(id) != 1) {
 			
-			throw new DatabaseOperationException(ResponseCode.SERVER_ERROR, "파일 삭제에 실패 했습니다.");
+			throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "파일 삭제에 실패 했습니다.");
 		}
 		
 		// 버킷에 저장한 파일 url 생성(나중에 작업)
