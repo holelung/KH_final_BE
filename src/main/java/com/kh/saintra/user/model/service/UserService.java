@@ -5,12 +5,13 @@ import org.springframework.web.multipart.MultipartFile;
 import com.kh.saintra.auth.model.dto.ChangePasswordDTO;
 import com.kh.saintra.global.response.ApiResponse;
 import com.kh.saintra.mail.model.dto.EmailDTO;
-import com.kh.saintra.user.model.dto.AttendanceDTO;
+import com.kh.saintra.user.model.dto.Attendance;
+import com.kh.saintra.user.model.dto.AttendanceRequest;
 import com.kh.saintra.user.model.dto.UserDTO;
 import com.kh.saintra.user.model.dto.UserPasswordDTO;
 import com.kh.saintra.user.model.dto.UserProfileDTO;
 import com.kh.saintra.user.model.dto.UserSearchDTO;
-import com.kh.saintra.user.model.dto.UserUpdateDTO;
+import com.kh.saintra.user.model.dto.UserCompanyInfoDTO;
 import com.kh.saintra.user.model.dto.UserUpdateEmailDTO;
 import com.kh.saintra.user.model.vo.User;
 
@@ -56,7 +57,7 @@ public interface UserService {
      * @param userUpdate 유저이름과 부서, 직급, 팀, 권한이 들어있는 DTO
      * @return ApiResponse(ResponseCode code, String message)
      */
-    ApiResponse<Void> updateUserByAdmin(UserUpdateDTO userUpdate);
+    ApiResponse<Void> updateUserByAdmin(UserCompanyInfoDTO userUpdate);
 
     /**
      * <pre>
@@ -117,24 +118,32 @@ public interface UserService {
     
     /** 
      * <pre>회원 탈퇴(관리자 제어)</pre>
-     * @param username 관리자가 탈퇴시킬 유저의 ID
+     * @param id 관리자가 탈퇴시킬 유저의 ID
      * @return ApiResponse(ResponseCode code, String message)
      */
-    ApiResponse<Void> deleteUserByAdmin(String username);
+    ApiResponse<Void> deleteUserByAdmin(Long id);
     
     /**
      * <pre>
-     * 근태 조회(한 명)
+     * 근태 조회(유저용)
      * 조회하는 유저 아이디를 받아서 
      * 근태 목록을 반환함
      * </pre>
      * 
-     * @param attendance 근태조회 기간(startDate, endDate, 조회하는 유저ID)가 포함됨 
+     * @param attendance 근태조회 기간(startDate, endDate)가 포함됨 
      * @return ApiResponse(ResponseCode code, <T> data, String message)
      */
-    ApiResponse<AttendanceDTO> getAttendance(AttendanceDTO attendance);
+    ApiResponse<List<Attendance>> getAttendance(AttendanceRequest attendance);
 
-    
+    /**
+     * 근태 조회 관리자용
+     * 
+     * @param attendance 근태조회 기간(startDate, endDate), 조회하는 유저ID가 포함됨
+     * @return ApiResponse(ResponseCode code, <T> data, String message)
+     */
+    ApiResponse<List<Attendance>> getAttendanceByAdmin(AttendanceRequest attendance);
+
+
     /**
      * <pre>출근 처리</pre>
      * @return ApiResponse(ResponseCode code, String message)

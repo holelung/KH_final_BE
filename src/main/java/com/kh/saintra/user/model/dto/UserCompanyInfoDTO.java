@@ -15,11 +15,12 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class UserUpdateDTO {
+public class UserCompanyInfoDTO {
 
-    private String username;
+    private Long id;
     private String userRole;
-    private Department department;
-    private Job job;
+    private Long deptId;
+    private Long jobId;
+    private Long teamId;
 
 }

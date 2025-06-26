@@ -19,6 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.kh.saintra.auth.model.dto.ChangePasswordDTO;
 import com.kh.saintra.global.enums.ResponseCode;
 import com.kh.saintra.global.response.ApiResponse;
+import com.kh.saintra.user.model.dto.Attendance;
+import com.kh.saintra.user.model.dto.AttendanceRequest;
 import com.kh.saintra.user.model.dto.UserDTO;
 import com.kh.saintra.user.model.dto.UserPasswordDTO;
 import com.kh.saintra.user.model.dto.UserProfileDTO;
@@ -82,16 +84,51 @@ public class UserController {
 
     }
 
+    //  이메일 변경
     @PatchMapping("/email")
     public ResponseEntity<ApiResponse<Void>> changeEmail(@RequestBody @Valid UserUpdateEmailDTO email){
 
         return ResponseEntity.ok(userService.updateEmail(email));
     }
 
+    // 회원탈퇴
     @DeleteMapping("/mypage")
     public ResponseEntity<ApiResponse<Void>> dropUser(@RequestBody Map<String, String> password){
 
         return ResponseEntity.ok(userService.deleteUser(password.get("password")));
     }
 
+    // 회원 강퇴
+    @DeleteMapping
+    public ResponseEntity<ApiResponse<Void>> dropUserByAdmin(@RequestBody Map<String, Long> id){
+        return ResponseEntity.ok(userService.deleteUserByAdmin(id.get("id")));
+    }
+
+    // 근태조회(유저)
+    @GetMapping("/attendance")
+    public ResponseEntity<ApiResponse<List<Attendance>>> getAttendance(@RequestBody @Valid AttendanceRequest request){
+    
+        return ResponseEntity.ok(userService.getAttendance(request));
+    }
+
+    // 근태조회(관리자)
+    @GetMapping("/admin/attendance")
+    public ResponseEntity<ApiResponse<List<Attendance>>> getAttendanceByAdmin(@RequestBody @Valid AttendanceRequest request){
+
+        return ResponseEntity.ok(userService.getAttendanceByAdmin(request));
+    }
+
+    @PostMapping("/attendance")
+    public ResponseEntity<ApiResponse<Void>> checkIn(@RequestBody @Valid AttendanceRequest request) {
+        
+        
+        return ResponseEntity.ok(userService.checkIn());
+    }
+
+    @DeleteMapping("/attendance")
+    public ResponseEntity<ApiResponse<Void>> checkOut(@RequestBody @Valid AttendanceRequest request) {
+
+        return ResponseEntity.ok(userService.checkOut());
+    }
+    
 }

@@ -18,12 +18,13 @@ import com.kh.saintra.global.error.exceptions.InvalidAccessException;
 import com.kh.saintra.global.response.ApiResponse;
 import com.kh.saintra.mail.model.dto.EmailDTO;
 import com.kh.saintra.user.model.dao.UserMapper;
-import com.kh.saintra.user.model.dto.AttendanceDTO;
+import com.kh.saintra.user.model.dto.Attendance;
+import com.kh.saintra.user.model.dto.AttendanceRequest;
 import com.kh.saintra.user.model.dto.UserDTO;
 import com.kh.saintra.user.model.dto.UserPasswordDTO;
 import com.kh.saintra.user.model.dto.UserProfileDTO;
 import com.kh.saintra.user.model.dto.UserSearchDTO;
-import com.kh.saintra.user.model.dto.UserUpdateDTO;
+import com.kh.saintra.user.model.dto.UserCompanyInfoDTO;
 import com.kh.saintra.user.model.dto.UserUpdateEmailDTO;
 import com.kh.saintra.user.model.vo.UpdateEmail;
 import com.kh.saintra.user.model.vo.UpdatePassword;
@@ -108,9 +109,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ApiResponse<Void> updateUserByAdmin(UserUpdateDTO userUpdate) {
-        
-        throw new UnsupportedOperationException("Unimplemented method 'updateUserByAdmin'");
+    @Transactional
+    public ApiResponse<Void> updateUserByAdmin(UserCompanyInfoDTO companyInfo) {
+        // 부서 확인
+        // if(!authService.getUserDetails().getDeptId().equals("1")){
+        // throw new InvalidAccessException(ResponseCode.INVALID_ACCESS, "접근 권한이 없습니다.");
+        // }
+
+        if(userIsExistById(companyInfo.getId()) == null){
+            throw new InvalidAccessException(ResponseCode.INVALID_VALUE, "없는 사용자 입니다.");
+        }
+
+        try {
+            userMapper.updateUserByAdmin(companyInfo);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "사원정보 수정 실패");
+        }
+
+        return ApiResponse.success(ResponseCode.UPDATE_SUCCESS, "사원정보 수정완료");
     }
 
     @Override
@@ -200,23 +217,106 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ApiResponse<Void> deleteUserByAdmin(String username) {
-        throw new UnsupportedOperationException("Unimplemented method 'deleteUserByAdmin'");
+    @Transactional
+    public ApiResponse<Void> deleteUserByAdmin(Long id) {
+        
+        if(userIsExistById(id) == null){
+            throw new InvalidAccessException(ResponseCode.INVALID_VALUE, "없는 사용자 입니다.");
+        }
+
+        try {
+            userMapper.deleteUser(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "회원 강제 탈퇴 실패");
+        }
+
+        return ApiResponse.success(ResponseCode.UPDATE_SUCCESS, "회원 강제 탈퇴 성공");
     }
 
     @Override
-    public ApiResponse<AttendanceDTO> getAttendance(AttendanceDTO attendance) {
-        throw new UnsupportedOperationException("Unimplemented method 'getAttendance'");
+    @Transactional
+    public ApiResponse<List<Attendance>> getAttendance(AttendanceRequest attendance) {
+        List<Attendance> result = null;
+
+        attendance.setId(authService.getUserDetails().getId());
+
+        try {
+            result = userMapper.getAttendance(attendance);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "근태 조회 실패");
+        }
+
+        return ApiResponse.success(ResponseCode.GET_SUCCESS, result, "근태조회 성공");
     }
 
+    
+
     @Override
+    @Transactional
+    public ApiResponse<List<Attendance>> getAttendanceByAdmin(AttendanceRequest attendance) {
+        List<Attendance> result = null;
+
+        if(userIsExistById(attendance.getId()) == null){
+            throw new InvalidAccessException(ResponseCode.INVALID_VALUE, "없는 사용자 입니다.");
+        }
+
+        try {
+            result = userMapper.getAttendance(attendance);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "근태 조회 실패");
+        }
+
+        return ApiResponse.success(ResponseCode.GET_SUCCESS, result, "근태조회 성공");
+    }
+
+
+    // 출근
+    @Override
+    @Transactional
     public ApiResponse<Void> checkIn() {
-        throw new UnsupportedOperationException("Unimplemented method 'checkIn'");
+        Long id = authService.getUserDetails().getId();
+
+        Attendance data = null;
+
+        try {
+            data = userMapper.checkLatestAttendance(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "근태 조회 실패");
+        }
+
+        if(data.getType().equals("Attendance")){
+            throw new InvalidAccessException(ResponseCode.INVALID_ACCESS, "이미 출근했습니다.");
+        }
+        
+        try {
+            userMapper.checkIn(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "출근 실패");
+        }
+
+        return ApiResponse.success(ResponseCode.INSERT_SUCCESS, "출근 처리되었습니다.");
     }
 
+    // 퇴근
     @Override
+    @Transactional
     public ApiResponse<Void> checkOut() {
-        throw new UnsupportedOperationException("Unimplemented method 'checkOut'");
+        
+        Long id = authService.getUserDetails().getId();
+
+        try {
+            userMapper.checkOut(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "퇴근 실패");
+        }
+        
+        return ApiResponse.success(ResponseCode.INSERT_SUCCESS, "퇴근 처리 완료");
     }
 
     @Transactional(
@@ -227,8 +327,21 @@ public class UserServiceImpl implements UserService {
         return userMapper.getUserByUsernameForApprove(username);
     }
 
+    @Transactional(
+        propagation = Propagation.REQUIRED
+    )
+    private UserDTO userIsExistById(Long id){
+        UserDTO user = null;
 
+        try {
+            user = userMapper.getUserByUserId(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "유저 정보 가져오기 실패");
+        }
 
+        return user;
+    }
 
 
 }

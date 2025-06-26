@@ -165,4 +165,72 @@
             ID = #{id}
     </update>
 
+    <select id="getAttendance"
+            parameterType="AttendanceRequest"
+            resultType="Attendance">
+        SELECT
+            ID,
+            USER_ID userId,
+            TYPE,
+            TIME
+        FROM
+            TB_ATTENDANCE
+        WHERE
+            USER_ID = #{userId}
+        AND
+            TIME > #{startDate}
+        AND
+            TIME < #{endDate}
+    </select>
+
+    <!-- 가장 최근 출퇴근 기록 확인 -->
+    <select id="checkLatestAttendance"
+            parameterType="_long"
+            resultType="Attendance">
+        SELECT
+            TYPE,
+            TIME
+        FROM
+            TB_ATTENDANCE
+        WHERE
+            USER_ID = #{id}
+        ORDER BY
+            TIME DESC
+        FETCH FIRST 1 ROW ONLY
+    </select>
+<!-- SELECT 중에 INSERT못하게 락을 걸어야한다.. -->
+
+    <!-- 출근 -->
+    <insert id="checkIn"
+            parameterType="_long">
+        INSERT
+        INTO
+            TB_ATTENDANCE(
+                USER_ID,
+                TYPE,
+                TIME
+            )
+        VALUES(
+            #{id},
+            'Attendance',
+            SYSDATE
+        )
+    </insert>
+
+    <!-- 퇴근 -->
+    <insert id="checkOut"
+            parameterType="_long">
+        INSERT
+        INTO
+            TB_ATTENDANCE(
+                USER_ID,
+                TYPE,
+                TIME
+            )
+        VALUES(
+            #{id},
+            'Leave',
+            SYSDATE
+        )
+    </insert>
 </mapper>
