@@ -18,6 +18,6 @@ import lombok.ToString;
 public class UserSearchDTO {
     
     private String search;
-    private Department department;
-    private Job job;
+    private Long deptId;
+    private Long jobId;
 }

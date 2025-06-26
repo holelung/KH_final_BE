@@ -38,7 +38,7 @@ public class FieldMatchValidator implements ConstraintValidator<FieldMatch, Obje
             Object firstValue = firstDescriptor.getReadMethod().invoke(value);
             Object secondValue = secondDescriptor.getReadMethod().invoke(value);
             
-            return Objects.equals(firstValue, secondValue);
+            return !Objects.equals(firstValue, secondValue);
         } catch (Exception e) {
             return false;
         }

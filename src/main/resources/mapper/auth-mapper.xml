@@ -109,4 +109,5 @@
         WHERE
             ID = #{userId}
     </update>
+
 </mapper>

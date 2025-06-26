@@ -1,13 +1,18 @@
 package com.kh.saintra.user.model.service;
 
+import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
+import com.kh.saintra.auth.model.dto.ChangePasswordDTO;
 import com.kh.saintra.global.response.ApiResponse;
 import com.kh.saintra.mail.model.dto.EmailDTO;
 import com.kh.saintra.user.model.dto.AttendanceDTO;
 import com.kh.saintra.user.model.dto.UserDTO;
+import com.kh.saintra.user.model.dto.UserPasswordDTO;
 import com.kh.saintra.user.model.dto.UserProfileDTO;
 import com.kh.saintra.user.model.dto.UserSearchDTO;
 import com.kh.saintra.user.model.dto.UserUpdateDTO;
+import com.kh.saintra.user.model.dto.UserUpdateEmailDTO;
+import com.kh.saintra.user.model.vo.User;
 
 public interface UserService {
     
@@ -30,7 +35,17 @@ public interface UserService {
      * @param userSearch 검색을 하는데 필요한 정보들이 들어있음(검색어, 오름/내림차순, 부서, 직급)
      * @return ApiResponse(ResponseCode code, <T> data, String message)
      */
-    ApiResponse<Object> getUserList(UserSearchDTO userSearch);
+    ApiResponse<List<UserDTO>> getUserList(UserSearchDTO userSearch);
+
+    /**
+     * <pre>
+     * 회원 정보 조회
+     * 
+     * </pre>
+     * @param id USER 테이블 pk
+     * @return UserDTO
+     */
+    ApiResponse<UserDTO> getUser();
 
     /**
      * <pre>
@@ -64,16 +79,34 @@ public interface UserService {
      * @return ApiResponse(ResponseCode code, String message)
      */
     ApiResponse<Void> updateUserProfileImage(MultipartFile file);
+
+    /**
+     * <pre>
+     * 비밀번호 변경(로그인)
+     * 
+     * 마이페이지에서 비밀번호 변경
+     * 1. AuthContext에서 로그인된 사용자 정보 가져옴
+     * 2. 현재 비밀번호가 일치하는지 확인
+     * 3. 현재 비밀번호와 새 비밀번호가 다른지 확인
+     * 4. 비밀 번호 변경
+     * 
+     * </pre>
+     * 
+     * @param UserPasswordDTO 현재 비밀번호, 변경할 비밀번호
+     * @return
+     */
+    ApiResponse<Void> changePassword(UserPasswordDTO userPassword);
     
     /**
      * <pre>
      * 이메일 변경 
      * 이메일 변경시 인증을 한번 해가지고 이메일 변경을 처리한다.
+     * 앞에서 이메일 인증을 하고 들어온다고 가정함
      * </pre>
      * @param email EmailDTO에는 Valid처리를 한 String타입의 변수가 들어있음
      * @return ApiResponse(ResponseCode code, String message)
      */
-    ApiResponse<Void> updateEmail(EmailDTO email);
+    ApiResponse<Void> updateEmail(UserUpdateEmailDTO userEmail);
 
     /** 
      * <pre>회원 탈퇴(유저 본인)</pre>
@@ -90,12 +123,18 @@ public interface UserService {
     ApiResponse<Void> deleteUserByAdmin(String username);
     
     /**
-     * <pre>근태 조회</pre>
+     * <pre>
+     * 근태 조회(한 명)
+     * 조회하는 유저 아이디를 받아서 
+     * 근태 목록을 반환함
+     * </pre>
+     * 
      * @param attendance 근태조회 기간(startDate, endDate, 조회하는 유저ID)가 포함됨 
      * @return ApiResponse(ResponseCode code, <T> data, String message)
      */
-    ApiResponse<Object> getAttendance(AttendanceDTO attendance);
+    ApiResponse<AttendanceDTO> getAttendance(AttendanceDTO attendance);
 
+    
     /**
      * <pre>출근 처리</pre>
      * @return ApiResponse(ResponseCode code, String message)

@@ -28,9 +28,7 @@
         ]]>
     </insert>
 
-    <select id="getUserByUsername"
-            parameterType="string"
-            resultType="UserDTO">
+    <sql id="selectUser">
         SELECT
             ID,
             USERNAME,
@@ -49,10 +47,24 @@
             IS_ACTIVE isActive
         FROM
             TB_USER
+    </sql>
+
+    <select id="getUserByUsername"
+            parameterType="string"
+            resultType="UserDTO">
+        <include refid="selectUser" />
         WHERE
             USERNAME = #{username}
         AND
             IS_ACTIVE = 'Y'
+    </select>
+
+    <select id="getUserByUserId"
+            parameterType="_long"
+            resultType="UserDTO">
+        <include refid="selectUser" />
+        WHERE
+            ID = #{id}
     </select>
 
     <select id="getUserByUsernameForApprove"
@@ -81,4 +93,76 @@
         AND
             IS_ACTIVE = 'N'
     </select>
+
+    <!-- 회원 목록 불러오기 -->
+    <select id="getUserList"
+            parameterType="UserSearchDTO"
+            resultType="UserDTO">
+        <include refid="selectUser" />
+        WHERE 
+            1=1
+        <if test="search != null">
+        AND
+            REALNAME = #{search}
+        </if>
+        <if test="deptId != null">
+        AND
+            DEPT_ID = #{deptId}
+        </if>
+        <if test="jobId != null">
+        AND
+            JOB_ID = #{jobId}
+        </if>
+        ORDER BY
+            ID DESC
+    </select>
+
+    <!-- 회원 개인정보 업뎉이트 -->
+    <update id="updateUser"
+            parameterType="UserProfileDTO">
+        UPDATE
+            TB_USER
+        SET
+            REALNAME = #{realname},
+            PHONE = #{phone},
+            ADDRESS_1 = #{address1},
+            ADDRESS_2 = #{address2}
+        WHERE
+            ID = #{id}
+    </update>
+
+    <!-- 이메일 업데이트 -->
+    <update id="updateEmail"
+            parameterType="UpdateEmail">
+        UPDATE
+            TB_USER
+        SET
+            EMAIL = #{email}
+        WHERE
+            ID = #{id}
+    </update>
+
+
+    <!-- 비밀번호 변경(로그인) -->
+    <update id="updatePassword"
+            parameterType="UpdatePassword">
+        UPDATE
+            TB_USER
+        SET
+            PASSWORD = #{password}
+        WHERE
+            ID = #{id}
+    </update>
+
+    <!-- 회원탈퇴 (본인) -->
+    <update id="deleteUser"
+            parameterType="_long">
+        UPDATE
+            TB_USER
+        SET
+            IS_ACTIVE = 'N'
+        WHERE
+            ID = #{id}
+    </update>
+
 </mapper>
