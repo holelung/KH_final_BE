@@ -178,9 +178,11 @@
         WHERE
             USER_ID = #{userId}
         AND
-            TIME > #{startDate}
+            TIME &gt; #{startDate}
         AND
-            TIME < #{endDate}
+            TIME &lt; #{endDate}
+        ORDER BY
+            TIME DESC
     </select>
 
     <!-- 가장 최근 출퇴근 기록 확인 -->

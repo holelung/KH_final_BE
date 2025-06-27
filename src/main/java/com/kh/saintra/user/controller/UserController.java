@@ -118,6 +118,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getAttendanceByAdmin(request));
     }
 
+    // 출근
     @PostMapping("/attendance")
     public ResponseEntity<ApiResponse<Void>> checkIn(@RequestBody @Valid AttendanceRequest request) {
         
@@ -125,6 +126,7 @@ public class UserController {
         return ResponseEntity.ok(userService.checkIn());
     }
 
+    // 퇴근 
     @DeleteMapping("/attendance")
     public ResponseEntity<ApiResponse<Void>> checkOut(@RequestBody @Valid AttendanceRequest request) {
 
