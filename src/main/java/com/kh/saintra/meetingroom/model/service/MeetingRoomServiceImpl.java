@@ -2,6 +2,7 @@ package com.kh.saintra.meetingroom.model.service;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +12,7 @@ import com.kh.saintra.global.error.exceptions.DataAccessException;
 import com.kh.saintra.global.error.exceptions.DuplicateDataException;
 import com.kh.saintra.global.error.exceptions.EntityNotFoundException;
 import com.kh.saintra.global.error.exceptions.InvalidValueException;
+import com.kh.saintra.global.error.exceptions.UnauthorizedAccessException;
 import com.kh.saintra.meetingroom.model.dao.MeetingRoomMapper;
 import com.kh.saintra.meetingroom.model.dto.MeetingRoomRequestDTO;
 import com.kh.saintra.meetingroom.model.dto.MeetingRoomResponseDTO;
@@ -128,4 +130,74 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
             throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "회의실 예약 등록에 실패했습니다.");
         }
     }
+    
+    // 수정용 중복 예약 검사 (자기자신 제외)
+    private void duplicateForUpdate(MeetingRoomRequestDTO dto) {
+    	
+    	int count = 0;
+    	try {
+    		count = meetingRoomMapper.duplicateForUpdate(dto);
+    	} catch (Exception e) {
+    		throw e;
+    	}
+    	
+    	if (count > 0) {
+    		throw new DuplicateDataException(ResponseCode.DUPLICATE_RESERVATION, "해당 시간대에 다른 예약이 이미 존재합니다.");
+    	}
+    }
+    
+    // 3. 회의실 예약 수정 
+    @Override
+    @Transactional
+    public Long updateReservation(MeetingRoomRequestDTO dto, Long userId) {
+
+        validateTime(dto.getStartTime(), dto.getEndTime());
+        
+        checkMeetingRoomExists(dto.getRoomId());
+        
+        checkReserverExists(dto.getReserverType(), dto.getReserverId());
+
+        MeetingRoom existing = meetingRoomMapper.findReservationById(dto.getReservationId());
+        if (existing == null) {
+            throw new EntityNotFoundException(ResponseCode.ENTITY_NOT_FOUND, "해당 예약이 존재하지 않습니다.");
+        }
+        if (!Objects.equals(existing.getCreatedBy(), userId)) {
+            throw new UnauthorizedAccessException(ResponseCode.AUTH_FAIL, "해당 예약에 대한 수정 권한이 없습니다.");
+        }
+
+        duplicateForUpdate(dto);
+
+        int result = meetingRoomMapper.updateReservation(dto);
+        if (result == 0) {
+            throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "회의실 예약 수정에 실패하였습니다.");
+        }
+
+        return dto.getReservationId();
+    }
+    
+    // 4.회의실 예약 삭제 
+    @Override
+    @Transactional
+    public Long deleteReservation(Long reservationId, Long userId) {
+
+        MeetingRoom existing = meetingRoomMapper.findReservationById(reservationId);
+        if (existing == null) {
+        	throw new EntityNotFoundException(ResponseCode.ENTITY_NOT_FOUND, "해당 예약이 존재하지 않습니다.");
+        }
+
+        if (!existing.getCreatedBy().equals(userId)) {
+        	throw new UnauthorizedAccessException(ResponseCode.AUTH_FAIL, "해당 예약에 대한 수정 권한이 없습니다.");
+        }
+
+        int result = meetingRoomMapper.deleteReservation(reservationId);
+        
+        if (result == 0) {
+            throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "회의실 예약 삭제에 실패하였습니다.");
+        }
+
+        return reservationId;
+    }
+
+
+
 }
