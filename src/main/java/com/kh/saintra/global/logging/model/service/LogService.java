@@ -2,7 +2,9 @@ package com.kh.saintra.global.logging.model.service;
 
 import java.util.List;
 import com.kh.saintra.global.logging.model.dto.LogDTO;
+import com.kh.saintra.global.logging.model.dto.LogRequest;
 import com.kh.saintra.global.logging.model.vo.Log;
+import com.kh.saintra.global.response.ApiResponse;
 
 public interface LogService {
 
@@ -16,5 +18,5 @@ public interface LogService {
      * Log 조회
      * @return List<Log>
      */
-    List<Log> getLogs();
+    ApiResponse<List<LogDTO>> getLogs(LogRequest request);
 }

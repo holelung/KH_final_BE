@@ -25,17 +25,18 @@
         )
     </insert>
     
-    <select id="selectLogs">
+    <select id="selectLogList"
+            resultType="LogDTO">
         SELECT
-            ID,
-            USER_ID,
+            L.ID,
+            L.USER_ID userId,
             U.USERNAME,
-            ACTION_AREA,
-            ACTION_TIME,
-            ACTION_RESULT,
-            ACTION_TIME,
-            CLIENT_IP,
-            REFERER,
+            L.ACTION_AREA actionArea,
+            L.ACTION_TIME actionTime,
+            L.ACTION_RESULT actionResult,
+            L.ACTION_TYPE actionType,
+            L.CLIENT_IP clientIp,
+            L.REFERER referer
         FROM
             TB_LOG L
         LEFT JOIN

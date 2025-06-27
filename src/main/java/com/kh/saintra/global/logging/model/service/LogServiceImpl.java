@@ -5,9 +5,12 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import com.kh.saintra.global.enums.ResponseCode;
 import com.kh.saintra.global.logging.model.dao.LogMapper;
 import com.kh.saintra.global.logging.model.dto.LogDTO;
+import com.kh.saintra.global.logging.model.dto.LogRequest;
 import com.kh.saintra.global.logging.model.vo.Log;
+import com.kh.saintra.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -27,9 +30,11 @@ public class LogServiceImpl implements LogService{
     }
 
     @Override
-    public List<Log> getLogs() {
+    public ApiResponse<List<LogDTO>> getLogs(LogRequest request) {
         
-        throw new UnsupportedOperationException("Unimplemented method 'getLogs'");
+        List<LogDTO> result = logMapper.selectLogList();
+        
+        return ApiResponse.success(ResponseCode.GET_SUCCESS, result, "로그 조회 성공");
     }
     
 }

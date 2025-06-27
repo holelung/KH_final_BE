@@ -10,5 +10,5 @@ public interface LogMapper {
     
     void insertLog(LogDTO log);
 
-    List<Log> getLogs(); 
+    List<LogDTO> selectLogList(); 
 }
