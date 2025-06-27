@@ -15,13 +15,6 @@ public interface MeetingRoomMapper {
 
 	
 	// 1. 주간 예약 조회
-	/*
-	 * (startDate ~ endDate) 동안의 회의실 예약 조회
-	 * 
-	 * @param startDate 조회 시작일 
-	 * @param endDate 조회 종료일 
-	 * @return 예약 목록 리스트 
-	 */
 	List<MeetingRoomResponseDTO> getWeeklyReservations(@Param("startDate") String startDate,
 												  	   @Param("endDate") String endDate);
 	
@@ -41,13 +34,26 @@ public interface MeetingRoomMapper {
 	int insertReserver(MeetingRoom vo);
 
 	// 2-6. 예약자 유형별 등록
-    int insertUserReserver(@Param("reserverId")Long reserverId, @Param("userId") Long userId);
-    int insertTeamReserver(@Param("reserverId")Long reserverId, @Param("teamId") Long teamId);
+    int insertUserReserver(@Param("reserverId")Long reserverId,
+    					   @Param("userId") Long userId);
+    
+    int insertTeamReserver(@Param("reserverId")Long reserverId,
+    					   @Param("teamId") Long teamId);
 
     // 2-7. 예약 등록 
     int insertReservation(@Param("dto") MeetingRoomRequestDTO dto,
-            @Param("reserverId") Long reserverId,
-            @Param("createdBy") Long createdBy);
+            			  @Param("reserverId") Long reserverId,
+            			  @Param("createdBy") Long createdBy);
 	
-	
+	// 3. 회의실 예약 수정 
+    int updateReservation (MeetingRoomRequestDTO dto);
+    
+    // 3-1. 수정용 중복 예약 검사 (자기자신 제외)
+    int duplicateForUpdate(MeetingRoomRequestDTO dto);
+    
+    // 3-2. 수정 시 기존 예약자 확인용 
+    MeetingRoom findReservationById(@Param("reservationId") Long reservationId);
+
+    // 4. 회의실 예약 삭제 
+    int deleteReservation (Long reservatioinId);
 }

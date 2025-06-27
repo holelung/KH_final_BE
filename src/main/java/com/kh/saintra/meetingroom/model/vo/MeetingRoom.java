@@ -12,21 +12,28 @@ import lombok.Value;
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @ToString
 public class MeetingRoom {
 
 	private Long id;
+	
 	private String reserverType;
 	
 	private Long reserverId;
-	private Long reservationId;
-	private Long roomId;
-	private Long createdBy;
-	private String reserveDate;
-	private String startTime;
-	private String endTime;
-	private String purpose;
 	
-
+	private Long reservationId;
+	
+	private Long roomId;
+	
+	private Long createdBy;
+	
+	private String reserveDate;
+	
+	private String startTime;
+	
+	private String endTime;
+	
+	private String purpose;
 
 }

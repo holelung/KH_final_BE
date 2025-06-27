@@ -6,7 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,8 +36,9 @@ public class MeetingRoomController {
 	
 	/**
 	 * 회의실 주간 예약 조회 
-	 * @param startDate
-	 * @param endDate
+	 * @param startDate (yyyy-MM-dd)
+	 * @param endDate (yyyy-MM-dd)
+	 * @return 예약목록 
 	 */
 	@GetMapping
 	public ResponseEntity<ApiResponse<List<MeetingRoomResponseDTO>>> getWeeklyReservations(
@@ -49,8 +53,9 @@ public class MeetingRoomController {
 	}
 	/**
 	 * 회의실 예약 등록 
-	 * @param dto
-	 * @param userDetails
+	 * @param dto 예약정보 DTO
+	 * @param userDetails 로그인한 사용자 정보 
+	 * @return 생성된 예약 ID
 	 */
     @PostMapping("/write")
     public ResponseEntity<ApiResponse<Long>> createReservation(
@@ -67,4 +72,43 @@ public class MeetingRoomController {
         return ResponseEntity.ok(
                 ApiResponse.success(ResponseCode.INSERT_SUCCESS, reservationId, "예약이 등록되었습니다."));
     }
+    
+    /**
+     * 회의실 예약 수정 
+     * @param reservationId 수정할 예약 ID	
+     * @param dto 수정할 예약 정보
+     * @param useerDetails 로그인 한 사용자 정보 
+     * @return 수정된 예약 ID
+     */
+    @PutMapping("/{reservationId}")
+    public ResponseEntity<ApiResponse<Long>> updateReservation(
+    		@PathVariable(name = "reservationId") Long reservationId,
+    		@RequestBody MeetingRoomRequestDTO dto,
+    		@AuthenticationPrincipal CustomUserDetails userDetails) {
+    	
+        dto.setReservationId(reservationId);
+        Long updatedId = meetingRoomService.updateReservation(dto, userDetails.getId());
+
+        return ResponseEntity.ok(
+                ApiResponse.success(ResponseCode.UPDATE_SUCCESS, updatedId, "수정이 완료되었습니다."));
+    }
+    
+    /**
+     * 회의실 예약 삭제 (IS_ACTIVE = 'N')
+     * @param reservationId 삭제할 예약 ID
+     * @param userDetails 로그인한 사용자 정보 
+     * @return 삭제 처리한 예약 ID
+     */
+    @PatchMapping("/{reservationId}")
+    public ResponseEntity<ApiResponse<Long>> deleteReservation(
+    		@PathVariable(name = "reservationId") Long reservationId,
+    		@AuthenticationPrincipal CustomUserDetails userDetails){
+    	
+    	Long delectedId = meetingRoomService.deleteReservation(reservationId, userDetails.getId());
+    	
+    	return ResponseEntity.ok(
+    			ApiResponse.success(ResponseCode.DELETE_SUCCESS, delectedId, "삭제 완료되었습니다."));
+    }
+    
+
 }
