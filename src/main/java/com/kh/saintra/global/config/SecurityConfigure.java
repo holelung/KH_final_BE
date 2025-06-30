@@ -37,10 +37,14 @@ public class SecurityConfigure {
     @Bean
     @Order(1)
     public SecurityFilterChain websocketSecurity(HttpSecurity http) throws Exception {
-        return http.securityMatcher("/ws-status/**","/ws-chat/**")
+        return http.securityMatcher("/ws/**")
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
-                .authorizeHttpRequests(a -> a.anyRequest().authenticated())
+                .authorizeHttpRequests(a -> a.requestMatchers(
+                        HttpMethod.GET, "/ws/**"
+                    ).permitAll()
+                    .anyRequest().authenticated()
+                )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
@@ -56,13 +60,14 @@ public class SecurityConfigure {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests -> {
-                    requests.requestMatchers(HttpMethod.POST, "api/auth/password", "api/auth/tokens", "api/users/join").permitAll();
-                    requests.requestMatchers(HttpMethod.PATCH, "api/auth/password").permitAll();
+                    requests.requestMatchers(HttpMethod.POST, "/api/auth/password", "/api/auth/tokens", "/api/users/join").permitAll();
+                    requests.requestMatchers(HttpMethod.PATCH, "/api/auth/password").permitAll();
                     requests.requestMatchers(HttpMethod.POST).authenticated();
                     requests.requestMatchers(HttpMethod.GET).authenticated();
                     requests.requestMatchers(HttpMethod.DELETE).authenticated();
                     requests.requestMatchers(HttpMethod.PUT).authenticated();
                     requests.requestMatchers(HttpMethod.PATCH).authenticated();
+                    requests.requestMatchers(HttpMethod.OPTIONS).authenticated();
                 })
                 .addFilterBefore(coopFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

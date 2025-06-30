@@ -21,7 +21,7 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor{
         if(authentication != null) {
             attributes.put("authentication", authentication); // WebSocket 세션에 저장
         }
-        
+        System.out.println("핸드셰이크 흔들흔들");
         return true; // 핸드셰이크 허용
         
     }
