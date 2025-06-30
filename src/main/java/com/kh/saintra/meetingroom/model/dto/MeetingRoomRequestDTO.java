@@ -1,5 +1,7 @@
 package com.kh.saintra.meetingroom.model.dto;
 
+import com.kh.saintra.global.util.Regexp;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -23,11 +25,11 @@ public class MeetingRoomRequestDTO {
     @NotNull(message = "예약자 유형을 선택해주세요.")
     private String reserverType;
 
-    @NotNull(message = "예약자 또는 팀을 선택해주세요.")
+    @NotNull(message = "예약자 ID는 필수입니다.")
     private Long reserverId;
 
     @NotBlank(message = "예약 날짜는 필수입니다.")
-    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "날짜 형식은 yyyy-MM-dd입니다.")
+    @Pattern(regexp = Regexp.DATE, message = "날짜 형식은 yyyy-MM-dd입니다.")
     private String reserveDate;
 
     @NotBlank(message = "시작 시간은 필수입니다.")

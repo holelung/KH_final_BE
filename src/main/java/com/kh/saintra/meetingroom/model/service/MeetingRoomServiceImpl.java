@@ -109,10 +109,8 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
         int result = 0;
 
         if ("USER".equals(reserverType)) {
-            log.debug("insertUserReserver 호출: reserverId = {}, createdBy(userId) = {}", reserverId, createdBy);
             result = meetingRoomMapper.insertUserReserver(reserverId, createdBy);
         } else if ("TEAM".equals(reserverType)) {
-            log.debug("insertTeamReserver 호출: reserverId = {}, createdBy(teamId) = {}", reserverId, createdBy);
             result = meetingRoomMapper.insertTeamReserver(reserverId, createdBy);
         } else {
             throw new InvalidValueException(ResponseCode.INVALID_VALUE, "예약자 유형은 'USER' 또는 'TEAM'이어야 합니다.");

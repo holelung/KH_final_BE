@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kh.saintra.auth.model.service.AuthService;
 import com.kh.saintra.auth.model.vo.CustomUserDetails;
 import com.kh.saintra.global.enums.ResponseCode;
 import com.kh.saintra.global.error.exceptions.UnauthorizedAccessException;
@@ -33,6 +34,8 @@ import lombok.extern.slf4j.Slf4j;
 public class MeetingRoomController {
 	
 	private final MeetingRoomService meetingRoomService;
+	private final AuthService authService;
+
 	
 	/**
 	 * 회의실 주간 예약 조회 
@@ -59,12 +62,10 @@ public class MeetingRoomController {
 	 */
     @PostMapping("/write")
     public ResponseEntity<ApiResponse<Long>> createReservation(
-            @Validated @RequestBody MeetingRoomRequestDTO dto,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @Validated @RequestBody MeetingRoomRequestDTO dto){
     	
-    	if (userDetails == null) {
-            throw new UnauthorizedAccessException(ResponseCode.AUTH_FAIL, "로그인이 필요합니다.");
-        }
+    	CustomUserDetails userDetails = authService.getUserDetails();
+    	// -> getUserDetails 수정 예시 (일단 얘만 수정하고 다른 부분들은 추후 수정 예정)
     	
         Long createdBy = userDetails.getId();
         Long reservationId = meetingRoomService.createReservation(dto, createdBy);
