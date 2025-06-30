@@ -121,8 +121,7 @@ public class UserController {
     // 출근
     @PostMapping("/attendance")
     public ResponseEntity<ApiResponse<Void>> checkIn(@RequestBody @Valid AttendanceRequest request) {
-        
-        
+         
         return ResponseEntity.ok(userService.checkIn());
     }
 

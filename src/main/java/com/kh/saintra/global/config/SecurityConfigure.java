@@ -39,6 +39,7 @@ public class SecurityConfigure {
     public SecurityFilterChain websocketSecurity(HttpSecurity http) throws Exception {
         return http.securityMatcher("/ws-status/**","/ws-chat/**")
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(a -> a.anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
