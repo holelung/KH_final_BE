@@ -48,4 +48,115 @@
 	    r.RESERVE_DATE, r.START_TIME
 	</select>
 	
+	
+	<!-- 회의실 존재 여부 확인 -->
+	<select id="existsMeetingRoom" resultType="int">
+	    SELECT COUNT(*)
+	    FROM TB_MEETING_ROOM
+	    WHERE ID = #{roomId}
+	</select>
+	
+
+	<!-- 얘약자 존재 여부 확인 -->
+	<select id="existsReserver" resultType="int">
+	  <choose>
+	    <when test="reserverType == 'TEAM'">
+	      SELECT COUNT(*)
+	      FROM TB_TEAM
+	      WHERE ID = #{reserverId}
+	    </when>
+	    <when test="reserverType == 'USER'">
+	      SELECT COUNT(*)
+	      FROM TB_USER
+	      WHERE ID = #{reserverId}
+	    </when>
+	  </choose>
+	</select>
+	
+	<!-- 중복 예약 검사 -->
+	<select id="existsDuplicateReservation" resultType="int">
+	  SELECT
+	    COUNT(*)
+	  FROM
+	    TB_RESERVATION
+	  WHERE 
+	    ROOM_ID = #{dto.roomId}
+	    AND RESERVE_DATE = TO_DATE(#{dto.reserveDate}, 'YYYY-MM-DD')
+	    AND IS_ACTIVE = 'Y'
+	    AND TO_DATE(#{dto.startTime}, 'HH24:MI') &lt; END_TIME
+	    AND TO_DATE(#{dto.endTime}, 'HH24:MI') &gt; START_TIME
+	</select>
+	
+	
+	<!-- 예약자 유형 insert -->
+	<insert id="insertReserver"
+	        parameterType="com.kh.saintra.meetingroom.model.vo.MeetingRoom">
+	    <selectKey keyProperty="id" resultType="long" order="AFTER">
+	    	SELECT ID
+	    	FROM (
+					SELECT ID
+					FROM TB_RESERVER
+					ORDER BY ID DESC
+					)
+			WHERE ROWNUM = 1
+	    </selectKey>    
+	    INSERT INTO TB_RESERVER (
+	        RESERVER_TYPE
+	    ) VALUES (
+	        #{reserverType}
+	    )
+	</insert>
+
+	
+	<!-- TB_USER_RESERVER INSERT -->
+	<insert id="insertUserReserver">
+	    INSERT INTO TB_USER_RESERVER (
+	        RESERVER_ID,
+	        USER_ID
+	    ) VALUES (
+	        #{reserverId},
+	        #{userId}
+	    )
+	</insert>
+	
+	<!-- TB_TEAM_RESERVER INSERT -->
+	<insert id="insertTeamReserver">
+	    INSERT INTO TB_TEAM_RESERVER (
+	        RESERVER_ID,
+	        TEAM_ID
+	    ) VALUES (
+	        #{reserverId},
+	        #{teamId}
+	    )
+	</insert>
+	
+	<!-- 예약 등록 -->
+	<insert id="insertReservation" parameterType="map">
+	  INSERT INTO TB_RESERVATION (
+	      ROOM_ID,
+	      RESERVER_ID,
+	      CREATED_BY,
+	      RESERVE_DATE,
+	      START_TIME,
+	      END_TIME,
+	      PURPOSE,
+	      IS_ACTIVE
+	  )
+	  VALUES (
+	      #{dto.roomId},
+	      #{reserverId},
+	      #{createdBy},
+	      TO_DATE(#{dto.reserveDate}, 'YYYY-MM-DD'),
+	      TO_DATE(#{dto.startTime}, 'HH24:MI'),
+	      TO_DATE(#{dto.endTime}, 'HH24:MI'),
+	      #{dto.purpose},
+	      'Y'
+	  )
+	</insert>
+
+
+
+	
+	
+	
 </mapper>
