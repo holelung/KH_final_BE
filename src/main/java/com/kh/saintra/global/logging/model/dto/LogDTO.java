@@ -1,8 +1,8 @@
-package com.kh.saintra.log.model.dto;
+package com.kh.saintra.global.logging.model.dto;
 
-import java.security.Timestamp;
-
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,16 +10,19 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
+@Builder
 public class LogDTO {
+    
     private Long id;
     private Long userId;
+    private String username;
     private String actionArea;
     private String actionType;
     private String actionResult;
-    private Timestamp actionTime;
+    private LocalDateTime actionTime;
     private String clientIp;
     private String referer;
 }
