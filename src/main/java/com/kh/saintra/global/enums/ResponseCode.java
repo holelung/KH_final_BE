@@ -25,6 +25,7 @@ public enum ResponseCode {
     EXPIRED_TOKEN("E900"),
     INVALID_TOKEN("E901");
 
+
     private final String code;
 
     ResponseCode(String code) {

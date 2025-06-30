@@ -19,6 +19,7 @@ import com.kh.saintra.global.error.exceptions.InvalidAccessException;
 import com.kh.saintra.global.error.exceptions.InvalidValueException;
 import com.kh.saintra.global.error.exceptions.MailServiceException;
 import com.kh.saintra.global.error.exceptions.UnauthorizedAccessException;
+import com.kh.saintra.global.error.exceptions.EntityNotFoundException;
 import com.kh.saintra.global.response.ApiResponse;
 import com.kh.saintra.mail.model.service.MailService;
 import jakarta.validation.ConstraintViolationException;
@@ -107,6 +108,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiResponse<Void>> handleRuntimeException(RuntimeException e) {
         return makeResponseEntity(ResponseCode.SERVER_ERROR, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    
+    @ExceptionHandler(DuplicateDataException.class)
+    public ResponseEntity<ApiResponse<Void>> handleDuplicate(DuplicateDataException e) {
+    	 return makeResponseEntity(e.getResponseCode(), e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleEntityNotFound(EntityNotFoundException e) {
+        return makeResponseEntity(e.getResponseCode(), e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

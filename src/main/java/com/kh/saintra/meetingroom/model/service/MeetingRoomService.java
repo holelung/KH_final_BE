@@ -2,11 +2,14 @@ package com.kh.saintra.meetingroom.model.service;
 
 import java.util.List;
 
-import com.kh.saintra.meetingroom.model.dto.MeetingRoomDTO;
+import org.apache.ibatis.annotations.Param;
+
+import com.kh.saintra.meetingroom.model.dto.MeetingRoomResponseDTO;
 
 public interface MeetingRoomService {
 	
-	List<MeetingRoomDTO> getWeeklyReservations(String startDate, String endDate); // 주간 예약 조회 
+	// 주간 예약 조회 
+	List<MeetingRoomResponseDTO> getWeeklyReservations(@Param("startDate")String startDate, @Param("endDate")String endDate); 
 
 
 }
