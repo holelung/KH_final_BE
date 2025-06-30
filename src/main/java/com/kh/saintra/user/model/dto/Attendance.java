@@ -1,23 +1,24 @@
 package com.kh.saintra.user.model.dto;
 
-import org.springframework.boot.autoconfigure.batch.BatchProperties.Job;
-
-import com.kh.saintra.user.model.enums.Department;
-
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.Value;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class UserSearchDTO {
+public class Attendance {
     
-    private String search;
-    private Long deptId;
-    private Long jobId;
+    private Long id;
+    private Long userId;
+    private String type;
+    private LocalDateTime time;
+    
 }

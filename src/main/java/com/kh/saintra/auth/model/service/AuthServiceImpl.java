@@ -23,6 +23,7 @@ import com.kh.saintra.global.enums.ResponseCode;
 import com.kh.saintra.global.error.exceptions.AuthenticateFailException;
 import com.kh.saintra.global.error.exceptions.DatabaseOperationException;
 import com.kh.saintra.global.error.exceptions.InvalidAccessException;
+import com.kh.saintra.global.error.exceptions.InvalidValueException;
 import com.kh.saintra.global.response.ApiResponse;
 import com.kh.saintra.global.util.token.model.service.TokenService;
 import com.kh.saintra.mail.model.service.MailService;
@@ -106,6 +107,8 @@ public class AuthServiceImpl implements AuthService{
             throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "가입요청 테이블 행 삭제 실패");
         }
 
+        mailService.sendCelebrateMail(userMapper.getUserByUserId(userId).getEmail());
+
         return ApiResponse.success(ResponseCode.UPDATE_SUCCESS, "회원가입 승인 성공");
     }
 
@@ -143,17 +146,25 @@ public class AuthServiceImpl implements AuthService{
         
     }
 
-    @Override
-    public ApiResponse<Void> changePassword(ChangePasswordDTO changePassword) {
-        
-        throw new UnsupportedOperationException("Unimplemented method 'changePassword'");
-    }
+
 
     @Override
     public CustomUserDetails getUserDetails() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
         return user;
+    }
+
+
+    @Override
+    public Long checkPassword(String password) {
+        CustomUserDetails user = getUserDetails();
+
+        if(!passwordEncoder.matches(password, user.getPassword())){
+            throw new InvalidValueException(ResponseCode.INVALID_USERDATA, "비밀번호가 틀립니다.");
+        }
+
+        return user.getId();
     }
     
     

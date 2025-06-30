@@ -44,4 +44,15 @@ public interface MailService {
      * @return 
      */
     void sendPasswordFindEmail(Long id, String email);
+
+    /**
+     * <pre>
+     * 가입축하 메일 전송
+     * 
+     * 가입 축하메일을 전송한다.
+     * </pre>
+     * @param email
+     */
+    void sendCelebrateMail(String email);
+
 }
