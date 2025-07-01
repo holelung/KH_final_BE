@@ -1,5 +1,6 @@
 package com.kh.saintra.global.config.interceptor;
 
+import java.net.http.HttpHeaders;
 import java.util.Map;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -8,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
+import com.kh.saintra.global.logging.model.dto.LogDTO;
 
 @Component
 public class WebSocketHandshakeInterceptor implements HandshakeInterceptor{
@@ -15,18 +17,23 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor{
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
             WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
-        
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println(request.getURI());
-        
-        
 
-        if(authentication != null) {
-            attributes.put("authentication", authentication); // WebSocket 세션에 저장
-            System.out.println("웹소켓 세션에 저장을 !"+authentication);
-        }
+        
+        System.out.println("\n ======================= ");
+        System.out.println("요청 URI : " + request.getURI());
+        System.out.println("요청 IP : " + request.getRemoteAddress());
+        System.out.println("Referer : " + request.getHeaders().getFirst("Referer"));
+        System.out.println("요청 Method : " + request.getMethod());
+        LogDTO log = LogDTO.builder()
+                .actionArea(request.getURI().toString())
+                .actionType(request.getMethod().toString())
+                .clientIp(request.getRemoteAddress().toString())
+                .referer(request.getHeaders().getFirst("Referer"))
+                .build();
+        
+        attributes.put("LogInfo", log);
         System.out.println("핸드셰이크 흔들흔들");
-        return true; // 핸드셰이크 허용
+        return true;
         
     }
 
