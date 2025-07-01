@@ -22,7 +22,7 @@ public class UserSocketController {
 	public void greet() {
 		String text = "[" + getTimestamp() + "] :";
 		System.out.println("▶▶▶ greet() 호출됨");
-		template.convertAndSend("/topic/message", text);
+		template.convertAndSend("/status/message", text);
 	}
 
     private String getTimestamp() {

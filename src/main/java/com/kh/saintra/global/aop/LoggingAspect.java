@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import com.kh.saintra.auth.model.service.AuthService;
 import com.kh.saintra.auth.model.vo.CustomUserDetails;
 import com.kh.saintra.global.logging.model.dto.LogDTO;
 import com.kh.saintra.global.logging.model.service.LogService;
@@ -27,6 +28,7 @@ public class LoggingAspect {
     // 그럼 컨트롤러 단에서만 로그를찍으면 되지않나?
     
     private final LogService logService;
+    
 
     @Around("execution(* com.kh.saintra..controller..*(..))")
     public Object logExecution(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -41,9 +43,11 @@ public class LoggingAspect {
         String referer = request != null ? request.getHeader("Referer") : "NONE";
         String httpMethod = request != null ? request.getMethod() : "UNKNOWN";
 
+        // CustomUserDetails user = (CustomUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Long userId = getUserSafely();
+
         LogDTO logDto = LogDTO.builder()
-                .userId(getUserSafely())
+                .userId(userId)
                 .actionArea(requestUri)
                 .actionType(httpMethod)
                 .clientIp(clientIp)
@@ -81,7 +85,7 @@ public class LoggingAspect {
             return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
                     .map(auth -> (CustomUserDetails) auth.getPrincipal())
                     .map(CustomUserDetails::getId)
-                    .orElse(null);
+                    .orElse(0001L);
         } catch (Exception e) {
             return null;
         }

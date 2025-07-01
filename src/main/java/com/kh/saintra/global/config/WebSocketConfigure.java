@@ -9,6 +9,7 @@ import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -35,8 +36,7 @@ public class WebSocketConfigure implements WebSocketMessageBrokerConfigurer{
     private final WebSocketHandshakeInterceptor handshakeInterceptor;
     private final UserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
-
-
+    
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
     
@@ -63,9 +63,13 @@ public class WebSocketConfigure implements WebSocketMessageBrokerConfigurer{
         registration.interceptors(new ChannelInterceptor() {
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
-                StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+                StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+                //StompHeaderAccessor.wrap(message);
                 System.out.println("▶ preSend command=" + accessor.getCommand() + ", destination="
                         + accessor.getDestination()    );
+                
+                assert accessor != null;
+
                 // STOMP CONNECT 프레임일 때만 JWT 검사
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
                     String authHeader = accessor.getFirstNativeHeader(HttpHeaders.AUTHORIZATION);
@@ -81,11 +85,15 @@ public class WebSocketConfigure implements WebSocketMessageBrokerConfigurer{
                                 userDetailsService.loadUserByUsername(username);
 
                             // Authentication 객체 생성 & 세팅
-                            UsernamePasswordAuthenticationToken auth =
-                                new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-                            accessor.setUser(auth);
-                            SecurityContextHolder.getContext().setAuthentication(auth);
+                            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 
+                            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+                            System.out.println("여기는 토큰검증!"+ authenticationToken);
+                            System.out.println("프린시펄에 값이 있낭?"+ SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+
+                            accessor.setUser(authenticationToken);
+                            
                         } catch (ExpiredJwtException e) {
                             throw new AuthenticateTimeOutException(ResponseCode.AUTH_FAIL, "만료된 토큰입니다.");
                         } catch (JwtException e) {

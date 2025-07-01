@@ -17,9 +17,13 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor{
             WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
         
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println(request.getURI());
+        
+        
 
         if(authentication != null) {
             attributes.put("authentication", authentication); // WebSocket 세션에 저장
+            System.out.println("웹소켓 세션에 저장을 !"+authentication);
         }
         System.out.println("핸드셰이크 흔들흔들");
         return true; // 핸드셰이크 허용

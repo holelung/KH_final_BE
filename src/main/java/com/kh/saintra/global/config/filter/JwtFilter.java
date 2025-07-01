@@ -55,6 +55,7 @@ public class JwtFilter extends OncePerRequestFilter{
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            System.out.println("아 토큰을 저장해버려");
 
         } catch (ExpiredJwtException e) {
             log.info("만료된 토큰");
