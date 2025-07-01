@@ -1,35 +1,13 @@
 package com.kh.saintra.global.config;
 
-import java.util.Map;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.messaging.simp.stomp.StompCommand;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.messaging.support.MessageHeaderAccessor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
-import com.kh.saintra.auth.model.vo.CustomUserDetails;
 import com.kh.saintra.global.config.interceptor.StompAuthAndLoggingInterceptor;
 import com.kh.saintra.global.config.interceptor.WebSocketHandshakeInterceptor;
-import com.kh.saintra.global.enums.ResponseCode;
-import com.kh.saintra.global.error.exceptions.AuthenticateFailException;
-import com.kh.saintra.global.error.exceptions.AuthenticateTimeOutException;
-import com.kh.saintra.global.error.exceptions.InvalidAccessException;
-import com.kh.saintra.global.logging.model.dto.LogDTO;
-import com.kh.saintra.global.util.token.util.JwtUtil;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -38,8 +16,6 @@ import lombok.RequiredArgsConstructor;
 public class WebSocketConfigure implements WebSocketMessageBrokerConfigurer{
 
     private final WebSocketHandshakeInterceptor handshakeInterceptor;
-    private final UserDetailsService userDetailsService;
-    private final JwtUtil jwtUtil;
     private final StompAuthAndLoggingInterceptor stompInterceptor;
 
     @Override
@@ -50,7 +26,6 @@ public class WebSocketConfigure implements WebSocketMessageBrokerConfigurer{
             .addInterceptors(handshakeInterceptor)
             .withSockJS(); //WebSocket 연결 엔드포인트
     }
-
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
