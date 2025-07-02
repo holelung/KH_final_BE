@@ -13,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ScheduleResponseDTO {
 	
-	private Long scheduleId;
+	private Long id; 
 
     private String title;
 
@@ -32,6 +32,8 @@ public class ScheduleResponseDTO {
     private String reserverName;
     
     private String isActive;
+    
+    private Long createdBy;
 	
 
 }

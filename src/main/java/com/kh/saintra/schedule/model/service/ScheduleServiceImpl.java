@@ -3,6 +3,7 @@ package com.kh.saintra.schedule.model.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +12,8 @@ import com.kh.saintra.global.enums.ResponseCode;
 import com.kh.saintra.global.error.exceptions.DataAccessException;
 import com.kh.saintra.global.error.exceptions.EntityNotFoundException;
 import com.kh.saintra.global.error.exceptions.InvalidValueException;
+import com.kh.saintra.global.error.exceptions.UnauthorizedAccessException;
+import com.kh.saintra.meetingroom.model.vo.MeetingRoom;
 import com.kh.saintra.schedule.model.dao.ScheduleMapper;
 import com.kh.saintra.schedule.model.dto.ScheduleRequestDTO;
 import com.kh.saintra.schedule.model.dto.ScheduleResponseDTO;
@@ -121,5 +124,63 @@ public class ScheduleServiceImpl implements ScheduleService{
         }
     }
 	
+    // 3. 일정 수정
+    @Override
+    public Long updateSchedule(ScheduleRequestDTO dto, Long userId) {
+
+        checkReserverExists(dto.getReserverType(), dto.getReserverId());
+        DefaultColor(dto);
+
+        // 일정 존재 여부 및 사용자 소유 여부 확인
+        validateSchedule(dto.getScheduleId(), userId);
+
+        // 업데이트 수행
+        int result = scheduleMapper.updateSchedule(dto);
+        if (result == 0) {
+            throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "일정 수정에 실패했습니다.");
+        }
+
+        return dto.getScheduleId();
+    }
+
+
+    // 일정 존재 + 권한 확인 
+    private ScheduleResponseDTO validateSchedule(Long scheduleId, Long userId) {
+        ScheduleResponseDTO schedule = scheduleMapper.findScheduleById(scheduleId);
+
+        if (schedule == null) {
+            throw new EntityNotFoundException(ResponseCode.ENTITY_NOT_FOUND, "해당 일정이 존재하지 않습니다.");
+        }
+
+        if (!Objects.equals(schedule.getCreatedBy(), userId)) {
+            throw new UnauthorizedAccessException(ResponseCode.AUTH_FAIL, "해당 일정에 대한 수정 권한이 없습니다.");
+        }
+
+        return schedule;
+    }
+    
+    // 4. 일정 삭제 
+    @Override
+    @Transactional
+    public Long deleteSchedule(Long scheduleId, Long userId) {
+
+        ScheduleResponseDTO existing = scheduleMapper.findScheduleById(scheduleId);
+        
+        if (existing == null) {
+        	throw new EntityNotFoundException(ResponseCode.ENTITY_NOT_FOUND, "해당 일정이 존재하지 않습니다.");
+        }
+
+        if (!existing.getCreatedBy().equals(userId)) {
+        	throw new UnauthorizedAccessException(ResponseCode.AUTH_FAIL, "해당 일정에 대한 수정 권한이 없습니다.");
+        }
+
+        int result = scheduleMapper.deleteSchedule(scheduleId);
+        
+        if (result == 0) {
+            throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "일정 삭제에 실패하였습니다.");
+        }
+
+        return scheduleId;
+    }
 
 }

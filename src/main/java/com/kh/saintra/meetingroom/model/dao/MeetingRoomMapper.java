@@ -46,12 +46,12 @@ public interface MeetingRoomMapper {
             			  @Param("createdBy") Long createdBy);
 	
 	// 3. 회의실 예약 수정 
-    int updateReservation (MeetingRoomRequestDTO dto);
+    int updateReservation(MeetingRoomRequestDTO dto);
     
     // 3-1. 수정용 중복 예약 검사 (자기자신 제외)
     int duplicateForUpdate(MeetingRoomRequestDTO dto);
     
-    // 3-2. 수정 시 기존 예약자 확인용 
+    // 3-2. 수정 시 예약 조회 
     MeetingRoom findReservationById(@Param("reservationId") Long reservationId);
 
     // 4. 회의실 예약 삭제 

@@ -35,4 +35,12 @@ public interface ScheduleMapper {
     int insertTeamReserver(@Param("reserverId")Long reserverId,
     					   @Param("teamId") Long teamId);
 
+    // 3. 일정 수정
+    int updateSchedule(ScheduleRequestDTO dto);
+
+    // 3-2. 수정 시 일정 조회 
+    ScheduleResponseDTO findScheduleById(@Param ("scheduleId") Long scheduleId);
+    
+    // 4. 일정 삭제 
+    int deleteSchedule(Long scheduleId);
 }

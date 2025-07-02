@@ -116,8 +116,37 @@
 	    )
 	</insert>
 
-	
+	<!-- 기존 일정 조회 (수정용)-->
+	<select id="findScheduleById" resultType="com.kh.saintra.schedule.model.dto.ScheduleResponseDTO">
+	    SELECT 
+	        ID,
+	        TITLE,
+	        CONTENT,
+	        START_DATE,
+	        END_DATE,
+	        COLOR_CODE,
+	        CREATED_BY AS createdBy
+	    FROM TB_SCHEDULE
+	    WHERE ID = #{scheduleId}
+	</select>
 
+	<!-- 일정 수정 -->
+	<update id="updateSchedule">
+	    UPDATE TB_SCHEDULE
+	    SET 
+	        TITLE = #{title},
+	        CONTENT = #{content},
+	        START_DATE = #{startDate},
+	        END_DATE = #{endDate},
+	        COLOR_CODE = #{colorCode}
+	    WHERE ID = #{scheduleId}
+	</update>
 
+	<!-- 일정 삭제 (소프트 삭제: IS_ACTIVE = 'N') -->
+	<update id = "deleteSchedule">
+		UPDATE TB_SCHEDULE
+		SET IS_ACTIVE = 'N'
+		WHERE ID = #{scheduleId}	
+	</update>
 
 </mapper>

@@ -144,25 +144,31 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
     	}
     }
     
+    // 예약 존재 + 권한 확인
+    private MeetingRoom validateReservation(Long reservationId, Long userId) {
+    	MeetingRoom reservation = meetingRoomMapper.findReservationById(reservationId);
+    	
+    	if (reservation == null) {
+    		throw new EntityNotFoundException(ResponseCode.ENTITY_NOT_FOUND, "해당 예약이 존재하지 않습니다.");
+    	}
+    	
+    	if (!Objects.equals(reservation.getCreatedBy(), userId)) {
+    		throw new UnauthorizedAccessException(ResponseCode.AUTH_FAIL, "해당 예약에 대한 수정 권한이 없습니다.");
+    	}
+    	
+    	return reservation;
+    }
+    
     // 3. 회의실 예약 수정 
     @Override
     @Transactional
     public Long updateReservation(MeetingRoomRequestDTO dto, Long userId) {
 
         validateTime(dto.getStartTime(), dto.getEndTime());
-        
-        checkMeetingRoomExists(dto.getRoomId());
-        
+        checkMeetingRoomExists(dto.getRoomId());        
         checkReserverExists(dto.getReserverType(), dto.getReserverId());
 
-        MeetingRoom existing = meetingRoomMapper.findReservationById(dto.getReservationId());
-        if (existing == null) {
-            throw new EntityNotFoundException(ResponseCode.ENTITY_NOT_FOUND, "해당 예약이 존재하지 않습니다.");
-        }
-        if (!Objects.equals(existing.getCreatedBy(), userId)) {
-            throw new UnauthorizedAccessException(ResponseCode.AUTH_FAIL, "해당 예약에 대한 수정 권한이 없습니다.");
-        }
-
+        validateReservation(dto.getReservationId(), userId);
         duplicateForUpdate(dto);
 
         int result = meetingRoomMapper.updateReservation(dto);
@@ -195,6 +201,8 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 
         return reservationId;
     }
+    
+
 
 
 
