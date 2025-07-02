@@ -20,12 +20,14 @@ public enum ResponseCode {
     INVALID_VALUE("E400"),
     AUTH_FAIL("E401"),
     ENTITY_NOT_FOUND("E103"),
-    SERVER_ERROR("E500"),
+    SERVER_ERROR("E500"), 
     DB_CONNECT_ERROR("E501"),
     SQL_ERROR("E502"),
     DUPLICATE_RESERVATION("E600"),
     EXPIRED_TOKEN("E900"),
-    INVALID_TOKEN("E901");
+    INVALID_TOKEN("E901"),
+	UNKNOWN_ERROR("E999");
+
 
 
     private final String code;

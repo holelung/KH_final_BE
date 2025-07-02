@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kh.saintra.auth.model.service.AuthService;
 import com.kh.saintra.auth.model.vo.CustomUserDetails;
 import com.kh.saintra.global.enums.ResponseCode;
 import com.kh.saintra.global.error.exceptions.UnauthorizedAccessException;
@@ -33,6 +34,8 @@ import lombok.extern.slf4j.Slf4j;
 public class MeetingRoomController {
 	
 	private final MeetingRoomService meetingRoomService;
+	private final AuthService authService;
+
 	
 	/**
 	 * 회의실 주간 예약 조회 
@@ -59,12 +62,9 @@ public class MeetingRoomController {
 	 */
     @PostMapping("/write")
     public ResponseEntity<ApiResponse<Long>> createReservation(
-            @Validated @RequestBody MeetingRoomRequestDTO dto,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @Validated @RequestBody MeetingRoomRequestDTO dto){
     	
-    	if (userDetails == null) {
-            throw new UnauthorizedAccessException(ResponseCode.AUTH_FAIL, "로그인이 필요합니다.");
-        }
+    	CustomUserDetails userDetails = authService.getUserDetails();
     	
         Long createdBy = userDetails.getId();
         Long reservationId = meetingRoomService.createReservation(dto, createdBy);
@@ -83,8 +83,9 @@ public class MeetingRoomController {
     @PutMapping("/{reservationId}")
     public ResponseEntity<ApiResponse<Long>> updateReservation(
     		@PathVariable(name = "reservationId") Long reservationId,
-    		@RequestBody MeetingRoomRequestDTO dto,
-    		@AuthenticationPrincipal CustomUserDetails userDetails) {
+    		@RequestBody MeetingRoomRequestDTO dto) {
+    	
+    	CustomUserDetails userDetails = authService.getUserDetails();
     	
         dto.setReservationId(reservationId);
         Long updatedId = meetingRoomService.updateReservation(dto, userDetails.getId());
@@ -101,13 +102,14 @@ public class MeetingRoomController {
      */
     @PatchMapping("/{reservationId}")
     public ResponseEntity<ApiResponse<Long>> deleteReservation(
-    		@PathVariable(name = "reservationId") Long reservationId,
-    		@AuthenticationPrincipal CustomUserDetails userDetails){
+    		@PathVariable(name = "reservationId") Long reservationId){
     	
-    	Long delectedId = meetingRoomService.deleteReservation(reservationId, userDetails.getId());
+    	CustomUserDetails userDetails = authService.getUserDetails();
+    	
+    	Long deletedId = meetingRoomService.deleteReservation(reservationId, userDetails.getId());
     	
     	return ResponseEntity.ok(
-    			ApiResponse.success(ResponseCode.DELETE_SUCCESS, delectedId, "삭제 완료되었습니다."));
+    			ApiResponse.success(ResponseCode.DELETE_SUCCESS, deletedId, "삭제 완료되었습니다."));
     }
     
 

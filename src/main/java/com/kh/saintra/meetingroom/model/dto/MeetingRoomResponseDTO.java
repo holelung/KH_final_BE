@@ -38,5 +38,6 @@ public class MeetingRoomResponseDTO {
     private String reserverName;
 
     private String isActive;
+    
 
 }

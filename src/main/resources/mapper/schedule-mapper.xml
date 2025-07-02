@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.kh.saintra.schedule.model.dao.ScheduleMapper">
+
+	<!-- 일정 조회 -->
+	<select id="getSchedules" 
+			resultType="com.kh.saintra.schedule.model.dto.ScheduleResponseDTO">
+	    SELECT
+	        s.ID 				AS scheduleId,
+	        s.TITLE,
+	        s.CONTENT,
+	        s.START_DATE		AS startDate,
+	        s.END_DATE			AS endDate,
+	        s.COLOR_CODE,
+	        r.RESERVER_TYPE 	AS reserverType,
+	        r.ID 				AS reserverId,
+	        CASE 
+	            WHEN r.RESERVER_TYPE = 'USER' THEN u.REALNAME
+	            WHEN r.RESERVER_TYPE = 'TEAM' THEN t.TEAM_NAME
+	        END AS reserverName,
+	        s.IS_ACTIVE AS isActive
+	    FROM
+	        TB_SCHEDULE s
+	    JOIN TB_RESERVER r ON s.RESERVER_ID = r.ID
+	    LEFT JOIN TB_USER_RESERVER ur ON r.ID = ur.RESERVER_ID
+	    LEFT JOIN TB_USER u ON ur.USER_ID = u.ID
+	    LEFT JOIN TB_TEAM_RESERVER tr ON r.ID = tr.RESERVER_ID
+	    LEFT JOIN TB_TEAM t ON tr.TEAM_ID = t.ID
+	    WHERE
+	        s.IS_ACTIVE = 'Y'
+	        AND s.START_DATE BETWEEN #{startDate} AND #{endDate}
+	    ORDER BY
+	    	s.START_DATE ASC, s.END_DATE ASC, s.ID ASC
+	</select>
+	
+	<!-- 예약자 존재 여부 확인 -->
+    <select id="existsReserver" resultType="int">
+        <choose>
+            <when test="reserverType == 'TEAM'">
+                SELECT COUNT(*)
+                FROM TB_TEAM
+                WHERE ID = #{reserverId}
+            </when>
+            <when test="reserverType == 'USER'">
+                SELECT COUNT(*)
+                FROM TB_USER
+                WHERE ID = #{reserverId}
+            </when>
+        </choose>
+    </select>
+	
+	<!-- 예약자 유형 등록 -->
+	<insert id="insertReserver"
+			parameterType="map">
+	    <selectKey keyProperty="id" resultType="long" order="AFTER">
+	        SELECT ID
+	        FROM (
+	            SELECT ID
+	            FROM TB_RESERVER
+	            ORDER BY ID DESC
+	        )
+	        WHERE ROWNUM = 1
+	    </selectKey>
+	    INSERT INTO TB_RESERVER (
+	        RESERVER_TYPE
+	    ) VALUES (
+	        #{reserverType}
+	    )
+	</insert>
+
+	<!-- 개인 예약자 등록 -->
+    <insert id="insertUserReserver">
+        INSERT INTO TB_USER_RESERVER (
+            RESERVER_ID,
+            USER_ID
+        ) VALUES (
+            #{reserverId},
+            #{userId}
+        )
+    </insert>
+    
+	<!-- 팀 예약자 등록 -->
+    <insert id="insertTeamReserver">
+        INSERT INTO TB_TEAM_RESERVER (
+            RESERVER_ID,
+            TEAM_ID
+        ) VALUES (
+            #{reserverId},
+            #{teamId}
+        )
+    </insert>
+    
+	<!-- 일정 등록 -->
+	<insert id="insertSchedule" parameterType="map">
+	    INSERT INTO TB_SCHEDULE (
+	        TITLE,
+	        CONTENT,
+	        RESERVER_ID,
+	        CREATED_BY,
+	        START_DATE,
+	        END_DATE,
+	        COLOR_CODE,
+	        IS_ACTIVE
+	    ) VALUES (
+	        #{dto.title},
+	        #{dto.content},
+	        #{reserverId},
+	        #{createdBy},
+	        TO_DATE(#{dto.startDate}, 'YYYY-MM-DD'),
+	        TO_DATE(#{dto.endDate}, 'YYYY-MM-DD'),
+	        #{dto.colorCode},
+	        'Y'
+	    )
+	</insert>
+
+	<!-- 기존 일정 조회 (수정용)-->
+	<select id="findScheduleById" resultType="com.kh.saintra.schedule.model.dto.ScheduleResponseDTO">
+	    SELECT 
+	        ID,
+	        TITLE,
+	        CONTENT,
+	        START_DATE,
+	        END_DATE,
+	        COLOR_CODE,
+	        CREATED_BY AS createdBy
+	    FROM TB_SCHEDULE
+	    WHERE ID = #{scheduleId}
+	</select>
+
+	<!-- 일정 수정 -->
+	<update id="updateSchedule">
+	    UPDATE TB_SCHEDULE
+	    SET 
+	        TITLE = #{title},
+	        CONTENT = #{content},
+	        START_DATE = #{startDate},
+	        END_DATE = #{endDate},
+	        COLOR_CODE = #{colorCode}
+	    WHERE ID = #{scheduleId}
+	</update>
+
+	<!-- 일정 삭제 (소프트 삭제: IS_ACTIVE = 'N') -->
+	<update id = "deleteSchedule">
+		UPDATE TB_SCHEDULE
+		SET IS_ACTIVE = 'N'
+		WHERE ID = #{scheduleId}	
+	</update>
+
+</mapper>

@@ -46,7 +46,7 @@ public class StartBeforeEndValidator implements ConstraintValidator<StartBeforeE
             LocalDate startDate = LocalDate.parse((String) startObj, formatter);
             LocalDate endDate = LocalDate.parse((String) endObj, formatter);
 
-            return startDate.isBefore(endDate);
+            return !startDate.isAfter(endDate);
 
         } catch (DateTimeParseException e) {
             return false;
