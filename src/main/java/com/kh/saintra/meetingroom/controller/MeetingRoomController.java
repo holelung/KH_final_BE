@@ -105,10 +105,10 @@ public class MeetingRoomController {
     		@PathVariable(name = "reservationId") Long reservationId,
     		@AuthenticationPrincipal CustomUserDetails userDetails){
     	
-    	Long delectedId = meetingRoomService.deleteReservation(reservationId, userDetails.getId());
+    	Long deletedId = meetingRoomService.deleteReservation(reservationId, userDetails.getId());
     	
     	return ResponseEntity.ok(
-    			ApiResponse.success(ResponseCode.DELETE_SUCCESS, delectedId, "삭제 완료되었습니다."));
+    			ApiResponse.success(ResponseCode.DELETE_SUCCESS, deletedId, "삭제 완료되었습니다."));
     }
     
 

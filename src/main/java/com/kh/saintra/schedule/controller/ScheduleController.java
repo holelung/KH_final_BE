@@ -55,7 +55,7 @@ public class ScheduleController {
     
     /**
      * 일정 등록 
-     * @param dto 일정 등록에 필요한 데이터 (제목, 날짜, 색상 등)
+     * @param dto 일정 등록에 필요한 데이터
      * @return 생성된 일정 ID를 포함한 ApiResponse
      */
     @PostMapping("/write")
@@ -73,16 +73,17 @@ public class ScheduleController {
     
     /**
      * 일정 수정 
-     * @param dto
-     * @param userDetails
-     * @return
+     * @param scheduleId 수정할 일정 ID
+     * @param dto 수정할 일정 정보
+     * @return 수정된 일정 ID와 함께 성공 응답 반환
      */
     @PutMapping("/{scheduleId}")
     public ResponseEntity<ApiResponse<Long>> updateSchedule(
     		@PathVariable(name = "scheduleId") Long scheduleId,
-            @RequestBody ScheduleRequestDTO dto,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @RequestBody ScheduleRequestDTO dto) {
         
+    	CustomUserDetails userDetails = authService.getUserDetails();
+
     	dto.setScheduleId(scheduleId);
     	Long updatedId = scheduleService.updateSchedule(dto, userDetails.getId());
 
@@ -92,19 +93,19 @@ public class ScheduleController {
 
     /**
      *일정 삭제 (IS_ACTIVE = 'N')
-     * @param scheduleId
-     * @param userDetails
-     * @return
+     * @param scheduleId 삭제할 일정 ID
+     * @return 삭제된 일정 ID와 함께 성공 응답 반환
      */
     @PatchMapping("/{scheduleId}")
     public ResponseEntity<ApiResponse<Long>> deleteSchedule(
-    		@PathVariable(name = "scheduleId") Long scheduleId,
-    		@AuthenticationPrincipal CustomUserDetails userDetails){
+    		@PathVariable(name = "scheduleId") Long scheduleId){
     	
-    	Long delectedId = scheduleService.deleteSchedule(scheduleId, userDetails.getId());
+    	CustomUserDetails userDetails = authService.getUserDetails();
+    	
+    	Long deletedId = scheduleService.deleteSchedule(scheduleId, userDetails.getId());
     	
     	return ResponseEntity.ok(
-    			ApiResponse.success(ResponseCode.DELETE_SUCCESS, delectedId, "삭제 완료되었습니다."));
+    			ApiResponse.success(ResponseCode.DELETE_SUCCESS, deletedId, "삭제 완료되었습니다."));
     }
 	
 }

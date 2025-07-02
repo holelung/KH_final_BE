@@ -35,9 +35,9 @@ public interface ScheduleService {
 
     /**
      * 일정 삭제
-     * @param scheduleId
-     * @param schedule
-     * @return
+	 * @param scheduleId 삭제할 일정 ID
+	 * @param userId 사용자 ID (일정 소유자 확인용)
+	 * @return 삭제된 일정 ID
      */
     Long deleteSchedule(Long scheduleId, Long userId);
 
