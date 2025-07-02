@@ -3,6 +3,7 @@ package com.kh.saintra.board.controller;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -40,6 +41,7 @@ public class BoardController {
 	 * @return 페이지네이션 규칙에 맞는 게시물 목록
 	 */
 	@GetMapping
+	@Transactional
 	public ResponseEntity<?> getBoardList(@ModelAttribute @Valid BoardListDTO boardListInfo) {
 		
 		Map<String, Object> boardMap = boardService.getBoards(boardListInfo);

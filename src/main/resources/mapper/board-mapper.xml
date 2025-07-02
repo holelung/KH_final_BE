@@ -24,13 +24,13 @@
 			COUNT(*)
 		FROM
 		<choose>
-			<when test="type = bulletin">
+			<when test="type == 'bulletin'">
 				TB_BOARD_BULLETIN
 			</when>
-			<when test="type = free">
+			<when test="type == 'free'">
 				TB_BOARD_FREE
 			</when>
-			<when test="type = anonymous">
+			<when test="type == 'anonymous'">
 				TB_BOARD_ANONYMOUS
 			</when>
 			<otherwise>
@@ -39,20 +39,20 @@
 		</choose>
 		WHERE
 			IS_ACTIVE = 'Y'
-		<if test="type != bulletin and type != free and type != anonymous">
+		<if test="type != 'bulletin' and type != 'free' and type != 'anonymous'">
 			AND
 				DEPT_ID = #{type}
 		</if>
 		<if test="condition != null and keyword != null">
 			AND
 			<choose>
-				<when test="condition = title">
+				<when test="condition == 'title'">
 					TITLE LIKE '%'||#{keyword}||'%'
 				</when>
-				<when test="condition = content">
+				<when test="condition == 'content'">
 					CONTENT LIKE '%'||#{keyword}||'%'
 				</when>
-				<when test="condition = writer">
+				<when test="condition == 'writer'">
 					USER_ID = (
 						SELECT
 							ID
@@ -80,13 +80,13 @@
 			B.CREATE_DATE createDate
 		FROM
 		<choose>
-			<when test="type = bulletin">
+			<when test="type == 'bulletin'">
 				TB_BOARD_BULLETIN B
 			</when>
-			<when test="type = free">
+			<when test="type == 'free'">
 				TB_BOARD_FREE B
 			</when>
-			<when test="type = anonymous">
+			<when test="type == 'anonymous'">
 				TB_BOARD_ANONYMOUS B
 			</when>
 			<otherwise>
@@ -97,35 +97,35 @@
 			TB_USER U ON (U.ID = B.USER_ID)
 		WHERE
 			B.IS_ACTIVE = 'Y'
-		<if test="type != bulletin and type != free and type != anonymous">
+		<if test="type != 'bulletin' and type != 'free' and type != 'anonymous'">
 			AND
 				B.DEPT_ID = #{type}
 		</if>
 		<if test="condition != null and keyword != null">
 			AND
 			<choose>
-				<when test="condition = title">
+				<when test="condition == 'title'">
 					B.TITLE LIKE '%'||#{keyword}||'%'
 				</when>
-				<when test="condition = content">
+				<when test="condition == 'content'">
 					B.CONTENT LIKE '%'||#{keyword}||'%'
 				</when>
-				<when test="condition = writer">
+				<when test="condition == 'writer'">
 					B.USER_ID = (
 						SELECT
-							U2.ID
+							ID
 						FROM
-							TB_USER U2
+							TB_USER
 						WHERE
-							U2.IS_ACTIVE = 'Y'
+							IS_ACTIVE = 'Y'
 						AND
-							U2.REALNAME = #{keyword}
+							REALNAME LIKE '%'||#{keyword}||'%'
 					)
 				</when>
 			</choose>
 		</if>
 		ORDER BY
-			B.CREATE_DATE DESC
+			B.ID DESC
 		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
 	</select>
 	

@@ -76,9 +76,9 @@ public class BoardServiceImpl implements BoardService {
 		checkBoardType(type);
 		
 		// 게시판에 존재하는 게시물 목록 페이징 처리
-		int page = Integer.parseInt(boardListInfo.getPage());
+		int page = boardListInfo.getPage();
 		int totalBoardCount = boardMapper.selectTotalBoardCount(boardListInfo);
-		int boardLimit = 10;
+		int boardLimit = 12;
 		int buttonLimit = 10;
 		int maxPage = (int)Math.ceil((double) totalBoardCount / boardLimit);	
 		int startButton = (page - 1) / buttonLimit * buttonLimit + 1;
@@ -87,6 +87,8 @@ public class BoardServiceImpl implements BoardService {
 		
 		boardListInfo.setLimit(boardLimit);
 		boardListInfo.setOffset(offset);
+		
+		log.info("condition: {}", boardListInfo.getCondition());
 		
 		List<BoardVO> boardList = boardMapper.selectBoardList(boardListInfo);
 		
