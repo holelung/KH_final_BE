@@ -59,7 +59,7 @@ public class ScheduleServiceImpl implements ScheduleService{
     		DefaultColor(dto);
     		validateSchedule(dto.getScheduleId(), userId);
     		int result = scheduleMapper.updateSchedule(dto);
-    		if (result == 0) {
+    		if (result != 1) {
     			throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "일정 수정에 실패했습니다.");
     		}
     		return dto.getScheduleId();
@@ -79,7 +79,7 @@ public class ScheduleServiceImpl implements ScheduleService{
     			throw new UnauthorizedAccessException(ResponseCode.AUTH_FAIL, "해당 일정에 대한 수정 권한이 없습니다.");
     		}
     		int result = scheduleMapper.deleteSchedule(scheduleId);
-    		if (result == 0) {
+    		if (result != 1) {
     			throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "일정 삭제에 실패하였습니다.");
     		}
     		return scheduleId;
@@ -115,7 +115,7 @@ public class ScheduleServiceImpl implements ScheduleService{
         int result = scheduleMapper.insertReserver(paramMap);  // scheduleMapper로 연결
         Long reserverId = (Long) paramMap.get("id");
 
-        if (result == 0 || reserverId == null) {
+        if (result != 1 || reserverId == null) {
             throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "예약자 정보 저장에 실패했습니다.");
         }
 
@@ -158,7 +158,7 @@ public class ScheduleServiceImpl implements ScheduleService{
     // 일정 등록
     private void insertSchedule(ScheduleRequestDTO dto, Long createdBy) {
         int result = scheduleMapper.insertSchedule(dto, dto.getReserverId(), createdBy);
-        if (result == 0) {
+        if (result != 1) {
             throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "일정 등록에 실패했습니다.");
         }
     }

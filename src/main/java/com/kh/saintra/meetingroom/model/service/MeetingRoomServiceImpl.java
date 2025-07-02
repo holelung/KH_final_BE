@@ -72,7 +72,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
             duplicateForUpdate(dto);
 
             int result = meetingRoomMapper.updateReservation(dto);
-            if (result == 0) {
+            if (result != 1) {
                 throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "회의실 예약 수정에 실패하였습니다.");
             }
 
@@ -95,7 +95,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
             }
 
             int result = meetingRoomMapper.deleteReservation(reservationId);
-            if (result == 0) {
+            if (result != 1) {
                 throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "회의실 예약 삭제에 실패하였습니다.");
             }
 
@@ -156,7 +156,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
         int result = meetingRoomMapper.insertReserver(reserverVo);
         Long reserverId = reserverVo.getId();
 
-        if (result == 0 || reserverId == null) {
+        if (result != 1 || reserverId == null) {
             throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "예약자 정보 저장에 실패했습니다.");
         }
 
@@ -175,7 +175,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
             throw new InvalidValueException(ResponseCode.INVALID_VALUE, "예약자 유형은 'USER' 또는 'TEAM'이어야 합니다.");
         }
 
-        if (result == 0) {
+        if (result != 1) {
             throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "예약자 유형 저장에 실패했습니다.");
         }
     }
@@ -183,7 +183,7 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
     // 예약 등록
     private void insertReservation(MeetingRoomRequestDTO dto, Long reserverId, Long createdBy) {
         int result = meetingRoomMapper.insertReservation(dto, reserverId, createdBy);
-        if (result == 0) {
+        if (result != 1) {
             throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "회의실 예약 등록에 실패했습니다.");
         }
     }
