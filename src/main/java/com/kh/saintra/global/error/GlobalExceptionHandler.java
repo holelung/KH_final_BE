@@ -20,6 +20,7 @@ import com.kh.saintra.global.error.exceptions.InvalidAccessException;
 import com.kh.saintra.global.error.exceptions.InvalidValueException;
 import com.kh.saintra.global.error.exceptions.MailServiceException;
 import com.kh.saintra.global.error.exceptions.UnauthorizedAccessException;
+import com.kh.saintra.global.error.exceptions.UnknownException;
 import com.kh.saintra.global.error.exceptions.EntityNotFoundException;
 import com.kh.saintra.global.response.ApiResponse;
 import com.kh.saintra.mail.model.service.MailService;
@@ -86,6 +87,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleEntityNotFoundException(EntityNotFoundException e) {
     	return makeResponseEntity(e.getResponseCode(), e.getMessage(), HttpStatus.NOT_FOUND);
     }
+    
+    @ExceptionHandler(UnknownException.class)
+    public ResponseEntity<ApiResponse<Object>> handleUnknown(UnknownException e) {
+        return makeResponseEntity(e.getResponseCode(), e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 
     // Valid가 발생시키는 Exception(@Pattern, @NotBlank)
     @ExceptionHandler(ConstraintViolationException.class)

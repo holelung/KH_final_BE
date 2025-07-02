@@ -65,7 +65,6 @@ public class MeetingRoomController {
             @Validated @RequestBody MeetingRoomRequestDTO dto){
     	
     	CustomUserDetails userDetails = authService.getUserDetails();
-    	// -> getUserDetails 수정 예시 (일단 얘만 수정하고 다른 부분들은 추후 수정 예정)
     	
         Long createdBy = userDetails.getId();
         Long reservationId = meetingRoomService.createReservation(dto, createdBy);
@@ -84,8 +83,9 @@ public class MeetingRoomController {
     @PutMapping("/{reservationId}")
     public ResponseEntity<ApiResponse<Long>> updateReservation(
     		@PathVariable(name = "reservationId") Long reservationId,
-    		@RequestBody MeetingRoomRequestDTO dto,
-    		@AuthenticationPrincipal CustomUserDetails userDetails) {
+    		@RequestBody MeetingRoomRequestDTO dto) {
+    	
+    	CustomUserDetails userDetails = authService.getUserDetails();
     	
         dto.setReservationId(reservationId);
         Long updatedId = meetingRoomService.updateReservation(dto, userDetails.getId());
@@ -102,8 +102,9 @@ public class MeetingRoomController {
      */
     @PatchMapping("/{reservationId}")
     public ResponseEntity<ApiResponse<Long>> deleteReservation(
-    		@PathVariable(name = "reservationId") Long reservationId,
-    		@AuthenticationPrincipal CustomUserDetails userDetails){
+    		@PathVariable(name = "reservationId") Long reservationId){
+    	
+    	CustomUserDetails userDetails = authService.getUserDetails();
     	
     	Long deletedId = meetingRoomService.deleteReservation(reservationId, userDetails.getId());
     	

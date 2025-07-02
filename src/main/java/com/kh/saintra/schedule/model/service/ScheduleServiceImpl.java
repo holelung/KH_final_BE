@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +14,7 @@ import com.kh.saintra.global.error.exceptions.DataAccessException;
 import com.kh.saintra.global.error.exceptions.EntityNotFoundException;
 import com.kh.saintra.global.error.exceptions.InvalidValueException;
 import com.kh.saintra.global.error.exceptions.UnauthorizedAccessException;
-import com.kh.saintra.meetingroom.model.vo.MeetingRoom;
+import com.kh.saintra.global.error.exceptions.UnknownException;
 import com.kh.saintra.schedule.model.dao.ScheduleMapper;
 import com.kh.saintra.schedule.model.dto.ScheduleRequestDTO;
 import com.kh.saintra.schedule.model.dto.ScheduleResponseDTO;
@@ -31,33 +32,74 @@ public class ScheduleServiceImpl implements ScheduleService{
 	// 1. 일정 조회 
     @Override
     public List<ScheduleResponseDTO> getSchedules(String startDate, String endDate) {
-        try {
-            return scheduleMapper.getSchedules(startDate, endDate);
-        } catch (Exception e) {
-            log.error("일정 목록 조회 중 오류 발생", e);
-            throw new DataAccessException(ResponseCode.SERVER_ERROR, "일정 조회 중 오류가 발생했습니다.");
-        }
+        return executeWithExceptionHandling("일정 조회", () -> scheduleMapper.getSchedules(startDate, endDate));
     }
     
     // 2. 일정 등록 
     @Override
     @Transactional
     public Long createSchedule(ScheduleRequestDTO dto, Long createdBy) {
-    	
-        checkReserverExists(dto.getReserverType(), dto.getReserverId());
-        
-        Long reserverId = registerReserver(dto.getReserverType());
-        dto.setReserverId(reserverId);
-        insertReserverByType(dto.getReserverType(), reserverId, createdBy);
-        
-        DefaultColor(dto);
-        DefaultEndDate(dto);
-
-        insertSchedule(dto, createdBy);
-
-        return dto.getScheduleId();
+    	return executeWithExceptionHandling("일정 등록", () -> {
+        	checkReserverExists(dto.getReserverType(), dto.getReserverId());
+            Long reserverId = registerReserver(dto.getReserverType());
+            dto.setReserverId(reserverId);
+            insertReserverByType(dto.getReserverType(), reserverId, createdBy);
+            DefaultColor(dto);
+            DefaultEndDate(dto);
+            insertSchedule(dto, createdBy);
+            return dto.getScheduleId();
+        });
     }
 
+    // 3. 일정 수정
+    @Override
+    public Long updateSchedule(ScheduleRequestDTO dto, Long userId) {
+    	return executeWithExceptionHandling("일정 수정", () -> {
+    		checkReserverExists(dto.getReserverType(), dto.getReserverId());
+    		DefaultColor(dto);
+    		validateSchedule(dto.getScheduleId(), userId);
+    		int result = scheduleMapper.updateSchedule(dto);
+    		if (result == 0) {
+    			throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "일정 수정에 실패했습니다.");
+    		}
+    		return dto.getScheduleId();
+    	});
+    }
+    
+    // 4. 일정 삭제 
+    @Override
+    @Transactional
+    public Long deleteSchedule(Long scheduleId, Long userId) {
+    	return executeWithExceptionHandling("일정 삭제", () -> {
+    		ScheduleResponseDTO existing = scheduleMapper.findScheduleById(scheduleId);
+    		if (existing == null) {
+    			throw new EntityNotFoundException(ResponseCode.ENTITY_NOT_FOUND, "해당 일정이 존재하지 않습니다.");
+    		}
+    		if (!existing.getCreatedBy().equals(userId)) {
+    			throw new UnauthorizedAccessException(ResponseCode.AUTH_FAIL, "해당 일정에 대한 수정 권한이 없습니다.");
+    		}
+    		int result = scheduleMapper.deleteSchedule(scheduleId);
+    		if (result == 0) {
+    			throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "일정 삭제에 실패하였습니다.");
+    		}
+    		return scheduleId;
+    	});
+    }
+    
+    // 공통 예외 처리 메서드
+    private <T> T executeWithExceptionHandling(String action, Supplier<T> logic) {
+    	try {
+    		return logic.get();
+    	} catch (InvalidValueException | EntityNotFoundException |
+    			DataAccessException | UnauthorizedAccessException e) {
+    		log.warn("{} 실패: {}", action, e.getMessage());
+    		throw e;
+    	} catch (Exception e) {
+    		log.error("{} 중 알 수 없는 오류 발생", action, e);
+    		throw new UnknownException(ResponseCode.UNKNOWN_ERROR, action + " 중 오류가 발생했습니다.");
+    	}
+    }
+    
     // 예약자 존재 여부 확인
     private void checkReserverExists(String reserverType, Long reserverId) {
     if (scheduleMapper.existsReserver(reserverType, reserverId) == 0) {
@@ -99,23 +141,20 @@ public class ScheduleServiceImpl implements ScheduleService{
         }
     }
 
-    
     // 색상 코드 기본값 지정
     private void DefaultColor(ScheduleRequestDTO dto) {
-    	
         if (dto.getColorCode() == null || dto.getColorCode().isBlank()) {
             dto.setColorCode("#2196F3");
         }
     }
-    
+
     // 종료일이 없을 경우 시작일로 설정
     private void DefaultEndDate(ScheduleRequestDTO dto) {
-    	
         if (dto.getEndDate() == null || dto.getEndDate().isBlank()) {
             dto.setEndDate(dto.getStartDate());
         }
     }
-    
+
     // 일정 등록
     private void insertSchedule(ScheduleRequestDTO dto, Long createdBy) {
         int result = scheduleMapper.insertSchedule(dto, dto.getReserverId(), createdBy);
@@ -123,26 +162,6 @@ public class ScheduleServiceImpl implements ScheduleService{
             throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "일정 등록에 실패했습니다.");
         }
     }
-	
-    // 3. 일정 수정
-    @Override
-    public Long updateSchedule(ScheduleRequestDTO dto, Long userId) {
-
-        checkReserverExists(dto.getReserverType(), dto.getReserverId());
-        DefaultColor(dto);
-
-        // 일정 존재 여부 및 사용자 소유 여부 확인
-        validateSchedule(dto.getScheduleId(), userId);
-
-        // 업데이트 수행
-        int result = scheduleMapper.updateSchedule(dto);
-        if (result == 0) {
-            throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "일정 수정에 실패했습니다.");
-        }
-
-        return dto.getScheduleId();
-    }
-
 
     // 일정 존재 + 권한 확인 
     private ScheduleResponseDTO validateSchedule(Long scheduleId, Long userId) {
@@ -157,30 +176,6 @@ public class ScheduleServiceImpl implements ScheduleService{
         }
 
         return schedule;
-    }
-    
-    // 4. 일정 삭제 
-    @Override
-    @Transactional
-    public Long deleteSchedule(Long scheduleId, Long userId) {
-
-        ScheduleResponseDTO existing = scheduleMapper.findScheduleById(scheduleId);
-        
-        if (existing == null) {
-        	throw new EntityNotFoundException(ResponseCode.ENTITY_NOT_FOUND, "해당 일정이 존재하지 않습니다.");
-        }
-
-        if (!existing.getCreatedBy().equals(userId)) {
-        	throw new UnauthorizedAccessException(ResponseCode.AUTH_FAIL, "해당 일정에 대한 수정 권한이 없습니다.");
-        }
-
-        int result = scheduleMapper.deleteSchedule(scheduleId);
-        
-        if (result == 0) {
-            throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "일정 삭제에 실패하였습니다.");
-        }
-
-        return scheduleId;
     }
 
 }
