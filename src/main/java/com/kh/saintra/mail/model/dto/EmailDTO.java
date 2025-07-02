@@ -20,6 +20,6 @@ public class EmailDTO {
     @Pattern(regexp = Regexp.EMAIL, message="올바른 이메일 형식이 아닙니다.")
     private String email;
     
-    @Pattern(regexp = Regexp.VERIFY_CODE, message="올바른 인증 코드 형식이 아닙니다.")
+    
     private String verifyCode;
 }
