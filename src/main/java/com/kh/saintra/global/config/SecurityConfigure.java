@@ -37,15 +37,14 @@ public class SecurityConfigure {
     @Bean
     @Order(1)
     public SecurityFilterChain websocketSecurity(HttpSecurity http) throws Exception {
-        return http.securityMatcher("/ws/**")
+        return http.securityMatcher("/ws/**","/ws")
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(a -> a.requestMatchers(
-                        HttpMethod.GET, "/ws/**"
+                        HttpMethod.GET, "/ws/**", "/ws"
                     ).permitAll()
                     .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

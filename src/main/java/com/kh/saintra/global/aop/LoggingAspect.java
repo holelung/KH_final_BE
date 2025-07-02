@@ -4,6 +4,7 @@ import java.util.Optional;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -11,7 +12,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import com.kh.saintra.auth.model.vo.CustomUserDetails;
 import com.kh.saintra.global.logging.model.dto.LogDTO;
 import com.kh.saintra.global.logging.model.service.LogService;
-import com.kh.saintra.global.logging.model.vo.Log;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,8 +27,12 @@ public class LoggingAspect {
     // 그럼 컨트롤러 단에서만 로그를찍으면 되지않나?
     
     private final LogService logService;
+    
+    @Pointcut("execution(* com.kh.saintra..controller..*(..))"
+        + " && !within(com.kh.saintra..controller.UserStatusController)")
+    public void httpControllerMethods() {}
 
-    @Around("execution(* com.kh.saintra..controller..*(..))")
+    @Around("httpControllerMethods()")
     public Object logExecution(ProceedingJoinPoint joinPoint) throws Throwable {
 
         long start = System.currentTimeMillis();
@@ -41,9 +45,11 @@ public class LoggingAspect {
         String referer = request != null ? request.getHeader("Referer") : "NONE";
         String httpMethod = request != null ? request.getMethod() : "UNKNOWN";
 
+        // CustomUserDetails user = (CustomUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Long userId = getUserSafely();
+
         LogDTO logDto = LogDTO.builder()
-                .userId(getUserSafely())
+                .userId(userId)
                 .actionArea(requestUri)
                 .actionType(httpMethod)
                 .clientIp(clientIp)
@@ -81,7 +87,7 @@ public class LoggingAspect {
             return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
                     .map(auth -> (CustomUserDetails) auth.getPrincipal())
                     .map(CustomUserDetails::getId)
-                    .orElse(null);
+                    .orElse(1L);
         } catch (Exception e) {
             return null;
         }
