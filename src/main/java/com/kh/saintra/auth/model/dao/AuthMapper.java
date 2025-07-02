@@ -95,4 +95,6 @@ public interface AuthMapper {
      * @param ChangePassword changePassword 
      */
     void changePassword(ChangePassword changePassword);
+
+
 }

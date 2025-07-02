@@ -25,6 +25,7 @@ import com.kh.saintra.mail.model.dto.EmailContent;
 import com.kh.saintra.mail.model.dto.EmailDTO;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -142,9 +143,19 @@ public class MailServiceImpl implements MailService{
     }
 
     // 가입 승인 메일 내용 생성
-    private EmailContent createNotificationEmail(EmailDTO email){
+    private EmailContent createCelebrateEmail(EmailDTO email){
+        EmailContent content = new EmailContent();
+        content.setSubject("Saintra 가입을 축하합니다!");
 
-        return null;
+        String html;
+        try {
+            ClassPathResource res = new ClassPathResource("templates/mail/celebrate-mail.html");
+            html = StreamUtils.copyToString(res.getInputStream(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new MailServiceException(ResponseCode.MAIL_TEMPLATE_ERROR, "이메일 템플릿 로드 실패" + e);
+        }
+        content.setContent(html);
+        return content;
     }
 
     // 비밀번호 찾기 메일 내용생성
@@ -178,5 +189,15 @@ public class MailServiceImpl implements MailService{
         } catch (MessagingException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void sendCelebrateMail(String email) {
+        EmailDTO emailDto = new EmailDTO();
+        emailDto.setEmail(email);
+        
+        EmailContent content = createCelebrateEmail(emailDto);
+
+        sendMail(emailDto, content);
     }
 }

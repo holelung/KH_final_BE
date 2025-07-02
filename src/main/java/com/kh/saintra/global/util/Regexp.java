@@ -13,4 +13,7 @@ public final class Regexp {
     public static final String PHONE = "^010-\\d{4}-\\d{4}$";
     public static final String SSN = "^\\d{6}-[1-4]\\d{6}$";
     public static final String VERIFY_CODE = "^[A-Z0-9]{6}";
+    public static final String DATE = "^\\d{4}-\\d{2}-\\d{2}$";
+    public static final String TEXT = "^[가-힣a-zA-Z0-9\\s!@#$%^&*(),.?\":{}|<>_-]*$";
+    public static final String COLOR = "^#([A-Fa-f0-9]{6})$";
 }

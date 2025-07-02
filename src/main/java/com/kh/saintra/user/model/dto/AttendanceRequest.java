@@ -1,7 +1,7 @@
 package com.kh.saintra.user.model.dto;
 
 import java.sql.Date;
-
+import com.kh.saintra.global.annotation.StartBeforeEnd;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,9 +13,11 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class AttendanceDTO {
+@StartBeforeEnd(start = "startDate", end = "endDate")
+public class AttendanceRequest {
     
-    private String username;
+    private Long id;
     private Date startDate;
     private Date endDate; 
+    
 }

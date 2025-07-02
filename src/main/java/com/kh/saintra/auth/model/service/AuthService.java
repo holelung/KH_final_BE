@@ -89,20 +89,7 @@ public interface AuthService {
      */
     ApiResponse<Void> changePasswordByKey(ChangePasswordDTO changePassword);
     
-    /**
-     * <pre>
-     * 비밀번호 변경(로그인)
-     * 
-     * 마이페이지에서 비밀번호 변경
-     * 1. AuthContext에서 로그인된 사용자 정보 가져옴
-     * 2. 비밀번호 변경 요청 수행
-     * 
-     * </pre>
-     * 
-     * @param changePassword
-     * @return
-     */
-    ApiResponse<Void> changePassword(ChangePasswordDTO changePassword);
+
 
     /**
      * <pre>
@@ -115,5 +102,12 @@ public interface AuthService {
      */
     CustomUserDetails getUserDetails();
 
+
+    /**
+     * 비밀번호 확인 메서드
+     * @param password 비밀번호
+     * @return 비밀번호가 검증된 유저의 PK
+     */
+    Long checkPassword(String password);
 
 }
