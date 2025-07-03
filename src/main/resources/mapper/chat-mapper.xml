@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.kh.saintra.chat.model.dao.ChatMapper">
+
+
+  <!-- 1. 메시지 목록 조회 -->
+  <select id="findMessagesByTeamId"
+          parameterType="com.kh.saintra.chat.model.vo.GetMessageRequest"
+          resultType="com.kh.saintra.chat.model.dto.MessageDTO">
+    SELECT *
+    FROM (
+      SELECT
+        M.MESSAGE_ID       AS messageId,
+        M.SENDER_ID        AS senderId,
+        U.REALNAME         AS senderName,
+        M.CONTENT          AS content,
+        M.SENT_DATE        AS sentDate,
+        P.FILE_ID          AS profileImgId
+      FROM
+        TB_TEAM_MESSAGE M
+      JOIN TB_USER U ON M.SENDER_ID = U.ID
+      LEFT JOIN TB_PROFILE P ON U.ID = P.USER_ID
+      WHERE
+        M.TEAM_ID = #{teamId}
+      <if test="lastTimeStamp != null and lastTimeStamp != 'null'">
+        AND M.SENT_DATE &lt; TO_TIMESTAMP(#{lastTimeStamp}, 'YYYY-MM-DD HH24:MI:SS.FF3')
+      </if>
+      ORDER BY M.SENT_DATE DESC
+    )
+    WHERE ROWNUM &lt;= 20
+    ORDER BY sentDate ASC
+  </select>
+
+  <!-- 2. 메시지 등록 -->
+  <insert id="sendChatMessage"
+          parameterType="MessageDTO">
+	INSERT INTO TB_TEAM_MESSAGE (
+	    MESSAGE_ID, TEAM_ID, SENDER_ID, CONTENT, SENT_DATE
+	  ) VALUES (
+	    #{messageId},
+	    #{teamId},
+	    #{senderId},
+	    #{content},
+	    SYSTIMESTAMP
+	  )
+  </insert>
+
+  <!-- 3. 메시지 단건 조회 -->
+  <select id="findMessageByMessageId"
+          resultType="com.kh.saintra.chat.model.dto.MessageDTO"
+          parameterType="string">
+    SELECT
+      M.MESSAGE_ID       AS messageId,
+      M.SENDER_ID        AS senderId,
+      U.REALNAME         AS senderName,
+      M.CONTENT          AS content,
+      M.SENT_DATE        AS sentDate,
+      P.FILE_ID          AS profileImgId
+    FROM
+      TB_TEAM_MESSAGE M
+    JOIN TB_USER U ON M.SENDER_ID = U.ID
+    LEFT JOIN TB_PROFILE P ON U.ID = P.USER_ID
+    WHERE
+      M.MESSAGE_ID = #{messageId}
+  </select>
+
+  <!-- 4. 메시지 존재 여부 -->
+  <select id="checkMessage"
+          parameterType="string"
+          resultType="boolean">
+    SELECT
+      DECODE(COUNT(*), 0, 0, 1)
+    FROM
+      TB_TEAM_MESSAGE
+    WHERE
+      MESSAGE_ID = #{messageId}
+  </select>
+
+  <!-- 5. 메시지 작성자 확인 -->
+  <select id="checkIsSender"
+          parameterType="com.kh.saintra.chat.model.dto.MessageDTO"
+          resultType="boolean">
+    SELECT
+      DECODE(COUNT(*), 0, 0, 1)
+    FROM 
+      TB_TEAM_MESSAGE
+    WHERE
+      MESSAGE_ID = #{messageId}
+      AND SENDER_ID = #{senderId}
+  </select>
+
+  <!-- 6. 메시지 수정 -->
+  <update id="updateChatMessage"
+          parameterType="com.kh.saintra.chat.model.dto.MessageDTO">
+    UPDATE TB_TEAM_MESSAGE
+    SET CONTENT = #{content}
+    WHERE MESSAGE_ID = #{messageId}
+  </update>
+
+  <!-- 7. 메시지 삭제 -->
+  <delete id="deleteChatMessage"
+          parameterType="string">
+    DELETE FROM TB_TEAM_MESSAGE
+    WHERE MESSAGE_ID = #{messageId}
+  </delete>
+
+
+</mapper>
