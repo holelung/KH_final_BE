@@ -3,6 +3,7 @@ package com.kh.saintra.chat.model.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+
 @Getter
 @Setter
 public class MessageDTO {
@@ -15,7 +16,7 @@ public class MessageDTO {
 
     private String senderName;    
     
-    private Integer profileImgId;  
+    private String profileImgUrl;  
 
     private String content;      
     

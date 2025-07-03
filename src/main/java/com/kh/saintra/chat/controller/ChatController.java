@@ -14,7 +14,8 @@ import com.kh.saintra.global.enums.ResponseCode;
 import com.kh.saintra.global.response.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/chat")
@@ -26,7 +27,8 @@ public class ChatController {
 		@GetMapping
 		public ResponseEntity<ApiResponse<List<MessageDTO>>> findMessagesByRoomId(@RequestParam(name="teamId") String teamId,
 																 @RequestParam(name="lastTimeStamp", required = false) String lastTimeStamp){
-			
+			log.info("📨 메시지 목록 조회 요청: teamId={}, lastTimeStamp={}", teamId, lastTimeStamp);
+
 			
 			List<MessageDTO> messages = chatService.findMessagesByRoomId(teamId, lastTimeStamp);
 			

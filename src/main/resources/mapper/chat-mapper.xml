@@ -18,7 +18,7 @@
         U.REALNAME         AS senderName,
         M.CONTENT          AS content,
         M.SENT_DATE        AS sentDate,
-        P.FILE_ID          AS profileImgId
+        P.URL          AS profileImgUrl
       FROM
         TB_TEAM_MESSAGE M
       JOIN TB_USER U ON M.SENDER_ID = U.ID
@@ -36,7 +36,7 @@
 
   <!-- 2. 메시지 등록 -->
   <insert id="sendChatMessage"
-          parameterType="MessageDTO">
+          parameterType="com.kh.saintra.chat.model.dto.MessageDTO">
 	INSERT INTO TB_TEAM_MESSAGE (
 	    MESSAGE_ID, TEAM_ID, SENDER_ID, CONTENT, SENT_DATE
 	  ) VALUES (
@@ -58,7 +58,7 @@
       U.REALNAME         AS senderName,
       M.CONTENT          AS content,
       M.SENT_DATE        AS sentDate,
-      P.FILE_ID          AS profileImgId
+      P.URL          AS profileUrl
     FROM
       TB_TEAM_MESSAGE M
     JOIN TB_USER U ON M.SENDER_ID = U.ID

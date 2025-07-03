@@ -11,7 +11,8 @@ import com.kh.saintra.chat.model.vo.GetMessageRequest;
 import com.kh.saintra.chat.model.vo.Message;
 
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
@@ -24,6 +25,8 @@ public class ChatServiceImpl implements ChatService {
                 .teamId(teamId)
                 .lastTimeStamp(lastTimeStamp)
                 .build();
+        
+        log.info("💬 채팅 조회 요청: teamId={}, lastTimeStamp={}", request.getTeamId(), request.getLastTimeStamp());
 
         return chatMapper.findMessagesByTeamId(request);
     }
