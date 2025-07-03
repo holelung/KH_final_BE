@@ -1,4 +1,4 @@
-package com.kh.saintra.anonymous.file;
+package com.kh.saintra.anonymous.model.dto;
 
 import lombok.Data;
 import java.util.Date;
@@ -8,8 +8,8 @@ public class FileDto {
     private Long id;
     private Long boardId;
     private String fileName;       // 서버에 저장된 파일명
-    private String originalName;   // 사용자가 올린 원본 파일명
-    private String filePath;       // 파일 저장 경로
+    private String originalName;   // 사용자가 업로드한 원본 이름
+    private String filePath;       // 서버 저장 경로
     private Date uploadDate;
     private String isActive;
 }

@@ -1,5 +1,7 @@
-package com.kh.saintra.anonymous.board;
+package com.kh.saintra.anonymous.controller;
 
+import com.kh.saintra.anonymous.model.dto.AnonymousDto;
+import com.kh.saintra.anonymous.model.service.AnonymousService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,10 +31,7 @@ public class AnonymousController {
     @GetMapping("/{id}")
     public ResponseEntity<AnonymousDto> getBoardById(@PathVariable Long id) {
         AnonymousDto dto = anonymousService.getBoardById(id);
-        if (dto == null) {
-            return ResponseEntity.notFound().build(); // 404 Not Found
-        }
-        return ResponseEntity.ok(dto); // 200 OK
+        return dto == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(dto);
     }
 
     @PostMapping
@@ -55,10 +54,7 @@ public class AnonymousController {
     }
 
     @GetMapping("/search/my")
-    public List<AnonymousDto> searchMyBoard(
-        @RequestParam String keyword,
-        @RequestParam Long userId
-    ) {
+    public List<AnonymousDto> searchMyBoard(@RequestParam String keyword, @RequestParam Long userId) {
         return anonymousService.searchMyBoard(keyword, userId);
     }
 }

@@ -1,5 +1,6 @@
-package com.kh.saintra.anonymous.file;
+package com.kh.saintra.anonymous.model.dao;
 
+import com.kh.saintra.anonymous.model.dto.FileDto;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -7,11 +8,11 @@ import java.sql.ResultSet;
 import java.util.List;
 
 @Repository
-public class FileRepository {
+public class FileMapper {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public FileRepository(JdbcTemplate jdbcTemplate) {
+    public FileMapper(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

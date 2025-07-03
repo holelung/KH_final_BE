@@ -1,17 +1,17 @@
-package com.kh.saintra.anonymous.comment;
+package com.kh.saintra.anonymous.model.dao;
 
+import com.kh.saintra.anonymous.model.dto.CommentDto;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
 
 @Repository
-public class CommentRepository {
+public class CommentMapper {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public CommentRepository(JdbcTemplate jdbcTemplate) {
+    public CommentMapper(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -27,13 +27,12 @@ public class CommentRepository {
     };
 
     public List<CommentDto> findByBoardId(Long boardId) {
-        String sql = "SELECT * FROM TB_COMMENT_ANONYMOUS WHERE BOARD_ID = ? AND IS_ACTIVE = 'Y' ORDER BY ID ASC";
+        String sql = "SELECT * FROM TB_COMMENT_ANONYMOUS WHERE BOARD_ID = ? AND IS_ACTIVE = 'Y'";
         return jdbcTemplate.query(sql, rowMapper, boardId);
     }
 
     public int save(CommentDto dto) {
-        String sql = "INSERT INTO TB_COMMENT_ANONYMOUS (ID, BOARD_ID, USER_ID, CONTENT, CREATE_DATE, IS_ACTIVE) " +
-                     "VALUES (SEQ_COMMENT_ANONYMOUS.NEXTVAL, ?, ?, ?, SYSDATE, 'Y')";
+        String sql = "INSERT INTO TB_COMMENT_ANONYMOUS (ID, BOARD_ID, USER_ID, CONTENT, CREATE_DATE, IS_ACTIVE) VALUES (SEQ_COMMENT_ANONYMOUS.NEXTVAL, ?, ?, ?, SYSDATE, 'Y')";
         return jdbcTemplate.update(sql, dto.getBoardId(), dto.getUserId(), dto.getContent());
     }
 

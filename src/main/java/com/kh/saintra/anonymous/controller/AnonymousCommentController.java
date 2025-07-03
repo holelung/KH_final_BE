@@ -1,5 +1,7 @@
-package com.kh.saintra.anonymous.comment;
+package com.kh.saintra.anonymous.controller;
 
+import com.kh.saintra.anonymous.model.dto.CommentDto;
+import com.kh.saintra.anonymous.model.service.CommentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

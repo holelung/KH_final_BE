@@ -1,5 +1,7 @@
-package com.kh.saintra.anonymous.file;
+package com.kh.saintra.anonymous.controller;
 
+import com.kh.saintra.anonymous.model.dto.FileDto;
+import com.kh.saintra.anonymous.model.service.FileService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,12 +13,11 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/files")
+@CrossOrigin(origins = "*")
 public class FileController {
 
     private final FileService fileService;
-
-    // 설정파일 없이 직접 경로 지정
-    private final String uploadDir = "C:/upload/anonymous";
+    private final String uploadDir = "C:/upload/anonymous"; // 경로는 환경에 맞게 수정 가능
 
     public FileController(FileService fileService) {
         this.fileService = fileService;
@@ -57,21 +58,17 @@ public class FileController {
         return ResponseEntity.ok("파일 삭제 완료");
     }
 
-    // 파일 저장 메서드
     private void saveFile(MultipartFile file, Long boardId) throws Exception {
         String originalName = file.getOriginalFilename();
         if (originalName == null || originalName.isBlank()) {
             throw new IllegalArgumentException("파일 이름이 유효하지 않습니다.");
         }
 
-        // UUID를 통한 저장 파일명 생성
         String savedName = UUID.randomUUID() + "_" + originalName;
         String savePath = Paths.get(uploadDir, savedName).toString();
 
-        // 파일 저장
         file.transferTo(new File(savePath));
 
-        // DB 저장용 DTO 생성
         FileDto dto = new FileDto();
         dto.setBoardId(boardId);
         dto.setFileName(savedName);
