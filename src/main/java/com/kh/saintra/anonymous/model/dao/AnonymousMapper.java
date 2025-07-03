@@ -38,11 +38,12 @@ public class AnonymousMapper {
 
     public int save(AnonymousDto dto) {
         String sql = """
-            INSERT INTO TB_BOARD_ANONYMOUS (ID, USER_ID, TITLE, CONTENT, CREATE_DATE, IS_ACTIVE)
-            VALUES (SEQ_BOARD_ANONYMOUS.NEXTVAL, ?, ?, ?, SYSDATE, 'Y')
+            INSERT INTO TB_BOARD_ANONYMOUS (USER_ID, TITLE, CONTENT, CREATE_DATE, IS_ACTIVE)
+            VALUES (?, ?, ?, SYSDATE, 'Y')
         """;
         return jdbcTemplate.update(sql, dto.getUserId(), dto.getTitle(), dto.getContent());
     }
+
 
     public int update(AnonymousDto dto) {
         String sql = "UPDATE TB_BOARD_ANONYMOUS SET TITLE = ?, CONTENT = ? WHERE ID = ? AND IS_ACTIVE = 'Y'";

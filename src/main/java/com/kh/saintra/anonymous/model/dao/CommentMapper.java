@@ -32,9 +32,13 @@ public class CommentMapper {
     }
 
     public int save(CommentDto dto) {
-        String sql = "INSERT INTO TB_COMMENT_ANONYMOUS (ID, BOARD_ID, USER_ID, CONTENT, CREATE_DATE, IS_ACTIVE) VALUES (SEQ_COMMENT_ANONYMOUS.NEXTVAL, ?, ?, ?, SYSDATE, 'Y')";
+        String sql = """
+            INSERT INTO TB_COMMENT_ANONYMOUS (BOARD_ID, USER_ID, CONTENT, CREATE_DATE, IS_ACTIVE)
+            VALUES (?, ?, ?, SYSDATE, 'Y')
+        """;
         return jdbcTemplate.update(sql, dto.getBoardId(), dto.getUserId(), dto.getContent());
     }
+
 
     public int update(CommentDto dto) {
         String sql = "UPDATE TB_COMMENT_ANONYMOUS SET CONTENT = ? WHERE ID = ? AND IS_ACTIVE = 'Y'";

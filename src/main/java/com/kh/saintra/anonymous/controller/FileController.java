@@ -71,10 +71,10 @@ public class FileController {
 
         FileDto dto = new FileDto();
         dto.setBoardId(boardId);
-        dto.setFileName(savedName);
-        dto.setOriginalName(originalName);
-        dto.setFilePath(savePath);
+        dto.setUrl(savedName);     // URL → 저장된 파일명
+        dto.setOrigin(originalName); // ORIGIN → 사용자 업로드 이름
 
         fileService.saveFile(dto);
     }
+
 }
