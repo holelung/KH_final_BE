@@ -46,6 +46,7 @@ public class StompAuthAndLoggingInterceptor implements ChannelInterceptor {
 
         // STOMP CONNECT 프레임일 때만 JWT 검사
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+        	System.out.println("🟡 CONNECT 요청 들어옴");
             String authHeader = accessor.getFirstNativeHeader(HttpHeaders.AUTHORIZATION);
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 String token = authHeader.substring(7);
