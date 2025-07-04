@@ -24,4 +24,4 @@ public class WebSocketConfig implements WebSocketConfigurer {
                 .addInterceptors(webSocketAuthInterceptor)
                 .setAllowedOrigins("http://localhost:5173");
     }
-}
+}   
