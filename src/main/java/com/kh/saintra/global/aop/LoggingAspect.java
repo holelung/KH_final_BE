@@ -30,7 +30,10 @@ public class LoggingAspect {
     
     @Pointcut("execution(* com.kh.saintra..controller..*(..))"
         + " && !within(com.kh.saintra..controller.UserStatusController)"
-        + " && !within(com.kh.saintra..controller.MailController)")
+        + " && !within(com.kh.saintra..controller.MailController)"
+        + " && !execution(* com.kh.saintra..controller.UserController.join(..))"
+        + " && !execution(* com.kh.saintra..controller.AuthController.findPassword(..))"
+        + " && !execution(* com.kh.saintra..controller.AuthController.changePassword(..))")
     public void httpControllerMethods() {}
 
     @Around("httpControllerMethods()")
@@ -48,6 +51,9 @@ public class LoggingAspect {
 
         // CustomUserDetails user = (CustomUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Long userId = getUserSafely();
+        if( userId == null) {
+            return result;
+        }
 
         LogDTO logDto = LogDTO.builder()
                 .userId(userId)
@@ -88,9 +94,9 @@ public class LoggingAspect {
             return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
                     .map(auth -> (CustomUserDetails) auth.getPrincipal())
                     .map(CustomUserDetails::getId)
-                    .orElse(1L);
+                    .orElse(null);
         } catch (Exception e) {
-            return 1L;
+            return null;
         }
     }
 }
