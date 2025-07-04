@@ -59,7 +59,7 @@ public class SecurityConfigure {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests -> {
-                    requests.requestMatchers(HttpMethod.POST, "/api/auth/password", "/api/auth/tokens", "/api/users/join", "/api/emails**").permitAll();
+                    requests.requestMatchers(HttpMethod.POST, "/api/auth/password", "/api/auth/tokens", "/api/users/join", "/api/emails/**").permitAll();
                     requests.requestMatchers(HttpMethod.PATCH, "/api/auth/password").permitAll();
                     requests.requestMatchers(HttpMethod.POST).authenticated();
                     requests.requestMatchers(HttpMethod.GET).authenticated();

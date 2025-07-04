@@ -127,4 +127,5 @@ public interface UserMapper {
 
     void checkOut(Long id);
 
+    UserDTO getUserByMe(Long id);
 }

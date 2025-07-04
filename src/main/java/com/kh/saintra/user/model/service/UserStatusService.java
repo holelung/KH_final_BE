@@ -1,5 +1,6 @@
 package com.kh.saintra.user.model.service;
 
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -30,6 +31,10 @@ public class UserStatusService {
     public void markOffline(String username) {
         statusMap.put(username, "OFFLINE");
         log.info("로그아웃: {}", statusMap);
+        broadcast();
+    }
+
+    public void getStatus() {
         broadcast();
     }
 

@@ -10,7 +10,9 @@ import com.kh.saintra.mail.model.dto.EmailDTO;
 import com.kh.saintra.mail.model.service.MailService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/emails")
 @RequiredArgsConstructor
@@ -26,7 +28,7 @@ public class MailController {
 
     @PostMapping("/verify")
     public ResponseEntity<ApiResponse<Void>> confirmEmailCode(@RequestBody @Valid EmailDTO email){
-
+        log.info("Email verification request: {}", email);
         return ResponseEntity.ok(mailService.confirmEmailVerification(email));
     }
 }

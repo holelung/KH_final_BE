@@ -7,16 +7,12 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import com.kh.saintra.auth.model.dao.AuthMapper;
-import com.kh.saintra.auth.model.dto.ChangePasswordDTO;
 import com.kh.saintra.auth.model.service.AuthService;
-import com.kh.saintra.auth.model.vo.CustomUserDetails;
 import com.kh.saintra.duplication.model.service.DuplicationCheckService;
 import com.kh.saintra.global.enums.ResponseCode;
 import com.kh.saintra.global.error.exceptions.DatabaseOperationException;
-import com.kh.saintra.global.error.exceptions.DuplicateDataException;
 import com.kh.saintra.global.error.exceptions.InvalidAccessException;
 import com.kh.saintra.global.response.ApiResponse;
-import com.kh.saintra.mail.model.dto.EmailDTO;
 import com.kh.saintra.user.model.dao.UserMapper;
 import com.kh.saintra.user.model.dto.Attendance;
 import com.kh.saintra.user.model.dto.AttendanceRequest;
@@ -50,8 +46,6 @@ public class UserServiceImpl implements UserService {
         duplicationService.isIdDuplicate(user.getUsername());
         // 이메일 중복검사
         duplicationService.isEmailDuplicate(user.getEmail());
-
-        //이메일 인증 
 
         User userValue = User.builder()
                 .username(user.getUsername())
@@ -135,15 +129,13 @@ public class UserServiceImpl implements UserService {
     public ApiResponse<Void> updateUser(UserProfileDTO userProfile) {
         
         userProfile.setId(authService.getUserDetails().getId());
-
         try {
             userMapper.updateUser(userProfile);
         } catch (Exception e) {
             e.printStackTrace();
             throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "회원 정보 업데이트 실패");
         }
-
-
+        
         return ApiResponse.success(ResponseCode.UPDATE_SUCCESS, "회원 정보 업데이트 성공");
     }
 
@@ -288,7 +280,7 @@ public class UserServiceImpl implements UserService {
             throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "근태 조회 실패");
         }
 
-        if(data.getType().equals("Attendance")){
+        if(data != null && data.getType().equals("Attendance")){
             throw new InvalidAccessException(ResponseCode.INVALID_ACCESS, "이미 출근했습니다.");
         }
         
@@ -341,6 +333,21 @@ public class UserServiceImpl implements UserService {
         }
 
         return user;
+    }
+
+
+    @Override
+    public ApiResponse<UserDTO> getUserByMe() {
+        Long id = authService.getUserDetails().getId();
+
+        try {
+            UserDTO user = userMapper.getUserByMe(id);
+            return ApiResponse.success(ResponseCode.GET_SUCCESS, user, "유저 정보 조회 성공");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "유저 정보 조회 실패");
+        }
+        
     }
 
 
