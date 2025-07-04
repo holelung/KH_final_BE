@@ -19,7 +19,7 @@ public class Message {
 
 	private String messageId;
 
-	private Long senderId;
+	private String senderId;
 
 	private String content;
 

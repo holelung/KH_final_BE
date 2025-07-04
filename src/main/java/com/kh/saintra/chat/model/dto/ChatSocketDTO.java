@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class ChatSocketDTO {
 
-	private String messageId;
+	private Long messageId;
 
 	private Long sender;
 

@@ -37,14 +37,10 @@
   <!-- 2. 메시지 등록 -->
   <insert id="sendChatMessage"
           parameterType="com.kh.saintra.chat.model.dto.MessageDTO">
-	INSERT INTO TB_TEAM_MESSAGE (
+	  INSERT INTO TB_TEAM_MESSAGE (
 	    MESSAGE_ID, TEAM_ID, SENDER_ID, CONTENT, SENT_DATE
 	  ) VALUES (
-	    #{messageId},
-	    #{teamId},
-	    #{senderId},
-	    #{content},
-	    SYSTIMESTAMP
+	    #{messageId}, #{teamId}, #{senderId}, #{content}, SYSTIMESTAMP
 	  )
   </insert>
 

@@ -8,11 +8,11 @@ import lombok.Setter;
 @Setter
 public class MessageDTO {
 
-	private Long teamId;
+	private String teamId;
 	
-    private Long messageId;
+    private String messageId;
     
-    private Long senderId;   
+    private String senderId;   
 
     private String senderName;    
     
