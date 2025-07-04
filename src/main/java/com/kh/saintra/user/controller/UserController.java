@@ -56,6 +56,13 @@ public class UserController {
 
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<UserDTO>> getUserByMe() {
+        
+        return ResponseEntity.ok(userService.getUserByMe());
+    }
+    
+
     // 사용자 목록 조회
     @GetMapping
     public ResponseEntity<ApiResponse<List<UserDTO>>> getUserList(@ModelAttribute UserSearchDTO search){
@@ -66,6 +73,7 @@ public class UserController {
     // 사용자 정보 변경
     @PutMapping("/mypage")
     public ResponseEntity<ApiResponse<Void>> updateUserProfile(@RequestBody @Valid UserProfileDTO userProfile){
+        System.out.println("User정보 업데이트 컨트롤러");
         return ResponseEntity.ok(userService.updateUser(userProfile));
     }
 
@@ -106,7 +114,7 @@ public class UserController {
 
     // 근태조회(유저)
     @GetMapping("/attendance")
-    public ResponseEntity<ApiResponse<List<Attendance>>> getAttendance(@RequestBody @Valid AttendanceRequest request){
+    public ResponseEntity<ApiResponse<List<Attendance>>> getAttendance(@ModelAttribute @Valid AttendanceRequest request){
     
         return ResponseEntity.ok(userService.getAttendance(request));
     }
@@ -120,14 +128,14 @@ public class UserController {
 
     // 출근
     @PostMapping("/attendance")
-    public ResponseEntity<ApiResponse<Void>> checkIn(@RequestBody @Valid AttendanceRequest request) {
+    public ResponseEntity<ApiResponse<Void>> checkIn() {
          
         return ResponseEntity.ok(userService.checkIn());
     }
 
     // 퇴근 
     @DeleteMapping("/attendance")
-    public ResponseEntity<ApiResponse<Void>> checkOut(@RequestBody @Valid AttendanceRequest request) {
+    public ResponseEntity<ApiResponse<Void>> checkOut() {
 
         return ResponseEntity.ok(userService.checkOut());
     }

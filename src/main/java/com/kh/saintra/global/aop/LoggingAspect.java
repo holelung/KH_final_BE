@@ -29,7 +29,8 @@ public class LoggingAspect {
     private final LogService logService;
     
     @Pointcut("execution(* com.kh.saintra..controller..*(..))"
-        + " && !within(com.kh.saintra..controller.UserStatusController)")
+        + " && !within(com.kh.saintra..controller.UserStatusController)"
+        + " && !within(com.kh.saintra..controller.MailController)")
     public void httpControllerMethods() {}
 
     @Around("httpControllerMethods()")
@@ -89,7 +90,7 @@ public class LoggingAspect {
                     .map(CustomUserDetails::getId)
                     .orElse(1L);
         } catch (Exception e) {
-            return null;
+            return 1L;
         }
     }
 }

@@ -48,6 +48,28 @@
         FROM
             TB_USER
     </sql>
+    <sql id="selectUserByMe">
+        <![CDATA[
+        SELECT
+            ID,
+            USERNAME,
+            PASSWORD,
+            REALNAME,
+            EMAIL,
+            C##SAINTRA.CRYPTO.DECRYPT_AES(PHONE) AS phone,
+            ENROLL_DATE enrollDate,
+            ROLE,
+            C##SAINTRA.CRYPTO.DECRYPT_AES(SSN) AS ssn,
+            ADDRESS_1 address1,
+            C##SAINTRA.CRYPTO.DECRYPT_AES(ADDRESS_2) AS address2,
+            JOB_ID jobId,
+            DEPT_ID deptId,
+            TEAM_ID teamId,
+            IS_ACTIVE isActive
+        FROM
+            TB_USER
+        ]]>
+    </sql>
 
     <select id="getUserByUsername"
             parameterType="string"
@@ -117,19 +139,32 @@
             ID DESC
     </select>
 
+    <!-- 회원 정보 조회(유저 본인) -->
+    <select id="getUserByMe"
+            parameterType="_long"
+            resultType="UserDTO">
+        <include refid="selectUserByMe" />
+        WHERE
+            ID = #{id}
+    </select>
+
     <!-- 회원 개인정보 업뎉이트 -->
     <update id="updateUser"
             parameterType="UserProfileDTO">
+        <![CDATA[
         UPDATE
             TB_USER
         SET
             REALNAME = #{realname},
-            PHONE = #{phone},
+            PHONE = C##SAINTRA.CRYPTO.ENCRYPT_AES(#{phone, jdbcType=VARCHAR}),
             ADDRESS_1 = #{address1},
-            ADDRESS_2 = #{address2}
+            ADDRESS_2 = C##SAINTRA.CRYPTO.ENCRYPT_AES(#{address2, jdbcType=VARCHAR})
         WHERE
             ID = #{id}
+        ]]>
     </update>
+
+
 
     <!-- 이메일 업데이트 -->
     <update id="updateEmail"
@@ -176,7 +211,7 @@
         FROM
             TB_ATTENDANCE
         WHERE
-            USER_ID = #{userId}
+            USER_ID = #{id}
         AND
             TIME &gt; #{startDate}
         AND

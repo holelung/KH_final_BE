@@ -2,9 +2,7 @@ package com.kh.saintra.user.model.service;
 
 import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
-import com.kh.saintra.auth.model.dto.ChangePasswordDTO;
 import com.kh.saintra.global.response.ApiResponse;
-import com.kh.saintra.mail.model.dto.EmailDTO;
 import com.kh.saintra.user.model.dto.Attendance;
 import com.kh.saintra.user.model.dto.AttendanceRequest;
 import com.kh.saintra.user.model.dto.UserDTO;
@@ -13,7 +11,7 @@ import com.kh.saintra.user.model.dto.UserProfileDTO;
 import com.kh.saintra.user.model.dto.UserSearchDTO;
 import com.kh.saintra.user.model.dto.UserCompanyInfoDTO;
 import com.kh.saintra.user.model.dto.UserUpdateEmailDTO;
-import com.kh.saintra.user.model.vo.User;
+
 
 public interface UserService {
     
@@ -47,6 +45,16 @@ public interface UserService {
      * @return UserDTO
      */
     ApiResponse<UserDTO> getUser();
+
+    /**
+     * <pre>
+     * 회원 정보 조회(유저 본인)
+     * 
+     * 유저가 자신의 정보를 조회하는 요청을 처리하는 메서드
+     * </pre>
+     * @return ApiResponse(ResponseCode code, <T> data, String message)
+     */
+    ApiResponse<UserDTO> getUserByMe();
 
     /**
      * <pre>

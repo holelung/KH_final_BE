@@ -117,9 +117,16 @@ public class AuthServiceImpl implements AuthService{
     @Transactional
     public ApiResponse<Void> findPassword(String username) {
         
-        UserDTO user = userMapper.getUserByUsername(username);
+        UserDTO user = null;
 
-        mailService.sendPasswordFindEmail(user.getId(), user.getEmail());
+        try {
+           user = userMapper.getUserByUsername(username);
+           mailService.sendPasswordFindEmail(user.getId(), user.getEmail());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "존재하지 않는 회원입니다.");
+        }
+
 
         return ApiResponse.success(ResponseCode.MAIL_SEND, "비밀번호 찾기 메일이 전송되었습니다.");
     }
@@ -140,7 +147,12 @@ public class AuthServiceImpl implements AuthService{
                 .password(passwordEncoder.encode(changePassword.getPassword()))
                 .build();
         
-        authMapper.changePassword(request);
+        try {
+            authMapper.changePassword(request);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "비밀번호 변경 실패");
+        }
 
         return ApiResponse.success(ResponseCode.UPDATE_SUCCESS, "비밀번호 변경 성공!");
         

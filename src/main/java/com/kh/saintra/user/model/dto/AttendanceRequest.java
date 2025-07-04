@@ -1,6 +1,5 @@
 package com.kh.saintra.user.model.dto;
 
-import java.sql.Date;
 import com.kh.saintra.global.annotation.StartBeforeEnd;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,7 +16,7 @@ import lombok.ToString;
 public class AttendanceRequest {
     
     private Long id;
-    private Date startDate;
-    private Date endDate; 
+    private String startDate;
+    private String endDate; 
     
 }
