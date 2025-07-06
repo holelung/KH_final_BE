@@ -3,8 +3,10 @@ package com.kh.saintra.comment.controller;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,7 +34,10 @@ public class CommentController {
 	private final CommentService commentService;
 	
 	@GetMapping
-	public ResponseEntity<?> getCommentList(@RequestBody @Valid CommentListDTO commentListInfo) {
+	@Transactional
+	public ResponseEntity<?> getCommentList(@ModelAttribute @Valid CommentListDTO commentListInfo) {
+		
+		log.info("commentListInfo: {}", commentListInfo);
 		
 		Map<String, Object> commentMap = commentService.getCommentList(commentListInfo);
 		
@@ -40,6 +45,7 @@ public class CommentController {
 	}
 	
 	@PostMapping
+	@Transactional
 	public ResponseEntity<?> insertComment(@RequestBody @Valid CommentInsertDTO commentInsertInfo) {
 		
 		commentService.insertComment(commentInsertInfo);
@@ -48,6 +54,7 @@ public class CommentController {
 	}
 	
 	@PutMapping
+	@Transactional
 	public ResponseEntity<?> updateComment(@RequestBody @Valid CommentUpdateDTO commentUpdateInfo) {
 		
 		commentService.updateComment(commentUpdateInfo);
@@ -56,6 +63,7 @@ public class CommentController {
 	}
 	
 	@DeleteMapping
+	@Transactional
 	public ResponseEntity<?> deleteComment(@RequestBody @Valid CommentDeleteDTO commentDeleteInfo) {
 		
 		commentService.deleteComment(commentDeleteInfo);

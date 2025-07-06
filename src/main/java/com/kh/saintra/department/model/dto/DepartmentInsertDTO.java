@@ -27,7 +27,4 @@ public class DepartmentInsertDTO {
 	@NotBlank
 	@Pattern(regexp = "^(Y|N)$", message = "허용되지 않은 권한 식별값 입니다.")
 	private String inspect;
-	
-	@NotBlank
-	private Long userId;
 }

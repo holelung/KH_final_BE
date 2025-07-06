@@ -3,8 +3,10 @@ package com.kh.saintra.board.model.dao;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.kh.saintra.board.model.dto.BoardDeleteDTO;
+import com.kh.saintra.board.model.dto.BoardDetailDTO;
 import com.kh.saintra.board.model.dto.BoardInsertDTO;
 import com.kh.saintra.board.model.dto.BoardListDTO;
 import com.kh.saintra.board.model.dto.BoardUpdateDTO;
@@ -19,15 +21,15 @@ public interface BoardMapper {
 	
 	List<BoardVO> selectBoardList(BoardListDTO boardListInfo);
 	
-	BoardVO selectBoardDetail(String type, Long boardId);
+	BoardVO selectBoardDetail(BoardDetailDTO boardDetailInfo);
 	
-	List<Long> selectBoardFiles(String type, Long boardId);
+	List<Long> selectBoardFiles(BoardDetailDTO boardDetailInfo);
 	
 	int insertBoard(BoardInsertDTO boardInsertInfo);
 	
 	Long selectLatestBoardIdByConditions(BoardInsertDTO boardInsertInfo);
 	
-	int insertBoardFiles(String type, Long boardId, List<Long> files);
+	int insertBoardFiles(@Param("type") String type, @Param("boardId") Long boardId, @Param("files") List<Long> files);
 	
 	int selectBoardCountByUserId(String type, Long boardId, Long userId);
 	

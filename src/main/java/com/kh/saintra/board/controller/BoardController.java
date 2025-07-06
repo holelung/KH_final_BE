@@ -50,15 +50,19 @@ public class BoardController {
 	}
 	
 	@PostMapping
+	@Transactional
 	public ResponseEntity<?> insertBoard(@RequestBody @Valid BoardInsertDTO boardInsertInfo) {
 		
-		boardService.insertBoard(boardInsertInfo);
+		Long boardId = boardService.insertBoard(boardInsertInfo);
 		
-		return ResponseEntity.ok(ApiResponse.success(ResponseCode.INSERT_SUCCESS, "게시물 등록 성공"));
+		return ResponseEntity.ok(ApiResponse.success(ResponseCode.INSERT_SUCCESS, boardId, "게시물 등록 성공"));
 	}
 	
 	@GetMapping("/detail")
+	@Transactional
 	public ResponseEntity<?> getBoardDetail(@ModelAttribute @Valid BoardDetailDTO boardDetailInfo) {
+		
+		log.info("boardDetailInfo: {}", boardDetailInfo);
 		
 		Map<String, Object> boardDetail = boardService.getBoardDetail(boardDetailInfo);
 		
@@ -66,6 +70,7 @@ public class BoardController {
 	}
 	
 	@PutMapping
+	@Transactional
 	public ResponseEntity<?> updateBoard(@RequestBody @Valid BoardUpdateDTO boardUpdateInfo) {
 		
 		boardService.updateBoard(boardUpdateInfo);
@@ -74,6 +79,7 @@ public class BoardController {
 	}
 	
 	@DeleteMapping
+	@Transactional
 	public ResponseEntity<?> deleteBoard(@RequestBody @Valid BoardDeleteDTO boardDeleteInfo) {
 		
 		boardService.deleteBoard(boardDeleteInfo);

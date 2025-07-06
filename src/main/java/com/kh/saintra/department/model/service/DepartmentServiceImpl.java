@@ -35,49 +35,19 @@ public class DepartmentServiceImpl implements DepartmentService {
 	private final DepartmentMapper departmentMapper;
 	
 	@Override
-	public Map<String, Object> getDepartmentList(DepartmentListDTO deptListInfo) {
+	public List<DepartmentVO> getDepartmentList() {
 
-		int page = Integer.parseInt(deptListInfo.getPage());
-		int totalDeptCount = departmentMapper.selectTotalDeptCount(deptListInfo);
-		int deptLimit = 10;
-		int buttonLimit = 10;
-		int maxPage = (int)Math.ceil((double) totalDeptCount / deptLimit);	
-		int startButton = (page - 1) / buttonLimit * buttonLimit + 1;
-		int endButton = startButton + buttonLimit - 1;
-		int offset = (page - 1) * deptLimit;
+		List<DepartmentVO> departmentList = departmentMapper.selectDepartmentList();
 		
-		deptListInfo.setLimit(deptLimit);
-		deptListInfo.setOffset(offset);
-		
-		List<DepartmentVO> departmentList = departmentMapper.selectDepartmentList(deptListInfo);
-		
-		Map<String, Object> departmentMap = new HashMap<String, Object>();
-		
-		departmentMap.put("departmentList", departmentList);
-		departmentMap.put("totalDeptCount", totalDeptCount);
-		departmentMap.put("page", page);
-		departmentMap.put("deptLimit", deptLimit);
-		departmentMap.put("buttonLimit", buttonLimit);
-		departmentMap.put("maxPage", maxPage);
-		departmentMap.put("startButton", startButton);
-		departmentMap.put("endButton", endButton);
-		
-		return departmentMap;
+		return departmentList;
 	}
 
 	@Override
 	public void insertDepartment(DepartmentInsertDTO deptInsertInfo) {
 		
 		// 토큰에서 가져온 사용자 정보와 요청 데이터의 사용자 정보 비교
-		CustomUserDetails userInfo = authService.getUserDetails();
-		
-		Long tokenUserId = userInfo.getId();
-		Long clientUserId = deptInsertInfo.getUserId();
-		
-		if(!tokenUserId.equals(clientUserId)) {
-			
-			throw new InvalidAccessException(ResponseCode.AUTH_FAIL, "권한이 없거나 잘못된 요청 입니다.");
-		}
+
+		log.info("departmentInsertInfo2: {}", deptInsertInfo);
 		
 		// 이미 존재하는 부서와 이름이 중복되는지 확인
 		String deptName = deptInsertInfo.getDepartmentName();
@@ -114,6 +84,8 @@ public class DepartmentServiceImpl implements DepartmentService {
 			}
 		}
 		
+		log.info("departmentInsertInfo3: {}", deptInsertInfo);
+		
 		// 부서 정보 삽입
 		if(departmentMapper.insertDepartment(deptInsertInfo) != 1) {
 			
@@ -122,19 +94,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 	}
 
 	@Override
-	public DepartmentPageVO getDepartmentPage(String deptId) {
-		
-		// 부서 고유번호 데이터가 유효한지 확인
-		Long id = (long)0;
-		
-		try {
-			
-			id = Long.parseLong(deptId);
-			
-		} catch (RuntimeException e) {
-			
-			throw new InvalidValueException(ResponseCode.INVALID_VALUE, "잘못된 요청 데이터 입니다.");
-		}
+	public DepartmentPageVO getDepartmentPage(Long deptId) {
 		
 		// 토큰의 정보를 통해 해당 부서에 소속된 사용자인지 확인
 		if(!(deptId.equals(authService.getUserDetails().getDeptId()))) {
@@ -149,32 +109,12 @@ public class DepartmentServiceImpl implements DepartmentService {
 	}
 
 	@Override
-	public void updateDepartment(String deptId, DepartmentUpdateDTO deptUpdateInfo) {
+	public void updateDepartment(Long deptId, DepartmentUpdateDTO deptUpdateInfo) {
 		
 		// 토큰에서 가져온 사용자 정보와 요청 데이터의 사용자 정보 비교
 		CustomUserDetails userInfo = authService.getUserDetails();
 		
-		Long tokenUserId = userInfo.getId();
-		Long clientUserId = deptUpdateInfo.getUserId();
-		
-		if(!tokenUserId.equals(clientUserId)) {
-			
-			throw new InvalidAccessException(ResponseCode.AUTH_FAIL, "권한이 없거나 잘못된 요청 입니다.");
-		}
-		
-		// 해당 부서 정보 가져오기(유효한 부서인지 확인)
-		Long id = (long)0;
-		
-		try {
-			
-			id = Long.parseLong(deptId);
-			
-		} catch (RuntimeException e) {
-			
-			throw new InvalidValueException(ResponseCode.INVALID_VALUE, "잘못된 요청 데이터 입니다.");
-		}
-		
-		DepartmentVO deptToUpdate = departmentMapper.selectDepartmentById(id);
+		DepartmentVO deptToUpdate = departmentMapper.selectDepartmentById(deptId);
 		
 		if(deptToUpdate == null) {
 			
@@ -199,7 +139,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 		}
 		
 		// 부서 이름 수정
-		if(departmentMapper.updateDepartment(id, deptUpdateInfo.getDepartmentName()) != 1) {
+		if(departmentMapper.updateDepartment(deptId, deptUpdateInfo.getDepartmentName()) != 1) {
 			
 			throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "부서 이름 수정에 실패 했습니다.");
 		}
@@ -223,7 +163,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 				}
 			}
 			
-			if(departmentMapper.updatePersonnel(id, personnel) != 1) {
+			if(departmentMapper.updatePersonnel(deptId, personnel) != 1) {
 				
 				throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "인사 권한 수정에 실패 했습니다.");
 			}
@@ -239,40 +179,28 @@ public class DepartmentServiceImpl implements DepartmentService {
 				}
 			}
 			
-			if(departmentMapper.updateInspect(id, inspect) != 1) {
+			if(departmentMapper.updateInspect(deptId, inspect) != 1) {
 				
 				throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "감사 권한 수정에 실패 했습니다.");
 			}
 		}
 	}
+	
+	@Override
+	public void enableDepartment(Long deptId) {
+		
+		if(departmentMapper.enableDepartment(deptId) != 1) {
+			
+			throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "부서 활성화에 실패 했습니다.");
+		}
+	}
 
 	@Override
-	public void deleteDepartment(String deptId, DepartmentDeleteDTO deptDeleteInfo) {
+	public void deleteDepartment(Long deptId, DepartmentDeleteDTO deptDeleteInfo) {
 		
-		// 토큰에서 가져온 사용자 정보와 요청 데이터의 사용자 정보 비교
 		CustomUserDetails userInfo = authService.getUserDetails();
 		
-		Long tokenUserId = userInfo.getId();
-		Long clientUserId = deptDeleteInfo.getUserId();
-		
-		if(!tokenUserId.equals(clientUserId)) {
-			
-			throw new InvalidAccessException(ResponseCode.AUTH_FAIL, "권한이 없거나 잘못된 요청 입니다.");
-		}
-		
-		// 해당 부서 정보 가져오기(유효한 부서인지 확인)
-		Long id = (long)0;
-		
-		try {
-			
-			id = Long.parseLong(deptId);
-			
-		} catch (RuntimeException e) {
-			
-			throw new InvalidValueException(ResponseCode.INVALID_VALUE, "잘못된 요청 데이터 입니다.");
-		}
-		
-		DepartmentVO deptToUpdate = departmentMapper.selectDepartmentById(id);
+		DepartmentVO deptToUpdate = departmentMapper.selectDepartmentById(deptId);
 		
 		if(deptToUpdate == null) {
 			
@@ -280,7 +208,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 		}
 		
 		// 사용자가 해당 부서 소속이며 일정 직급 이상인지 확인
-		if(!(userInfo.getDeptId()).equals(deptId)) {
+		if(!(userInfo.getDeptId()).equals(Long.toString(deptId))) {
 			
 			throw new InvalidAccessException(ResponseCode.AUTH_FAIL, "해당 부서 소속이 아닙니다.");
 		}
@@ -291,7 +219,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 		}
 		
 		// 부서 삭제
-		if(departmentMapper.deleteDepartment(id) != 1) {
+		if(departmentMapper.deleteDepartment(deptId) != 1) {
 			
 			throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "부서 삭제에 실패 했습니다.");
 		}

@@ -14,7 +14,7 @@ public interface BoardService {
 	
 	Map<String, Object> getBoards(BoardListDTO boardListInfo);
 	
-	void insertBoard(BoardInsertDTO boardInsertInfo);
+	Long insertBoard(BoardInsertDTO boardInsertInfo);
 	
 	Map<String, Object> getBoardDetail(BoardDetailDTO boardDetailInfo);
 	

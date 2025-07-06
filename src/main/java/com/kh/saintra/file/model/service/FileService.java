@@ -6,11 +6,11 @@ import com.kh.saintra.file.model.vo.FileVO;
 
 public interface FileService {
 
-	FileVO uploadFileforProfile(MultipartFile file);
+	void uploadFileforProfile(MultipartFile file);
 	
 	FileVO uploadFileforBoard(MultipartFile file);
 	
 	void deleteFileforProfile(String fileId);
 	
-	void deleteFileforBoard(String fileId);
+	void deleteFileforBoard(Long fileId);
 }

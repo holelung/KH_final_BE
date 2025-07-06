@@ -1,13 +1,18 @@
 package com.kh.saintra.file.model.service;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.kh.saintra.auth.model.service.AuthService;
 import com.kh.saintra.file.model.dao.FileMapper;
 import com.kh.saintra.file.model.dto.FileDTO;
 import com.kh.saintra.file.model.vo.FileVO;
@@ -37,6 +42,16 @@ public class FileServiceImpl implements FileService {
 	);
 	
 	private final FileMapper fileMapper;
+	private final AuthService authService;
+	private final AmazonS3Client amazonS3Client;
+	
+	@Value("${cloud.aws.s3.bucket}")
+	private String bucket;
+	
+	@Value("${cloud.aws.region.static}")
+	private String region;
+	
+	
 	
 	/**
 	 * 파일이 빈 파일인지 검사
@@ -106,20 +121,12 @@ public class FileServiceImpl implements FileService {
 		return filename;
 	}
 	
-	/**
-	 * 파일 정보 DB에 저장
-	 * @param fileInfo 파일 정보
-	 */
-	private void insertFileInfo(FileDTO fileInfo) {
-		
-		if(fileMapper.insertFileInfo(fileInfo) != 1) {
-			
-			throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "데이터베이스 오류 입니다.");
-		}
-	}
-	
 	@Override
-	public FileVO uploadFileforProfile(MultipartFile file) {
+	public void uploadFileforProfile(MultipartFile file) {
+		
+		// 사용자 정보 추출
+		Long userId = authService.getUserDetails().getId();
+		
 		// 빈 파일인지 검사
 		checkFileisEmpty(file);
 		
@@ -135,18 +142,39 @@ public class FileServiceImpl implements FileService {
 		// 서버에 저장할 고유한 파일 이름 생성
 		String filename = createFilename(extension);
 		
-		// 파일 버킷에 업로드(나중에 작업)
-		
+		// 파일 버킷에 업로드
+        String fileUrl = "https://" + bucket + ".s3." + region + ".amazonaws.com/" + filename;
+        
+        log.info("fileUrl: {}", fileUrl);
+        
+        ObjectMetadata metadata= new ObjectMetadata();
+        metadata.setContentType(file.getContentType());
+        metadata.setContentLength(file.getSize());
+        
+        try {
+        	
+        	amazonS3Client.putObject(bucket, filename, file.getInputStream(), metadata);
+        	
+		} catch (IOException e) {
+			
+			throw new FileStreamException(ResponseCode.SERVER_ERROR, "첨부 파일 업로드 실패");
+	    }
+        
 		// 파일 정보 DB에 저장
-		FileDTO fileInfo = new FileDTO(filename, origin);
-		insertFileInfo(fileInfo);
-		
-		// 유니크한 파일 번호가 포함된 파일 정보 가져와서 반환
-		return fileMapper.selectFileInfo(fileInfo);
+        FileDTO fileInfo = new FileDTO(userId, filename, origin, fileUrl);
+        
+		if(fileMapper.insertProfileInfo(fileInfo) != 1) {
+			
+			throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "데이터베이스 오류 입니다.");
+		}
 	}
 	
 	@Override
 	public FileVO uploadFileforBoard(MultipartFile file) {
+		
+//		// 사용자 정보 추출
+//		Long userId = authService.getUserDetails().getId();
+
 		// 빈 파일인지 검사
 		checkFileisEmpty(file);
 		
@@ -159,11 +187,29 @@ public class FileServiceImpl implements FileService {
 		// 서버에 저장할 고유한 파일 이름 생성
 		String filename = createFilename(extension);
 		
-		// 파일 버킷에 업로드(나중에 작업)
-		
+		// 파일 버킷에 업로드
+        String fileUrl = "https://" + bucket + ".s3." + region + ".amazonaws.com/" + filename;
+        
+        ObjectMetadata metadata= new ObjectMetadata();
+        metadata.setContentType(file.getContentType());
+        metadata.setContentLength(file.getSize());
+        
+        try {
+        	
+        	amazonS3Client.putObject(bucket, filename, file.getInputStream(), metadata);
+        	
+		} catch (IOException e) {
+			
+			throw new FileStreamException(ResponseCode.SERVER_ERROR, "첨부 파일 업로드 실패");
+	    }
+        
 		// 파일 정보 DB에 저장
-		FileDTO fileInfo = new FileDTO(filename, origin);
-		insertFileInfo(fileInfo);
+        FileDTO fileInfo = new FileDTO(13L, filename, origin, fileUrl);
+        
+		if(fileMapper.insertFileInfo(fileInfo) != 1) {
+			
+			throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "데이터베이스 오류 입니다.");
+		}
 		
 		// 유니크한 파일 번호가 포함된 파일 정보 가져와서 반환
 		return fileMapper.selectFileInfo(fileInfo);
@@ -200,31 +246,25 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public void deleteFileforBoard(String fileId) {
-		// fileId를 Long 자료형으로 파싱
-		Long id = (long)0;
-		
-		try {
-			id = Long.parseLong(fileId);
-			
-		} catch (RuntimeException e) {
-			
-			throw new InvalidValueException(ResponseCode.INVALID_VALUE, "잘못된 파일 ID 입니다.");
-		}
+	public void deleteFileforBoard(Long fileId) {
 		
 		// DB에 저장된 파일 정보 가져오기
-		FileVO fileInfo = fileMapper.selectFileInfoById(id);
+		FileVO fileInfo = fileMapper.selectFileInfoById(fileId);
+		
+		// 버킷에 저장한 파일 삭제 생성
+        try {
+        	
+        	amazonS3Client.deleteObject(bucket, fileInfo.getFilename());
+        	
+		} catch (RuntimeException e) {
+			
+			throw new FileStreamException(ResponseCode.SERVER_ERROR, "첨부 파일 업로드 실패");
+	    }
 		
 		// DB에 저장된 파일 정보 삭제
-		if(fileMapper.deleteFileInfo(id) != 1) {
+		if(fileMapper.deleteFileInfo(fileId) != 1) {
 			
 			throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "파일 삭제에 실패 했습니다.");
 		}
-		
-		// 버킷에 저장한 파일 url 생성(나중에 작업)
-		// String filename = fileInfo.getFilename();
-		
-		// 버킷에 업로드된 파일 삭제(나중에 작업)
-		
 	}
 }

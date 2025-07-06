@@ -28,12 +28,16 @@ public class LoggingAspect {
     
     private final LogService logService;
     
-    @Pointcut("execution(* com.kh.saintra..controller..*(..))"
+    @Pointcut("!execution(* com.kh.saintra..controller..*(..))"
         + " && !within(com.kh.saintra..controller.UserStatusController)"
         + " && !within(com.kh.saintra..controller.MailController)"
         + " && !execution(* com.kh.saintra..controller.UserController.join(..))"
         + " && !execution(* com.kh.saintra..controller.AuthController.findPassword(..))"
-        + " && !execution(* com.kh.saintra..controller.AuthController.changePassword(..))")
+        + " && !execution(* com.kh.saintra..controller.AuthController.changePassword(..))"
+        + " && !within(* com.kh.saintra..controller.BoardController)"
+        + " && !within(* com.kh.saintra..controller.CommentController)"
+        + " && !within(* com.kh.saintra..controller.DepartmentController)"
+        + " && !within(* com.kh.saintra..controller.FileController)")
     public void httpControllerMethods() {}
 
     @Around("httpControllerMethods()")

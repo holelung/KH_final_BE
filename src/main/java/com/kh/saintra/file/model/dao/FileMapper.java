@@ -8,6 +8,8 @@ import com.kh.saintra.file.model.vo.FileVO;
 @Mapper
 public interface FileMapper {
 
+	int insertProfileInfo(FileDTO fileInfo);
+	
 	int insertFileInfo(FileDTO fileInfo);
 	
 	FileVO selectFileInfo(FileDTO fileInfo);

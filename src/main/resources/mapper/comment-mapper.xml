@@ -3,18 +3,19 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.saintra.comment.model.dao.CommentMapper">
 
-	<select id="selectTotalCommentCount">
+	<select id="selectTotalCommentCount"
+			parameterType="com.kh.saintra.comment.model.dto.CommentListDTO">
 		SELECT
 			COUNT(*)
 		FROM
 		<choose>
-			<when test="type = bulletin">
+			<when test="type == 'bulletin'">
 				TB_COMMENT_BULLETIN
 			</when>
-			<when test="type = free">
+			<when test="type == 'free'">
 				TB_COMMENT_FREE
 			</when>
-			<when test="type = anonymous">
+			<when test="type == 'anonymous'">
 				TB_COMMENT_ANONYMOUS
 			</when>
 			<otherwise>
@@ -23,10 +24,8 @@
 		</choose>
 		WHERE
 			IS_ACTIVE = 'Y'
-		<if test="type != bulletin and type != free and type != anonymous">
-			AND
-				DEPT_ID = #{type}
-		</if>
+		AND
+			BOARD_ID = #{boardId}
 	</select>
 	
 	<select id="selectCommentList"
@@ -41,17 +40,17 @@
 			C.CREATE_DATE createDate
 		FROM
 		<choose>
-			<when test="type = bulletin">
+			<when test="type == 'bulletin'">
 				TB_COMMENT_BULLETIN C
 			JOIN
 				TB_BOARD_BULLETIN B ON (B.ID = C.BOARD_ID)
 			</when>
-			<when test="type = free">
+			<when test="type == 'free'">
 				TB_COMMENT_FREE C
 			JOIN
 				TB_BOARD_FREE B ON (B.ID = C.BOARD_ID)
 			</when>
-			<when test="type = anonymous">
+			<when test="type == 'anonymous'">
 				TB_COMMENT_ANONYMOUS C
 			JOIN
 				TB_BOARD_ANONYMOUS B ON (B.ID = C.BOARD_ID)
@@ -79,13 +78,13 @@
 			parameterType="com.kh.saintra.comment.model.dto.CommentInsertDTO">
 		INSERT INTO
 		<choose>
-			<when test="type = bulletin">
+			<when test="type == 'bulletin'">
 				TB_COMMENT_BULLETIN
 			</when>
-			<when test="type = free">
+			<when test="type == 'free'">
 				TB_COMMENT_FREE
 			</when>
-			<when test="type = anonymous">
+			<when test="type == 'anonymous'">
 				TB_COMMENT_ANONYMOUS
 			</when>
 			<otherwise>
@@ -113,13 +112,13 @@
 			parameterType="com.kh.saintra.comment.model.dto.CommentUpdateDTO">
 		UPDATE
 		<choose>
-			<when test="type = bulletin">
+			<when test="type == 'bulletin'">
 				TB_COMMENT_BULLETIN
 			</when>
-			<when test="type = free">
+			<when test="type == 'free'">
 				TB_COMMENT_FREE
 			</when>
-			<when test="type = anonymous">
+			<when test="type == 'anonymous'">
 				TB_COMMENT_ANONYMOUS
 			</when>
 			<otherwise>
@@ -142,13 +141,13 @@
 			parameterType="com.kh.saintra.comment.model.dto.CommentDeleteDTO">
 		UPDATE
 		<choose>
-			<when test="type = bulletin">
+			<when test="type == 'bulletin'">
 				TB_COMMENT_BULLETIN
 			</when>
-			<when test="type = free">
+			<when test="type == 'free'">
 				TB_COMMENT_FREE
 			</when>
-			<when test="type = anonymous">
+			<when test="type == 'anonymous'">
 				TB_COMMENT_ANONYMOUS
 			</when>
 			<otherwise>

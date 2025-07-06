@@ -12,6 +12,8 @@ import lombok.Value;
 public class FileVO {
 
 	Long fileId;
+	Long userId;
 	String filename;
 	String origin;
+	String url;
 }

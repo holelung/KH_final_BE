@@ -9,31 +9,51 @@
 		FROM
 			TB_DEPARTMENT
 	</select>
+	
+	<resultMap id="DeptUserResultMap" type="com.kh.saintra.department.model.vo.DepartmentVO">
+    	<id     column="ID"         property="id"/>
+    	<result column="DEPT_NAME"  property="deptName"/>
+    	<result column="PERSONNEL"  property="personnel"/>
+    	<result column="INSPECT"    property="inspect"/>
+    	<result column="IS_ACTIVE" 	property="isActive"	/>
+    	<result column="USERNAME"   property="username"/>
+    	<result column="REALNAME"   property="realname"/>
+  	</resultMap>
 
 	<select id="selectDepartmentList"
-			parameterType="com.kh.saintra.department.model.dto.DepartmentListDTO"
-			resultType="com.kh.saintra.department.model.vo.DepartmentVO">
+			resultMap="DeptUserResultMap">
 		SELECT
-			ID id,
-			DEPT_NAME deptName,
-			PERSONNEL personnel,
-			INSPECT inspect,
-			IS_ACTIVE isActive
-		FROM
-			TB_DEPARTMENT
-		<if test="condition != null and keyword != null">
-			<choose>
-				<when test="condition = deptname">
-					WHERE
-						DEPT_NAME LIKE '%'||#{keyword}||'%'
-				</when>
-				<otherwise>
-				</otherwise>
-			</choose>
-		</if>
-		ORDER BY
-			ID DESC
-		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+      		d.ID,
+      		d.DEPT_NAME,
+      		d.PERSONNEL,
+      		d.INSPECT,
+      		d.IS_ACTIVE,
+      		MAX(u.USERNAME) KEEP 
+      		(
+        		DENSE_RANK 
+        			FIRST
+        		ORDER BY 
+        			u.JOB_ID DESC
+      		) AS USERNAME,
+      		MAX(u.REALNAME) KEEP 
+      		(
+        		DENSE_RANK 
+        			FIRST
+        		ORDER BY 
+        			u.JOB_ID DESC
+      		) AS REALNAME
+    	FROM 
+    		TB_DEPARTMENT d
+    	LEFT JOIN 
+    		TB_USER u ON d.ID = u.DEPT_ID
+    	GROUP BY
+     		d.ID,
+      		d.DEPT_NAME,
+      		d.PERSONNEL,
+      		d.INSPECT,
+      		d.IS_ACTIVE
+    	ORDER BY 
+    		d.ID ASC
 	</select>
 	
 	<select id="selectDepartmentNameList">
@@ -73,24 +93,10 @@
 			)
 		VALUES
 			(
-				#{departmentName}
-		<choose>
-			<when test="personnel == 'Y'">
-				, 'Y'
-				, 'N'
-				, DEFAULT
-			</when>
-			<when test="inspect == 'Y'">
-				, 'N'
-				, 'Y'
-				, DEFAULT
-			</when>
-			<otherwise>
-				, DEFAULT
-				, DEFAULT
-				, DEFAULT
-			</otherwise>
-		</choose>
+				#{departmentName},
+				DEFAULT,
+				DEFAULT,
+				DEFAULT
 			)
 	</insert>
 	
@@ -141,6 +147,15 @@
 			ID = #{deptId}
 		AND
 			IS_ACTIVE = 'Y'
+	</update>
+	
+	<update id="enableDepartment">
+		UPDATE
+			TB_DEPARTMENT
+		SET
+			IS_ACTIVE = 'Y'
+		WHERE
+			ID = #{deptId}
 	</update>
 	
 	<update id="deleteDepartment">

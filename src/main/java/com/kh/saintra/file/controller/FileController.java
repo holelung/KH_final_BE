@@ -1,6 +1,7 @@
 package com.kh.saintra.file.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,11 +31,12 @@ public class FileController {
 	 * @return DB에 저장된 파일 정보
 	 */
 	@PostMapping("/users")
+	@Transactional
 	public ResponseEntity<?> uploadFileforProfile(@RequestParam(name = "file") MultipartFile file) {
 		
-		FileVO fileInfo = fileService.uploadFileforProfile(file);
+		fileService.uploadFileforProfile(file);
 		
-		return ResponseEntity.ok(ApiResponse.success(ResponseCode.INSERT_SUCCESS, fileInfo, "프로필 사진 업로드 성공"));
+		return ResponseEntity.ok(ApiResponse.success(ResponseCode.INSERT_SUCCESS, "프로필 사진 업로드 성공"));
 	}
 
 	/**
@@ -69,7 +71,7 @@ public class FileController {
 	 * @return
 	 */
 	@DeleteMapping("/boards")
-	public ResponseEntity<?> deleteFileforBoard(@RequestParam(name = "fileId") String fileId) {
+	public ResponseEntity<?> deleteFileforBoard(@RequestParam(name = "fileId") Long fileId) {
 		
 		fileService.deleteFileforBoard(fileId);
 		
