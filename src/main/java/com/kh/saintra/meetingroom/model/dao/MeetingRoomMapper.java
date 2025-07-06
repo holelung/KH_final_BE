@@ -52,4 +52,8 @@ public interface MeetingRoomMapper {
 
     // 4. 회의실 예약 삭제 
     int deleteReservation (Long reservatioinId);
+    
+    // 5. 회의실 목록 조회
+    List<MeetingRoomResponseDTO> selectAllRooms();
+
 }

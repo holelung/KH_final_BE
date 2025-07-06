@@ -111,6 +111,13 @@ public class MeetingRoomController {
     	return ResponseEntity.ok(
     			ApiResponse.success(ResponseCode.DELETE_SUCCESS, deletedId, "삭제 완료되었습니다."));
     }
-    
 
+	/**
+	 * 회의실 목록 조회 
+	 */
+	@GetMapping("/list")
+	public ResponseEntity<ApiResponse<List<MeetingRoomResponseDTO>>> getRoomList() {
+	    List<MeetingRoomResponseDTO> rooms = meetingRoomService.getAllRooms();
+	    return ResponseEntity.ok(ApiResponse.success(ResponseCode.GET_SUCCESS, rooms, "회의실 목록 조회 성공"));
+	}
 }

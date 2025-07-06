@@ -179,4 +179,16 @@
         WHERE ID = #{reservationId}
     </update>
 
+
+    <!-- 5. 회의실 목록 조회  -->
+	<select id="selectAllRooms" resultType="com.kh.saintra.meetingroom.model.dto.MeetingRoomResponseDTO">
+    SELECT 
+        ID AS roomId,
+        ROOM_NAME AS roomName,
+        ROOM_LOCATION AS roomLocation,
+        CAPACITY AS capacity
+    FROM 
+        TB_MEETING_ROOM
+	</select>
+
 </mapper>

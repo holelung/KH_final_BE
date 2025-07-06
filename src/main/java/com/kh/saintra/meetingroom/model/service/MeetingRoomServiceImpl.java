@@ -221,4 +221,15 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 
         return reservation;
     }
+    
+    // 회의실 목록 조회 
+    @Override
+    public List<MeetingRoomResponseDTO> getAllRooms() {
+        try {
+            return meetingRoomMapper.selectAllRooms();
+        } catch (Exception e) {
+        	log.error("❌ 회의실 목록 조회 중 오류 발생", e);
+            throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "회의실 목록 조회에 실패했습니다.");
+        }
+    }
 }
