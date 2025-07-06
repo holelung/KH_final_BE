@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.saintra.board.model.dao.BoardMapper">
+
+	<select id="selectDepartmentCountById" 
+			parameterType="_int" 
+			resultType="_int">
+		SELECT
+			COUNT(*)
+		FROM
+			TB_DEPARTMENT
+		WHERE
+			ID = #{id}
+		AND
+			IS_ACTIVE = 'Y'
+	</select>
+	
+	<select id="selectTotalBoardCount"
+			parameterType="com.kh.saintra.board.model.dto.BoardListDTO"
+			resultType="_int">
+		SELECT
+			COUNT(*)
+		FROM
+		<choose>
+			<when test="type == 'bulletin'">
+				TB_BOARD_BULLETIN
+			</when>
+			<when test="type == 'free'">
+				TB_BOARD_FREE
+			</when>
+			<when test="type == 'anonymous'">
+				TB_BOARD_ANONYMOUS
+			</when>
+			<otherwise>
+				TB_BOARD_DEPARTMENT
+			</otherwise>
+		</choose>
+		WHERE
+			IS_ACTIVE = 'Y'
+		<if test="type != 'bulletin' and type != 'free' and type != 'anonymous'">
+			AND
+				DEPT_ID = #{type}
+		</if>
+		<if test="condition != null and keyword != null">
+			AND
+			<choose>
+				<when test="condition == 'title'">
+					TITLE LIKE '%'||#{keyword}||'%'
+				</when>
+				<when test="condition == 'content'">
+					CONTENT LIKE '%'||#{keyword}||'%'
+				</when>
+				<when test="condition == 'writer'">
+					USER_ID = (
+						SELECT
+							ID
+						FROM
+							TB_USER
+						WHERE
+							IS_ACTIVE = 'Y'
+						AND
+							REALNAME = #{keyword}
+					)
+				</when>
+			</choose>
+		</if>
+	</select>
+	
+	<select id="selectBoardList"
+			parameterType="com.kh.saintra.board.model.dto.BoardListDTO"
+			resultType="com.kh.saintra.board.model.vo.BoardVO">
+		SELECT
+			B.ID id,
+			U.USERNAME username,
+			U.REALNAME realname,
+			B.TITLE title,
+			B.CONTENT content,
+			B.CREATE_DATE createDate
+		FROM
+		<choose>
+			<when test="type == 'bulletin'">
+				TB_BOARD_BULLETIN B
+			</when>
+			<when test="type == 'free'">
+				TB_BOARD_FREE B
+			</when>
+			<when test="type == 'anonymous'">
+				TB_BOARD_ANONYMOUS B
+			</when>
+			<otherwise>
+				TB_BOARD_DEPARTMENT B
+			</otherwise>
+		</choose>
+		JOIN
+			TB_USER U ON (U.ID = B.USER_ID)
+		WHERE
+			B.IS_ACTIVE = 'Y'
+		<if test="type != 'bulletin' and type != 'free' and type != 'anonymous'">
+			AND
+				B.DEPT_ID = #{type}
+		</if>
+		<if test="condition != null and keyword != null">
+			AND
+			<choose>
+				<when test="condition == 'title'">
+					B.TITLE LIKE '%'||#{keyword}||'%'
+				</when>
+				<when test="condition == 'content'">
+					B.CONTENT LIKE '%'||#{keyword}||'%'
+				</when>
+				<when test="condition == 'writer'">
+					B.USER_ID = (
+						SELECT
+							ID
+						FROM
+							TB_USER
+						WHERE
+							IS_ACTIVE = 'Y'
+						AND
+							REALNAME LIKE '%'||#{keyword}||'%'
+					)
+				</when>
+			</choose>
+		</if>
+		ORDER BY
+			B.ID DESC
+		OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+	
+	<select id="selectBoardDetail"
+			parameterType="com.kh.saintra.board.model.dto.BoardDetailDTO"
+			resultType="com.kh.saintra.board.model.vo.BoardVO">
+		SELECT
+			B.ID id,
+			U.USERNAME username,
+			U.REALNAME realname,
+			B.TITLE title,
+			B.CONTENT content,
+			B.CREATE_DATE createDate
+		FROM
+		<choose>
+			<when test="type = bulletin">
+				TB_BOARD_BULLETIN B
+			</when>
+			<when test="type = free">
+				TB_BOARD_FREE B
+			</when>
+			<when test="type = anonymous">
+				TB_BOARD_ANONYMOUS B
+			</when>
+			<otherwise>
+				TB_BOARD_DEPARTMENT B
+			</otherwise>
+		</choose>
+		JOIN
+			TB_USER U ON (U.ID = B.USER_ID)
+		WHERE
+			B.IS_ACTIVE = 'Y'
+		AND
+			B.ID = #{boardId}
+	</select>
+	
+	<select id="selectBoardFiles">
+		SELECT
+			FILE_ID
+		FROM
+		<choose>
+			<when test="type = bulletin">
+				TB_FILE_BULLETIN
+			</when>
+			<when test="type = free">
+				TB_FILE_FREE
+			</when>
+			<when test="type = anonymous">
+				TB_FILE_ANONYMOUS
+			</when>
+			<otherwise>
+				TB_FILE_DEPARTMENT
+			</otherwise>
+		</choose>
+		WHERE
+			BOARD_ID = #{boardId}
+		ORDER BY
+			CREATE_DATE ASC
+	</select>
+	
+	<insert id="insertBoard"
+			parameterType="com.kh.saintra.board.model.dto.BoardInsertDTO">
+		INSERT INTO
+		<choose>
+			<when test="type = bulletin">
+				TB_BOARD_BULLETIN
+			</when>
+			<when test="type = free">
+				TB_BOARD_FREE
+			</when>
+			<when test="type = anonymous">
+				TB_BOARD_ANONYMOUS
+			</when>
+			<otherwise>
+				TB_BOARD_DEPARTMENT
+			</otherwise>
+		</choose>
+			(
+				USER_ID,
+				TITLE,
+				CONTENT,
+				CREATE_DATE,
+				IS_ACTIVE
+			)
+		VALUES
+			(
+				#{userId},
+				#{title},
+				#{content},
+				DEFAULT,
+				DEFAULT
+			)
+	</insert>
+	
+	<select id="selectLatestBoardIdByConditions"
+			parameterType="com.kh.saintra.board.model.dto.BoardInsertDTO"
+			resultType="long">
+		SELECT
+			ID
+		FROM
+			(
+				SELECT *
+				FROM
+				<choose>
+					<when test="type = bulletin">
+						TB_BOARD_BULLETIN
+					</when>
+					<when test="type = free">
+						TB_BOARD_FREE
+					</when>
+					<when test="type = anonymous">
+						TB_BOARD_ANONYMOUS
+					</when>
+					<otherwise>
+						TB_BOARD_DEPARTMENT
+					</otherwise>
+				</choose>
+				WHERE
+					TITLE = #{title}
+				AND
+					USER_ID = #{userId}
+				ORDER BY
+					ID DESC
+			)
+		WHERE
+			ROWNUM = 1
+	</select>
+	
+	<insert id="insertBoardFiles">
+		INSERT INTO
+		<choose>
+			<when test="type = bulletin">
+				TB_FILE_BULLETIN
+			</when>
+			<when test="type = free">
+				TB_FILE_FREE
+			</when>
+			<when test="type = anonymous">
+				TB_FILE_ANONYMOUS
+			</when>
+			<otherwise>
+				TB_FILE_DEPARTMENT
+			</otherwise>
+		</choose>
+			(
+				FILE_ID,
+				BOARD_ID,
+				CREATE_DATE
+			)
+		VALUES
+		<foreach collection="list" item="file" nullable="false">
+			(
+				#{file},
+				#{boardId},
+				DEFAULT
+			)
+		</foreach>
+	</insert>
+	
+	<select id="selectBoardCountByUserId">
+		SELECT
+			COUNT(*)
+		FROM
+		<choose>
+			<when test="type = bulletin">
+				TB_FILE_BULLETIN
+			</when>
+			<when test="type = free">
+				TB_FILE_FREE
+			</when>
+			<when test="type = anonymous">
+				TB_FILE_ANONYMOUS
+			</when>
+			<otherwise>
+				TB_FILE_DEPARTMENT
+			</otherwise>
+		</choose>
+		WHERE
+			ID = #{boardId}
+		AND
+			USER_ID = #{userId}
+		AND
+			IS_ACTIVE = 'Y'
+	</select>
+	
+	<delete id="deleteBoardFiles">
+		DELETE
+		FROM
+		<choose>
+			<when test="type = bulletin">
+				TB_FILE_BULLETIN
+			</when>
+			<when test="type = free">
+				TB_FILE_FREE
+			</when>
+			<when test="type = anonymous">
+				TB_FILE_ANONYMOUS
+			</when>
+			<otherwise>
+				TB_FILE_DEPARTMENT
+			</otherwise>
+		</choose>
+		WHERE
+			BOARD_ID = #{boardId}
+	</delete>
+	
+	<update id="updateBoard"
+			parameterType="com.kh.saintra.board.model.dto.BoardUpdateDTO">
+		UPDATE
+		<choose>
+			<when test="type = bulletin">
+				TB_BOARD_BULLETIN
+			</when>
+			<when test="type = free">
+				TB_BOARD_FREE
+			</when>
+			<when test="type = anonymous">
+				TB_BOARD_ANONYMOUS
+			</when>
+			<otherwise>
+				TB_BOARD_DEPARTMENT
+			</otherwise>
+		</choose>
+		SET
+			TITLE = #{title},
+			CONTENT = #{content}
+		WHERE
+			ID = #{boardId}
+		AND
+			IS_ACTIVE = 'Y'
+	</update>
+	
+	<update id="disableBoard"
+			parameterType="com.kh.saintra.board.model.dto.BoardDeleteDTO">
+		UPDATE
+		<choose>
+			<when test="type = bulletin">
+				TB_BOARD_BULLETIN
+			</when>
+			<when test="type = free">
+				TB_BOARD_FREE
+			</when>
+			<when test="type = anonymous">
+				TB_BOARD_ANONYMOUS
+			</when>
+			<otherwise>
+				TB_BOARD_DEPARTMENT
+			</otherwise>
+		</choose>
+		SET
+			IS_ACTIVE = 'N'
+		WHERE
+			ID = #{boardId}
+		AND
+			USER_ID = #{userId}
+		AND 
+			IS_ACTIVE = 'Y'
+	</update>
+</mapper>

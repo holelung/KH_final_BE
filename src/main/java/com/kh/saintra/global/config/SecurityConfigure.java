@@ -62,7 +62,7 @@ public class SecurityConfigure {
                     requests.requestMatchers(HttpMethod.POST, "/api/auth/password", "/api/auth/tokens", "/api/users/join", "/api/emails/**").permitAll();
                     requests.requestMatchers(HttpMethod.PATCH, "/api/auth/password").permitAll();
                     requests.requestMatchers(HttpMethod.POST).authenticated();
-                    requests.requestMatchers(HttpMethod.GET).authenticated();
+                    requests.requestMatchers(HttpMethod.GET).permitAll();
                     requests.requestMatchers(HttpMethod.DELETE).authenticated();
                     requests.requestMatchers(HttpMethod.PUT).authenticated();
                     requests.requestMatchers(HttpMethod.PATCH).authenticated();
