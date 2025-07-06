@@ -8,6 +8,8 @@ import com.kh.saintra.file.model.vo.FileVO;
 @Mapper
 public interface FileMapper {
 
+	FileVO getProfile(Long userId);
+	
 	int insertProfileInfo(FileDTO fileInfo);
 	
 	int insertFileInfo(FileDTO fileInfo);

@@ -3,6 +3,7 @@ package com.kh.saintra.file.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,6 +25,15 @@ import lombok.extern.slf4j.Slf4j;
 public class FileController {
 	
 	private final FileService fileService;
+	
+	@GetMapping("/users")
+	@Transactional
+	public ResponseEntity<?> getProfile() {
+		
+		FileVO profile = fileService.getProfile();
+		
+		return ResponseEntity.ok(ApiResponse.success(ResponseCode.INSERT_SUCCESS, profile, "프로필 가져오기 성공"));
+	}
 	
 	/**
 	 * 사용자 프로필에 이미지 파일을 삽입하면 파일을 서버에 업로드하고, 업로드한 파일 정보를 반환하는 메서드
@@ -58,7 +68,7 @@ public class FileController {
 	 * @return
 	 */
 	@DeleteMapping("/users")
-	public ResponseEntity<?> deleteFileforProfile(@RequestParam(name = "fileId") String fileId) {
+	public ResponseEntity<?> deleteFileforProfile(@RequestParam(name = "fileId") Long fileId) {
 		
 		fileService.deleteFileforProfile(fileId);
 		

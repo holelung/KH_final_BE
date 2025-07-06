@@ -122,6 +122,14 @@ public class FileServiceImpl implements FileService {
 	}
 	
 	@Override
+	public FileVO getProfile() {
+		
+		Long userId = authService.getUserDetails().getId();
+		
+		return fileMapper.getProfile(userId);
+	}
+	
+	@Override
 	public void uploadFileforProfile(MultipartFile file) {
 		
 		// 사용자 정보 추출
@@ -144,8 +152,6 @@ public class FileServiceImpl implements FileService {
 		
 		// 파일 버킷에 업로드
         String fileUrl = "https://" + bucket + ".s3." + region + ".amazonaws.com/" + filename;
-        
-        log.info("fileUrl: {}", fileUrl);
         
         ObjectMetadata metadata= new ObjectMetadata();
         metadata.setContentType(file.getContentType());
@@ -216,7 +222,7 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public void deleteFileforProfile(String fileId) {
+	public void deleteFileforProfile(Long fileId) {
 		// fileId를 Long 자료형으로 파싱
 		Long id = (long)0;
 		
