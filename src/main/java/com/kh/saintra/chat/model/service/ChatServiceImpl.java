@@ -9,6 +9,7 @@ import com.kh.saintra.chat.model.dao.ChatMapper;
 import com.kh.saintra.chat.model.dto.MessageDTO;
 import com.kh.saintra.chat.model.vo.GetMessageRequest;
 import com.kh.saintra.chat.model.vo.Message;
+import com.kh.saintra.team.model.dto.TeamDTO;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,6 +59,7 @@ public class ChatServiceImpl implements ChatService {
 
         MessageDTO saved = chatMapper.findMessageByMessageId(messageId);
         saved.setType("send");
+        saved.setTeamId(message.getTeamId());
         return saved;
     }
 
@@ -119,4 +121,10 @@ public class ChatServiceImpl implements ChatService {
         response.setType("delete");
         return response;
     }
+    
+    @Override
+    public List<TeamDTO> getAllChatRooms() {
+        return chatMapper.findAllTeamRooms();
+    }
+
 }

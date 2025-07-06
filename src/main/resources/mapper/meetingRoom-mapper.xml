@@ -55,22 +55,6 @@
         WHERE ID = #{roomId}
     </select>
 
-    <!-- 예약자 존재 여부 확인 -->
-    <select id="existsReserver" resultType="int">
-        <choose>
-            <when test="reserverType == 'TEAM'">
-                SELECT COUNT(*)
-                FROM TB_TEAM
-                WHERE ID = #{reserverId}
-            </when>
-            <when test="reserverType == 'USER'">
-                SELECT COUNT(*)
-                FROM TB_USER
-                WHERE ID = #{reserverId}
-            </when>
-        </choose>
-    </select>
-
     <!-- 중복 예약 검사 (시간 겹침 여부 확인) -->
     <select id="existsDuplicateReservation" resultType="int">
         SELECT COUNT(*)

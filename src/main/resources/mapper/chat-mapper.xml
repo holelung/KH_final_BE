@@ -102,6 +102,12 @@
     DELETE FROM TB_TEAM_MESSAGE
     WHERE MESSAGE_ID = #{messageId}
   </delete>
+  
+  <select id="findAllTeamRooms" resultType="com.kh.saintra.team.model.dto.TeamDTO">
+    SELECT TEAM_ID AS id, TEAM_NAME AS teamName
+    FROM TB_TEAM
+  </select>
+
 
 
 </mapper>

@@ -19,6 +19,7 @@ import com.kh.saintra.meetingroom.model.dao.MeetingRoomMapper;
 import com.kh.saintra.meetingroom.model.dto.MeetingRoomRequestDTO;
 import com.kh.saintra.meetingroom.model.dto.MeetingRoomResponseDTO;
 import com.kh.saintra.meetingroom.model.vo.MeetingRoom;
+import com.kh.saintra.schedule.model.dto.ScheduleRequestDTO;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,11 +49,10 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
         return executeWithExceptionHandling("예약 등록", () -> {
             validateTime(dto.getStartTime(), dto.getEndTime());
             checkMeetingRoomExists(dto.getRoomId());
-            checkReserverExists(dto.getReserverType(), dto.getReserverId());
             checkDuplicateReservation(dto);
 
             Long reserverId = registerReserver(dto.getReserverType());
-            insertReserverByType(dto.getReserverType(), reserverId, createdBy);
+            insertReserverMappingByType(dto, reserverId);
             insertReservation(dto, reserverId, createdBy);
 
             return dto.getReservationId();
@@ -66,7 +66,6 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
         return executeWithExceptionHandling("예약 수정", () -> {
             validateTime(dto.getStartTime(), dto.getEndTime());
             checkMeetingRoomExists(dto.getRoomId());        
-            checkReserverExists(dto.getReserverType(), dto.getReserverId());
 
             validateReservation(dto.getReservationId(), userId);
             duplicateForUpdate(dto);
@@ -133,12 +132,6 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
         }
     }
 
-    // 예약자 존재 여부 확인
-    private void checkReserverExists(String reserverType, Long reserverId) {
-        if (meetingRoomMapper.existsReserver(reserverType, reserverId) == 0) {
-            throw new EntityNotFoundException(ResponseCode.ENTITY_NOT_FOUND, "예약자 또는 팀이 존재하지 않습니다.");
-        }
-    }
 
     // 중복 예약 검사
     private void checkDuplicateReservation(MeetingRoomRequestDTO dto) {
@@ -164,22 +157,40 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
     }
 
     // 예약자 유형별 INSERT
-    private void insertReserverByType(String reserverType, Long reserverId, Long createdBy) {
-        int result = 0;
-
-        if ("USER".equals(reserverType)) {
-            result = meetingRoomMapper.insertUserReserver(reserverId, createdBy);
-        } else if ("TEAM".equals(reserverType)) {
-            result = meetingRoomMapper.insertTeamReserver(reserverId, createdBy);
-        } else {
-            throw new InvalidValueException(ResponseCode.INVALID_VALUE, "예약자 유형은 'USER' 또는 'TEAM'이어야 합니다.");
+    private void insertReserverMappingByType(MeetingRoomRequestDTO dto, Long reserverId) {
+        switch (dto.getReserverType()) {
+            case "USER" -> {
+                if (dto.getUserId() == null) {
+                    throw new InvalidValueException(ResponseCode.INVALID_VALUE, "USER 예약자는 userId가 필요합니다.");
+                }
+                insertUserReserver(reserverId, dto.getUserId());
+            }
+            case "TEAM" -> {
+                if (dto.getTeamId() == null) {
+                    throw new InvalidValueException(ResponseCode.INVALID_VALUE, "TEAM 예약자는 teamId가 필요합니다.");
+                }
+                insertTeamReserver(reserverId, dto.getTeamId());
+            }
+            default -> throw new InvalidValueException(ResponseCode.INVALID_VALUE, "예약자 유형은 USER 또는 TEAM이어야 합니다.");
         }
-
+    }
+    
+    // 예약자 유형이 USER일 경우 INSERT
+    private void insertUserReserver(Long reserverId, Long userId) {
+        int result = meetingRoomMapper.insertUserReserver(reserverId, userId);
         if (result != 1) {
-            throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "예약자 유형 저장에 실패했습니다.");
+            throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "USER 예약자 저장에 실패했습니다.");
         }
     }
 
+    // 예약자 유형이 TEAM일 경우 INSERT
+    private void insertTeamReserver(Long reserverId, Long teamId) {
+        int result = meetingRoomMapper.insertTeamReserver(reserverId, teamId);
+        if (result != 1) {
+            throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "TEAM 예약자 저장에 실패했습니다.");
+        }
+    }
+    
     // 예약 등록
     private void insertReservation(MeetingRoomRequestDTO dto, Long reserverId, Long createdBy) {
         int result = meetingRoomMapper.insertReservation(dto, reserverId, createdBy);

@@ -20,10 +20,6 @@ public interface ScheduleMapper {
     int insertSchedule(@Param("dto") ScheduleRequestDTO dto, 
             		   @Param("reserverId") Long reserverId, 
             		   @Param("createdBy") Long createdBy);
-    
-    // 2-2. 예약자 존재 확인 
-	int existsReserver(@Param("reserverType") String reserverType,
-					   @Param("reserverId") Long reserverId);
 	
 	// 2-3. 예약자 유형 등록
     int insertReserver(Map<String, Object> paramMap);

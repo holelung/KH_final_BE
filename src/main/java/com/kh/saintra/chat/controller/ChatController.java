@@ -13,6 +13,7 @@ import com.kh.saintra.chat.model.dto.MessageDTO;
 import com.kh.saintra.chat.model.service.ChatService;
 import com.kh.saintra.global.enums.ResponseCode;
 import com.kh.saintra.global.response.ApiResponse;
+import com.kh.saintra.team.model.dto.TeamDTO;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,16 @@ public class ChatController {
 			return ResponseEntity.ok(
 					ApiResponse.success(ResponseCode.GET_SUCCESS, messages, "메세지 목록 조회 성공"));
 		}
+		
+		@GetMapping("/api/chat/rooms")
+		public ResponseEntity<ApiResponse<List<TeamDTO>>> getChatRooms() {
+		    List<TeamDTO> rooms = chatService.getAllChatRooms();
+
+		    return ResponseEntity.ok(
+		        ApiResponse.success(ResponseCode.GET_SUCCESS, rooms, "채팅방 목록 조회 성공")
+		    );
+		}
+
 		
 	}
 
