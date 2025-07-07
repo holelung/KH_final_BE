@@ -44,8 +44,12 @@ public class ScheduleRequestDTO {
     @NotBlank(message = "예약자 유형을 선택해주세요.")
     private String reserverType;
 	
-	@NotNull(message = "예약자 ID는 필수입니다.")
     private Long reserverId;
 	
 	private Long scheduleId;
+	
+	private Long userId; 
+	
+	private Long teamId;
+
 }

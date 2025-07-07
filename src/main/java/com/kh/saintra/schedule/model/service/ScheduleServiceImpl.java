@@ -35,18 +35,19 @@ public class ScheduleServiceImpl implements ScheduleService{
         return executeWithExceptionHandling("일정 조회", () -> scheduleMapper.getSchedules(startDate, endDate));
     }
     
-    // 2. 일정 등록 
+    // 2. 일정 등록
     @Override
     @Transactional
     public Long createSchedule(ScheduleRequestDTO dto, Long createdBy) {
-    	return executeWithExceptionHandling("일정 등록", () -> {
-        	checkReserverExists(dto.getReserverType(), dto.getReserverId());
+        return executeWithExceptionHandling("일정 등록", () -> {
             Long reserverId = registerReserver(dto.getReserverType());
             dto.setReserverId(reserverId);
-            insertReserverByType(dto.getReserverType(), reserverId, createdBy);
+            insertReserverMappingByType(dto, reserverId);
+
             DefaultColor(dto);
             DefaultEndDate(dto);
             insertSchedule(dto, createdBy);
+
             return dto.getScheduleId();
         });
     }
@@ -55,9 +56,8 @@ public class ScheduleServiceImpl implements ScheduleService{
     @Override
     public Long updateSchedule(ScheduleRequestDTO dto, Long userId) {
     	return executeWithExceptionHandling("일정 수정", () -> {
-    		checkReserverExists(dto.getReserverType(), dto.getReserverId());
-    		DefaultColor(dto);
     		validateSchedule(dto.getScheduleId(), userId);
+    		DefaultColor(dto);
     		int result = scheduleMapper.updateSchedule(dto);
     		if (result != 1) {
     			throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "일정 수정에 실패했습니다.");
@@ -100,13 +100,6 @@ public class ScheduleServiceImpl implements ScheduleService{
     	}
     }
     
-    // 예약자 존재 여부 확인
-    private void checkReserverExists(String reserverType, Long reserverId) {
-    if (scheduleMapper.existsReserver(reserverType, reserverId) == 0) {
-    	throw new EntityNotFoundException(ResponseCode.ENTITY_NOT_FOUND, "예약자 또는 팀이 존재하지 않습니다.");
-    	}
-    }
-    
     // 예약자 등록 및 ID 반환
     private Long registerReserver(String reserverType) {
         Map<String, Object> paramMap = new HashMap<>();
@@ -123,23 +116,40 @@ public class ScheduleServiceImpl implements ScheduleService{
     }
     
     // 예약자 유형별 INSERT
-    private void insertReserverByType(String reserverType, Long reserverId, Long createdBy) {
-        int result = 0;
-
-        if ("USER".equals(reserverType)) {
-            log.debug("insertUserReserver 호출: reserverId = {}, userId = {}", reserverId, createdBy);
-            result = scheduleMapper.insertUserReserver(reserverId, createdBy);
-        } else if ("TEAM".equals(reserverType)) {
-            log.debug("insertTeamReserver 호출: reserverId = {}, teamId = {}", reserverId, createdBy);
-            result = scheduleMapper.insertTeamReserver(reserverId, createdBy);
-        } else {
-            throw new InvalidValueException(ResponseCode.INVALID_VALUE, "예약자 유형은 'USER' 또는 'TEAM'이어야 합니다.");
-        }
-
-        if (result == 0) {
-            throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "예약자 유형 저장에 실패했습니다.");
+    private void insertReserverMappingByType(ScheduleRequestDTO dto, Long reserverId) {
+        switch (dto.getReserverType()) {
+            case "USER" -> {
+                if (dto.getUserId() == null) {
+                    throw new InvalidValueException(ResponseCode.INVALID_VALUE, "USER 예약자는 userId가 필요합니다.");
+                }
+                insertUserReserver(reserverId, dto.getUserId());
+            }
+            case "TEAM" -> {
+                if (dto.getTeamId() == null) {
+                    throw new InvalidValueException(ResponseCode.INVALID_VALUE, "TEAM 예약자는 teamId가 필요합니다.");
+                }
+                insertTeamReserver(reserverId, dto.getTeamId());
+            }
+            default -> throw new InvalidValueException(ResponseCode.INVALID_VALUE, "예약자 유형은 USER 또는 TEAM이어야 합니다.");
         }
     }
+    
+    // 예약자 유형이 USER일 경우 INSERT
+    private void insertUserReserver(Long reserverId, Long userId) {
+        int result = scheduleMapper.insertUserReserver(reserverId, userId);
+        if (result != 1) {
+            throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "USER 예약자 저장에 실패했습니다.");
+        }
+    }
+
+    // 예약자 유형이 TEAM일 경우 INSERT
+    private void insertTeamReserver(Long reserverId, Long teamId) {
+        int result = scheduleMapper.insertTeamReserver(reserverId, teamId);
+        if (result != 1) {
+            throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "TEAM 예약자 저장에 실패했습니다.");
+        }
+    }
+
 
     // 색상 코드 기본값 지정
     private void DefaultColor(ScheduleRequestDTO dto) {

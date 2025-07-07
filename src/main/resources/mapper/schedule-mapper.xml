@@ -9,12 +9,13 @@
 	<select id="getSchedules" 
 			resultType="com.kh.saintra.schedule.model.dto.ScheduleResponseDTO">
 	    SELECT
-	        s.ID 				AS scheduleId,
-	        s.TITLE,
-	        s.CONTENT,
+	        s.ID 				AS id,
+	        s.TITLE				AS title,
+	        s.CONTENT			AS content,
 	        s.START_DATE		AS startDate,
 	        s.END_DATE			AS endDate,
-	        s.COLOR_CODE,
+	        s.COLOR_CODE		AS colorCode,
+	        s.CREATED_BY		AS createdBy,
 	        r.RESERVER_TYPE 	AS reserverType,
 	        r.ID 				AS reserverId,
 	        CASE 
@@ -36,21 +37,6 @@
 	    	s.START_DATE ASC, s.END_DATE ASC, s.ID ASC
 	</select>
 	
-	<!-- 예약자 존재 여부 확인 -->
-    <select id="existsReserver" resultType="int">
-        <choose>
-            <when test="reserverType == 'TEAM'">
-                SELECT COUNT(*)
-                FROM TB_TEAM
-                WHERE ID = #{reserverId}
-            </when>
-            <when test="reserverType == 'USER'">
-                SELECT COUNT(*)
-                FROM TB_USER
-                WHERE ID = #{reserverId}
-            </when>
-        </choose>
-    </select>
 	
 	<!-- 예약자 유형 등록 -->
 	<insert id="insertReserver"

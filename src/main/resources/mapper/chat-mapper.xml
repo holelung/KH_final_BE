@@ -102,6 +102,15 @@
     DELETE FROM TB_TEAM_MESSAGE
     WHERE MESSAGE_ID = #{messageId}
   </delete>
+  
+  <!-- 8. 채팅방 목록 조회 -->
+  <select id="findAllTeamRooms" resultType="com.kh.saintra.team.model.dto.TeamDTO">
+    SELECT
+    	ID AS teamId,
+    	TEAM_NAME AS teamName
+    FROM TB_TEAM
+  </select>
+
 
 
 </mapper>

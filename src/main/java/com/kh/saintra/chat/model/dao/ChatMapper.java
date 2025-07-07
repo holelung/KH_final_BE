@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import com.kh.saintra.chat.model.dto.MessageDTO;
 import com.kh.saintra.chat.model.vo.GetMessageRequest;
 import com.kh.saintra.chat.model.vo.Message;
+import com.kh.saintra.team.model.dto.TeamDTO;
 
 @Mapper
 public interface ChatMapper {
@@ -31,5 +32,8 @@ public interface ChatMapper {
 
     // 메시지 삭제
     int deleteChatMessage(String messageId);
+    
+    List<TeamDTO> findAllTeamRooms();
+
 
 }

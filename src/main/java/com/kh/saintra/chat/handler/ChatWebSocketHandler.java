@@ -30,7 +30,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         String roomId = extractRoomId(session);
-        log.info("✅ 소켓 연결 요청 도착: roomId = {}", roomId);
+        log.info("🔌 연결됨: {}", session.getId());
 
 
         if (roomId == null || roomId.isBlank()) {
@@ -44,7 +44,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        log.info("💬 메시지 수신: {}", message.getPayload());
+    	log.info("📩 메시지 수신: {}", message.getPayload());
 
         // 메시지 파싱
         MessageDTO msg = objectMapper.readValue(message.getPayload(), MessageDTO.class);
@@ -79,7 +79,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         String roomId = extractRoomId(session);
         rooms.getOrDefault(roomId, Collections.emptySet()).remove(session);
-        log.info("🔌 연결 종료 | roomId={}, sessionId={}", roomId, session.getId());
+        log.info("❌ 연결 종료됨: {}, 이유: {}", session.getId(), status);
     }
 
     private String extractRoomId(WebSocketSession session) {

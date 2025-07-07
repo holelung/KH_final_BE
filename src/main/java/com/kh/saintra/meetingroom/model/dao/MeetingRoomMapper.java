@@ -23,10 +23,6 @@ public interface MeetingRoomMapper {
 	// 2-2. 회의실 존재 여부 확인 
 	int existsMeetingRoom(@Param("roomId") Long roomId);
 
-	// 2-3. 예약자 존재 여부 확인 
-	int existsReserver(@Param("reserverType") String reserverType,
-            		   @Param("reserverId") Long reserverId);
-
 	// 2-4. 중복 예약 검사 
 	int existsDuplicateReservation(@Param("dto") MeetingRoomRequestDTO dto);
 	
@@ -56,4 +52,8 @@ public interface MeetingRoomMapper {
 
     // 4. 회의실 예약 삭제 
     int deleteReservation (Long reservatioinId);
+    
+    // 5. 회의실 목록 조회
+    List<MeetingRoomResponseDTO> selectAllRooms();
+
 }

@@ -40,4 +40,9 @@ public interface MeetingRoomService {
      */
     Long deleteReservation(Long reservationId, Long userId);
 
+    /**
+     * 회의실 목록 조회
+     */
+    List<MeetingRoomResponseDTO> getAllRooms();
+
 }

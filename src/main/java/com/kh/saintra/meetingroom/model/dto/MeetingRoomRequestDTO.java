@@ -25,7 +25,6 @@ public class MeetingRoomRequestDTO {
     @NotNull(message = "예약자 유형을 선택해주세요.")
     private String reserverType;
 
-    @NotNull(message = "예약자 ID는 필수입니다.")
     private Long reserverId;
 
     @NotBlank(message = "예약 날짜는 필수입니다.")
@@ -44,5 +43,8 @@ public class MeetingRoomRequestDTO {
     
     private Long reservationId;
 	
+	private Long userId; 
+	
+	private Long teamId;
 
 }
