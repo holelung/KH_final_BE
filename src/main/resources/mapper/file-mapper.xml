@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.saintra.file.model.dao.FileMapper">
+
+	<select id="getProfile"
+			resultType="com.kh.saintra.file.model.vo.FileVO">
+		SELECT
+			USER_ID,
+			FILENAME,
+			ORIGIN,
+			URL
+		FROM
+			TB_PROFILE
+		WHERE
+			USER_ID = #{userId}
+	</select>
+
+	<insert id="insertProfileInfo"
+			parameterType="com.kh.saintra.file.model.dto.FileDTO">
+		INSERT INTO
+			TB_PROFILE
+			(
+				USER_ID,
+				FILENAME,
+				ORIGIN,
+				URL
+			)
+		VALUES
+			(
+				#{userId},
+				#{filename},
+				#{origin},
+				#{url}
+			)
+	</insert>
+
+	<insert id="insertFileInfo"
+			parameterType="com.kh.saintra.file.model.dto.FileDTO">
+		INSERT INTO
+			TB_FILE
+			(
+				USER_ID,
+				FILENAME,
+				ORIGIN,
+				URL
+			)
+		VALUES
+			(
+				#{userId},
+				#{filename},
+				#{origin},
+				#{url}
+			)
+	</insert>
+	
+	<select id="selectFileInfo"
+			parameterType="com.kh.saintra.file.model.dto.FileDTO"
+			resultType="com.kh.saintra.file.model.vo.FileVO">
+		SELECT
+			ID fileId,
+			USER_ID userId,
+			FILENAME,
+			ORIGIN,
+			URL
+		FROM
+			TB_FILE
+		WHERE
+			FILENAME = #{filename}
+		AND
+			ORIGIN = #{origin}
+		AND
+			URL = #{url}
+	</select>
+	
+	<select id="selectFileInfoById"
+			parameterType="string"
+			resultType="com.kh.saintra.file.model.vo.FileVO">
+		SELECT
+			ID fileId,
+			USER_ID userId,
+			FILENAME,
+			ORIGIN,
+			URL
+		FROM
+			TB_FILE
+		WHERE
+			ID = #{fileId}
+	</select>
+	
+	<delete id="deleteFileInfo"
+			parameterType="long">
+		DELETE
+		FROM
+			TB_FILE
+		WHERE
+			ID = #{fileId}
+	</delete>
+	
+</mapper>

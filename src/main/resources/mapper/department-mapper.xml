@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.saintra.department.model.dao.DepartmentMapper">
+
+	<select id="selectTotalDeptCount"
+			parameterType="com.kh.saintra.department.model.dto.DepartmentListDTO">
+		SELECT
+			COUNT(*)
+		FROM
+			TB_DEPARTMENT
+	</select>
+	
+	<resultMap id="DeptUserResultMap" type="com.kh.saintra.department.model.vo.DepartmentVO">
+    	<id     column="ID"         property="id"/>
+    	<result column="DEPT_NAME"  property="deptName"/>
+    	<result column="PERSONNEL"  property="personnel"/>
+    	<result column="INSPECT"    property="inspect"/>
+    	<result column="IS_ACTIVE" 	property="isActive"	/>
+    	<result column="USERNAME"   property="username"/>
+    	<result column="REALNAME"   property="realname"/>
+  	</resultMap>
+
+	<select id="selectDepartmentList"
+			resultMap="DeptUserResultMap">
+		SELECT
+      		d.ID,
+      		d.DEPT_NAME,
+      		d.PERSONNEL,
+      		d.INSPECT,
+      		d.IS_ACTIVE,
+      		MAX(u.USERNAME) KEEP 
+      		(
+        		DENSE_RANK 
+        			FIRST
+        		ORDER BY 
+        			u.JOB_ID DESC
+      		) AS USERNAME,
+      		MAX(u.REALNAME) KEEP 
+      		(
+        		DENSE_RANK 
+        			FIRST
+        		ORDER BY 
+        			u.JOB_ID DESC
+      		) AS REALNAME
+    	FROM 
+    		TB_DEPARTMENT d
+    	LEFT JOIN 
+    		TB_USER u ON d.ID = u.DEPT_ID
+    	GROUP BY
+     		d.ID,
+      		d.DEPT_NAME,
+      		d.PERSONNEL,
+      		d.INSPECT,
+      		d.IS_ACTIVE
+    	ORDER BY 
+    		d.ID ASC
+	</select>
+	
+	<select id="selectDepartmentNameList">
+		SELECT
+			DEPT_NAME
+		FROM
+			TB_DEPARTMENT
+	</select>
+	
+	<select id="checkPersonnel">
+		SELECT
+			COUNT(*)
+		FROM
+			TB_DEPARTMENT
+		WHERE
+			PERSONNEL = 'Y'
+	</select>
+	
+	<select id="checkInspect">
+		SELECT
+			COUNT(*)
+		FROM
+			TB_DEPARTMENT
+		WHERE
+			INSPECT = 'Y'
+	</select>
+	
+	<insert id="insertDepartment"
+			parameterType="com.kh.saintra.department.model.dto.DepartmentInsertDTO">
+		INSERT INTO
+			TB_DEPARTMENT
+			(
+				DEPT_NAME,
+				PERSONNEL,
+				INSPECT,
+				IS_ACTIVE
+			)
+		VALUES
+			(
+				#{departmentName},
+				DEFAULT,
+				DEFAULT,
+				DEFAULT
+			)
+	</insert>
+	
+	<select id="selectDepartmentById"
+			resultType="com.kh.saintra.department.model.vo.DepartmentVO">
+		SELECT
+			ID id,
+			DEPT_NAME deptName,
+			PERSONNEL personnel,
+			INSPECT inspect,
+			IS_ACTIVE isActive
+		FROM
+			TB_DEPARTMENT
+		WHERE
+			IS_ACTIVE = 'Y'
+		AND
+			ID = #{id}
+	</select>
+	
+	<update id="updatePersonnel">
+		UPDATE
+			TB_DEPARTMENT
+		SET
+			PERSONNEL = #{personnel}
+		WHERE
+			ID = #{deptId}
+		AND
+			IS_ACTIVE = 'Y'
+	</update>
+	
+	<update id="updateInspect">
+		UPDATE
+			TB_DEPARTMENT
+		SET
+			INSPECT = #{inspect}
+		WHERE
+			ID = #{deptId}
+		AND
+			IS_ACTIVE = 'Y'
+	</update>
+	
+	<update id="updateDepartment">
+		UPDATE
+			TB_DEPARTMENT
+		SET
+			DEPT_NAME = #{deptName}
+		WHERE
+			ID = #{deptId}
+		AND
+			IS_ACTIVE = 'Y'
+	</update>
+	
+	<update id="enableDepartment">
+		UPDATE
+			TB_DEPARTMENT
+		SET
+			IS_ACTIVE = 'Y'
+		WHERE
+			ID = #{deptId}
+	</update>
+	
+	<update id="deleteDepartment">
+		UPDATE
+			TB_DEPARTMENT
+		SET
+			IS_ACTIVE = 'N'
+		WHERE
+			ID = #{deptId}
+	</update>
+	
+</mapper>
