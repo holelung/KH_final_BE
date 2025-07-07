@@ -39,5 +39,7 @@ public class MeetingRoomResponseDTO {
 
     private String isActive;
     
+    private Long createdBy;
+    
 
 }
