@@ -51,8 +51,11 @@ public class UserDTO {
     private String ssn;
 
     private String jobId;
+    private String jobName;
     private String deptId;
+    private String deptName;
     private String teamId;
+    private String teamName;
     private String role;
     private LocalDateTime enrollDate;
     private String isActive;    

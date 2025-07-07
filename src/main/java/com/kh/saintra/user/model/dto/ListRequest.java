@@ -1,9 +1,5 @@
 package com.kh.saintra.user.model.dto;
 
-import org.springframework.boot.autoconfigure.batch.BatchProperties.Job;
-
-import com.kh.saintra.user.model.enums.Department;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,12 +11,9 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class UserSearchDTO {
+public class ListRequest {
     
     private String search;
-    // private String deptName;
-    // private String jobName;
-    // private String teamName;
     private Long rowsPerPage;
     private Long currentPage;
 }

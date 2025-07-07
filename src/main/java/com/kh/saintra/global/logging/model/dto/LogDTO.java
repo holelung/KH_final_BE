@@ -19,6 +19,7 @@ public class LogDTO {
     private Long id;
     private Long userId;
     private String username;
+    private String realname;
     private String actionArea;
     private String actionType;
     private String actionResult;

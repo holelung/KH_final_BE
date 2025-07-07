@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.kh.saintra.auth.model.dao.AuthMapper;
+import com.kh.saintra.auth.model.dto.ApproveRequest;
 import com.kh.saintra.auth.model.dto.ChangePasswordDTO;
 import com.kh.saintra.auth.model.dto.FindPasswordDTO;
 import com.kh.saintra.auth.model.dto.LoginFormDTO;
@@ -77,9 +78,19 @@ public class AuthServiceImpl implements AuthService{
     }
 
     @Override
-    public ApiResponse<List<ApproveUser>> getApproveList() {
-        
-        return ApiResponse.success(ResponseCode.GET_SUCCESS, authMapper.getApproveList(), "가입요청 목록 조회 성공");
+    public ApiResponse<Map<String, Object>> getApproveList(ApproveRequest request) {
+        Map<String, Object> result = new HashMap<>();
+        request.setCurrentPage(request.getCurrentPage() * request.getRowsPerPage());
+
+        try {
+            result.put("list",authMapper.getApproveList(request));
+            result.put("total", authMapper.getApproveListTotalCount(request));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "가입 요청목록 조회 실패");
+        }
+
+        return ApiResponse.success(ResponseCode.GET_SUCCESS, result, "가입요청 목록 조회 성공");
     }
 
     @Override

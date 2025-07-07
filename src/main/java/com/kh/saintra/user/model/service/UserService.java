@@ -1,10 +1,12 @@
 package com.kh.saintra.user.model.service;
 
 import java.util.List;
+import java.util.Map;
 import org.springframework.web.multipart.MultipartFile;
 import com.kh.saintra.global.response.ApiResponse;
 import com.kh.saintra.user.model.dto.Attendance;
 import com.kh.saintra.user.model.dto.AttendanceRequest;
+import com.kh.saintra.user.model.dto.ListRequest;
 import com.kh.saintra.user.model.dto.UserDTO;
 import com.kh.saintra.user.model.dto.UserPasswordDTO;
 import com.kh.saintra.user.model.dto.UserProfileDTO;
@@ -35,6 +37,8 @@ public interface UserService {
      * @return ApiResponse(ResponseCode code, <T> data, String message)
      */
     ApiResponse<List<UserDTO>> getUserList(UserSearchDTO userSearch);
+
+    ApiResponse<Map<String,Object>> getUserListByAdmin(UserSearchDTO userSearch);
 
     /**
      * <pre>
@@ -119,10 +123,10 @@ public interface UserService {
 
     /** 
      * <pre>회원 탈퇴(유저 본인)</pre>
-     * @param password 탈퇴할 유저의 비밀번호를 받음
+     * 
      * @return ApiResponse(ResponseCode code, String message)
      */
-    ApiResponse<Void> deleteUser(String password);
+    ApiResponse<Void> deleteUser();
     
     /** 
      * <pre>회원 탈퇴(관리자 제어)</pre>

@@ -64,6 +64,7 @@
 
     <!-- 회원가입 요청 목록 조회 -->
     <select id="getApproveList"
+            parameterType="ApproveRequest"
             resultType="ApproveUser">
         SELECT
             U.ID,
@@ -71,20 +72,44 @@
             U.PASSWORD,
             U.REALNAME,
             U.EMAIL,
-            U.PHONE,
-            U.SSN,
+            CRYPTO.DECRYPT_AES(U.PHONE) AS phone,
+            CRYPTO.DECRYPT_AES(U.SSN) AS ssn,
             U.ADDRESS_1 address1,
-            U.ADDRESS_2 address2,
+            CRYPTO.DECRYPT_AES(U.ADDRESS_2) AS address2,
             U.IS_ACTIVE isActive,
             J.ISSUE_DATE issueDate
         FROM
             TB_JOIN J
         LEFT JOIN
             TB_USER U ON (U.ID = J.USER_ID)
+        <if test="search != null || search != ''">
+        WHERE
+            U.REALNAME LIKE '%'||#{search}||'%' 
+        OR
+            U.USERNAME LIKE '%'||#{search}||'%' 
+        </if>
         ORDER BY
             ISSUE_DATE ASC
+        OFFSET #{currentPage} ROWS FETCH NEXT #{rowsPerPage} ROWS ONLY
     </select>
-
+    
+    <select id="getApproveListTotalCount"
+            parameterType="ApproveRequest"
+            resultType="_long">
+        SELECT
+            COUNT(*)
+        FROM
+            TB_JOIN
+        LEFT JOIN
+            TB_USER ON (ID = USER_ID)
+        <if test="search != null || search != ''">
+        WHERE
+            REALNAME LIKE '%'||#{search}||'%' 
+        OR
+            USERNAME LIKE '%'||#{search}||'%' 
+        </if>
+        
+    </select>
 
     <!-- 비밀번호 변경 AccessKey 확인 -->
     <select id="confirmAccessKey"

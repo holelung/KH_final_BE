@@ -7,6 +7,7 @@ import com.kh.saintra.user.model.dto.UserProfileDTO;
 import com.kh.saintra.user.model.dto.UserSearchDTO;
 import com.kh.saintra.user.model.dto.Attendance;
 import com.kh.saintra.user.model.dto.AttendanceRequest;
+import com.kh.saintra.user.model.dto.ListRequest;
 import com.kh.saintra.user.model.dto.UserCompanyInfoDTO;
 import com.kh.saintra.user.model.dto.UserUpdateEmailDTO;
 import com.kh.saintra.user.model.vo.UpdateEmail;
@@ -64,6 +65,10 @@ public interface UserMapper {
      * @return List<User>
      */
     List<UserDTO> getUserList(UserSearchDTO userSearch);
+    
+    List<UserDTO> getUserListByAdmin(UserSearchDTO request);
+
+    Long getUserListTotalCount(UserSearchDTO request);
 
 
     /**
