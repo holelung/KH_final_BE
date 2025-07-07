@@ -4,6 +4,7 @@ package com.kh.saintra.user.controller;
 import java.security.Principal;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -26,6 +27,11 @@ public class UserStatusController {
     @MessageMapping("/status.update")
     public void updateStatus(UserStatusDTO dto) {
         statusService.updateStatus(dto);
+    }
+
+    @MessageMapping("/status.me")
+    public void getStatus() {
+        statusService.getStatus();
     }
 
     @EventListener

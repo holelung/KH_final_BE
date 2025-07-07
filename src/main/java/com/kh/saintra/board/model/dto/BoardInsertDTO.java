@@ -32,8 +32,11 @@ public class BoardInsertDTO {
 	@NotBlank(message = "게시물 내용은 비어있을 수 없습니다.")
 	private String content;
 	
-	@Size(max = 20, message = "게시물에 파일을 20개 이상 첨부할 수 없습니다.")
-	List<Long> files;
+	@Size(max = 20, message = "게시물에 이미지 파일을 20개 이상 첨부할 수 없습니다.")
+	List<Long> imageFiles;
+	
+	@Size(max = 20, message = "게시물에 첨부 파일을 20개 이상 첨부할 수 없습니다.")
+	List<Long> attachedFiles;
 	
 	private Long userId;
 }

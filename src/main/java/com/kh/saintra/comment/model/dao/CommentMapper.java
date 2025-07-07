@@ -13,7 +13,7 @@ import com.kh.saintra.comment.model.vo.CommentVO;
 @Mapper
 public interface CommentMapper {
 
-	int selectTotalCommentCount(String boardType, Long BoardId);
+	int selectTotalCommentCount(CommentListDTO commentListInfo);
 	
 	List<CommentVO> selectCommentList(CommentListDTO commentListInfo);
 	

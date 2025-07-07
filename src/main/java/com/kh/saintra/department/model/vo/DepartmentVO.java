@@ -13,6 +13,8 @@ public class DepartmentVO {
 
 	private Long id;
 	private String deptName;
+	private String username;
+	private String realname;
 	private String personnel;
 	private String inspect;
 	private String isActive;

@@ -141,13 +141,13 @@
 			B.CREATE_DATE createDate
 		FROM
 		<choose>
-			<when test="type = bulletin">
+			<when test="type == 'bulletin'">
 				TB_BOARD_BULLETIN B
 			</when>
-			<when test="type = free">
+			<when test="type == 'free'">
 				TB_BOARD_FREE B
 			</when>
-			<when test="type = anonymous">
+			<when test="type == 'anonymous'">
 				TB_BOARD_ANONYMOUS B
 			</when>
 			<otherwise>
@@ -164,16 +164,16 @@
 	
 	<select id="selectBoardFiles">
 		SELECT
-			FILE_ID
+			ID
 		FROM
 		<choose>
-			<when test="type = bulletin">
+			<when test="type == 'bulletin'">
 				TB_FILE_BULLETIN
 			</when>
-			<when test="type = free">
+			<when test="type == 'free'">
 				TB_FILE_FREE
 			</when>
-			<when test="type = anonymous">
+			<when test="type == 'anonymous'">
 				TB_FILE_ANONYMOUS
 			</when>
 			<otherwise>
@@ -190,13 +190,13 @@
 			parameterType="com.kh.saintra.board.model.dto.BoardInsertDTO">
 		INSERT INTO
 		<choose>
-			<when test="type = bulletin">
+			<when test="type == 'bulletin'">
 				TB_BOARD_BULLETIN
 			</when>
-			<when test="type = free">
+			<when test="type == 'free'">
 				TB_BOARD_FREE
 			</when>
-			<when test="type = anonymous">
+			<when test="type == 'anonymous'">
 				TB_BOARD_ANONYMOUS
 			</when>
 			<otherwise>
@@ -204,6 +204,9 @@
 			</otherwise>
 		</choose>
 			(
+			<if test="type != 'bulletin' and type != 'free' and type != 'anonymous'">
+				DEPT_ID,
+			</if>
 				USER_ID,
 				TITLE,
 				CONTENT,
@@ -212,6 +215,9 @@
 			)
 		VALUES
 			(
+			<if test="type != 'bulletin' and type != 'free' and type != 'anonymous'">
+				${type},
+			</if>
 				#{userId},
 				#{title},
 				#{content},
@@ -230,13 +236,13 @@
 				SELECT *
 				FROM
 				<choose>
-					<when test="type = bulletin">
+					<when test="type == 'bulletin'">
 						TB_BOARD_BULLETIN
 					</when>
-					<when test="type = free">
+					<when test="type == 'free'">
 						TB_BOARD_FREE
 					</when>
-					<when test="type = anonymous">
+					<when test="type == 'anonymous'">
 						TB_BOARD_ANONYMOUS
 					</when>
 					<otherwise>
@@ -254,35 +260,37 @@
 			ROWNUM = 1
 	</select>
 	
-	<insert id="insertBoardFiles">
-		INSERT INTO
+	<insert id="insertBoardFiles" parameterType="list">
+ 		INSERT ALL
+  		<foreach collection="files" item="file">
+    	INTO 
 		<choose>
-			<when test="type = bulletin">
-				TB_FILE_BULLETIN
-			</when>
-			<when test="type = free">
-				TB_FILE_FREE
-			</when>
-			<when test="type = anonymous">
-				TB_FILE_ANONYMOUS
-			</when>
-			<otherwise>
-				TB_FILE_DEPARTMENT
-			</otherwise>
+        	<when test="type == 'bulletin'">
+        		TB_FILE_BULLETIN
+        	</when>
+        	<when test="type == 'free'">
+        		TB_FILE_FREE
+        	</when>
+        	<when test="type == 'anonymous'">
+        		TB_FILE_ANONYMOUS
+        	</when>
+        	<otherwise>
+        		TB_FILE_DEPARTMENT
+        	</otherwise>
 		</choose>
-			(
-				FILE_ID,
-				BOARD_ID,
-				CREATE_DATE
-			)
-		VALUES
-		<foreach collection="list" item="file" nullable="false">
-			(
-				#{file},
-				#{boardId},
-				DEFAULT
-			)
-		</foreach>
+		( 
+			ID, 
+			BOARD_ID, 
+			CREATE_DATE
+		)
+    	VALUES
+      	( 
+      		#{file}, 
+      		#{boardId}, 
+      		SYSDATE
+      	)
+  		</foreach>
+  		SELECT * FROM DUAL
 	</insert>
 	
 	<select id="selectBoardCountByUserId">
@@ -290,13 +298,13 @@
 			COUNT(*)
 		FROM
 		<choose>
-			<when test="type = bulletin">
+			<when test="type == 'bulletin'">
 				TB_FILE_BULLETIN
 			</when>
-			<when test="type = free">
+			<when test="type == 'free'">
 				TB_FILE_FREE
 			</when>
-			<when test="type = anonymous">
+			<when test="type == 'anonymous'">
 				TB_FILE_ANONYMOUS
 			</when>
 			<otherwise>
@@ -315,13 +323,13 @@
 		DELETE
 		FROM
 		<choose>
-			<when test="type = bulletin">
+			<when test="type == 'bulletin'">
 				TB_FILE_BULLETIN
 			</when>
-			<when test="type = free">
+			<when test="type == 'free'">
 				TB_FILE_FREE
 			</when>
-			<when test="type = anonymous">
+			<when test="type == 'anonymous'">
 				TB_FILE_ANONYMOUS
 			</when>
 			<otherwise>
@@ -336,13 +344,13 @@
 			parameterType="com.kh.saintra.board.model.dto.BoardUpdateDTO">
 		UPDATE
 		<choose>
-			<when test="type = bulletin">
+			<when test="type == 'bulletin'">
 				TB_BOARD_BULLETIN
 			</when>
-			<when test="type = free">
+			<when test="type == 'free'">
 				TB_BOARD_FREE
 			</when>
-			<when test="type = anonymous">
+			<when test="type == 'anonymous'">
 				TB_BOARD_ANONYMOUS
 			</when>
 			<otherwise>
@@ -362,13 +370,13 @@
 			parameterType="com.kh.saintra.board.model.dto.BoardDeleteDTO">
 		UPDATE
 		<choose>
-			<when test="type = bulletin">
+			<when test="type == 'bulletin'">
 				TB_BOARD_BULLETIN
 			</when>
-			<when test="type = free">
+			<when test="type == 'free'">
 				TB_BOARD_FREE
 			</when>
-			<when test="type = anonymous">
+			<when test="type == 'anonymous'">
 				TB_BOARD_ANONYMOUS
 			</when>
 			<otherwise>

@@ -13,6 +13,8 @@ import lombok.ToString;
 @ToString
 public class FileDTO {
 	
+	Long userId;
 	String filename;
 	String origin;
+	String url;
 }

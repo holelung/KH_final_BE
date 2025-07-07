@@ -1,11 +1,14 @@
 package com.kh.saintra.department.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -18,6 +21,7 @@ import com.kh.saintra.department.model.dto.DepartmentInsertDTO;
 import com.kh.saintra.department.model.dto.DepartmentListDTO;
 import com.kh.saintra.department.model.dto.DepartmentUpdateDTO;
 import com.kh.saintra.department.model.service.DepartmentService;
+import com.kh.saintra.department.model.vo.DepartmentVO;
 import com.kh.saintra.global.enums.ResponseCode;
 import com.kh.saintra.global.response.ApiResponse;
 
@@ -34,14 +38,16 @@ public class DepartmentController {
 	private final DepartmentService departmentService;
 	
 	@GetMapping
-	public ResponseEntity<?> getDepartmentList(@ModelAttribute @Valid DepartmentListDTO departmentListInfo) {
+	@Transactional
+	public ResponseEntity<?> getDepartmentList() {
 		
-		Map<String, Object> departmentMap = departmentService.getDepartmentList(departmentListInfo);
+		List<DepartmentVO> departmentList = departmentService.getDepartmentList();
 		
-		return ResponseEntity.ok(ApiResponse.success(ResponseCode.GET_SUCCESS, departmentMap, "부서 목록 응답 성공"));
+		return ResponseEntity.ok(ApiResponse.success(ResponseCode.GET_SUCCESS, departmentList, "부서 목록 응답 성공"));
 	}
 	
 	@PostMapping
+	@Transactional
 	public ResponseEntity<?> insertDepartment(@RequestBody @Valid DepartmentInsertDTO departmentInsertInfo) {
 		
 		departmentService.insertDepartment(departmentInsertInfo);
@@ -50,7 +56,8 @@ public class DepartmentController {
 	}
 	
 	@GetMapping("/{deptId}")
-	public ResponseEntity<?> getDepartmentPage(@PathVariable String deptId) {
+	@Transactional
+	public ResponseEntity<?> getDepartmentPage(@PathVariable(name = "deptId") Long deptId) {
 		
 		// 팀 관련 API 완성되면 다시 작업
 		
@@ -58,15 +65,28 @@ public class DepartmentController {
 	}
 	
 	@PutMapping("/{deptId}")
-	public ResponseEntity<?> updateDepartment(@PathVariable String deptId, DepartmentUpdateDTO departmentUpdateInfo) {
+	@Transactional
+	public ResponseEntity<?> updateDepartment(@PathVariable(name = "deptId") Long deptId, DepartmentUpdateDTO departmentUpdateInfo) {
 		
 		departmentService.updateDepartment(deptId, departmentUpdateInfo);
 		
 		return ResponseEntity.ok(ApiResponse.success(ResponseCode.UPDATE_SUCCESS, "부서 정보 수정 성공"));
 	}
 	
+	@PatchMapping("/{deptId}")
+	@Transactional
+	public ResponseEntity<?> enableDepartment(@PathVariable(name = "deptId") Long deptId) {
+		
+		log.info("deptId: {}", deptId);
+		
+		departmentService.enableDepartment(deptId);
+		
+		return ResponseEntity.ok(ApiResponse.success(ResponseCode.UPDATE_SUCCESS, "부서 활성화 성공"));
+	}
+	
 	@DeleteMapping("/{deptId}")
-	public ResponseEntity<?> deleteDepartment(@PathVariable String deptId, @RequestBody @Valid DepartmentDeleteDTO departmentDeleteInfo) {
+	@Transactional
+	public ResponseEntity<?> deleteDepartment(@PathVariable(name = "deptId") Long deptId, @RequestBody @Valid DepartmentDeleteDTO departmentDeleteInfo) {
 		
 		departmentService.deleteDepartment(deptId, departmentDeleteInfo);
 		

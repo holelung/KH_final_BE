@@ -14,7 +14,7 @@ public interface DepartmentMapper {
 
 	int selectTotalDeptCount(DepartmentListDTO deptListInfo);
 	
-	List<DepartmentVO> selectDepartmentList(DepartmentListDTO deptListInfo);
+	List<DepartmentVO> selectDepartmentList();
 	
 	List<String> selectDepartmentNameList();
 	
@@ -33,6 +33,8 @@ public interface DepartmentMapper {
 	int updateInspect(Long deptId, String inspect);
 	
 	int updateDepartment(Long deptId, String deptName);
+	
+	int enableDepartment(Long deptId);
 	
 	int deleteDepartment(Long deptId);
 }

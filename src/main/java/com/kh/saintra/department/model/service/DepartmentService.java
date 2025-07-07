@@ -1,5 +1,6 @@
 package com.kh.saintra.department.model.service;
 
+import java.util.List;
 import java.util.Map;
 
 import com.kh.saintra.department.model.dto.DepartmentDeleteDTO;
@@ -7,22 +8,20 @@ import com.kh.saintra.department.model.dto.DepartmentInsertDTO;
 import com.kh.saintra.department.model.dto.DepartmentListDTO;
 import com.kh.saintra.department.model.dto.DepartmentUpdateDTO;
 import com.kh.saintra.department.model.vo.DepartmentPageVO;
+import com.kh.saintra.department.model.vo.DepartmentVO;
 
 
 public interface DepartmentService {
 
-	/**
-	 * 조건에 맞는 부서 목록 가져오고 페이지네이션해서 반환
-	 * @param deptListInfo
-	 * @return 페이지네이션한 부서 목록
-	 */
-	Map<String, Object> getDepartmentList(DepartmentListDTO deptListInfo);
+	List<DepartmentVO> getDepartmentList();
 	
 	void insertDepartment(DepartmentInsertDTO deptInsertInfo);
 	
-	DepartmentPageVO getDepartmentPage(String deptId);
+	DepartmentPageVO getDepartmentPage(Long deptId);
 	
-	void updateDepartment(String deptId, DepartmentUpdateDTO deptUpdateInfo);
+	void updateDepartment(Long deptId, DepartmentUpdateDTO deptUpdateInfo);
 	
-	void deleteDepartment(String deptId, DepartmentDeleteDTO deptDeleteInfo);
+	void enableDepartment(Long deptId);
+	
+	void deleteDepartment(Long deptId, DepartmentDeleteDTO deptDeleteInfo);
 }

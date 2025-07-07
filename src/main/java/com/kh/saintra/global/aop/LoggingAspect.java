@@ -28,8 +28,16 @@ public class LoggingAspect {
     
     private final LogService logService;
     
-    @Pointcut("execution(* com.kh.saintra..controller..*(..))"
-        + " && !within(com.kh.saintra..controller.UserStatusController)")
+    @Pointcut("!execution(* com.kh.saintra..controller..*(..))"
+        + " && !within(com.kh.saintra..controller.UserStatusController)"
+        + " && !within(com.kh.saintra..controller.MailController)"
+        + " && !execution(* com.kh.saintra..controller.UserController.join(..))"
+        + " && !execution(* com.kh.saintra..controller.AuthController.findPassword(..))"
+        + " && !execution(* com.kh.saintra..controller.AuthController.changePassword(..))"
+        + " && !within(* com.kh.saintra..controller.BoardController)"
+        + " && !within(* com.kh.saintra..controller.CommentController)"
+        + " && !within(* com.kh.saintra..controller.DepartmentController)"
+        + " && !within(* com.kh.saintra..controller.FileController)")
     public void httpControllerMethods() {}
 
     @Around("httpControllerMethods()")
@@ -47,6 +55,9 @@ public class LoggingAspect {
 
         // CustomUserDetails user = (CustomUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Long userId = getUserSafely();
+        if( userId == null) {
+            return result;
+        }
 
         LogDTO logDto = LogDTO.builder()
                 .userId(userId)
@@ -87,7 +98,7 @@ public class LoggingAspect {
             return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
                     .map(auth -> (CustomUserDetails) auth.getPrincipal())
                     .map(CustomUserDetails::getId)
-                    .orElse(1L);
+                    .orElse(null);
         } catch (Exception e) {
             return null;
         }

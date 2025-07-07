@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.kh.saintra.auth.model.service.AuthService;
 import com.kh.saintra.board.model.dao.BoardMapper;
 import com.kh.saintra.board.model.dto.BoardDeleteDTO;
 import com.kh.saintra.board.model.dto.BoardDetailDTO;
@@ -30,6 +31,7 @@ public class BoardServiceImpl implements BoardService {
 	
 	private final BoardMapper boardMapper;
 	private final FileMapper fileMapper;
+	private final AuthService authService;
 	
 	/**
 	 * 게시판 종류를 확인하여 존재하는 게시판인지 확인하고 아닐 경우 예외처리하는 메서드
@@ -88,8 +90,6 @@ public class BoardServiceImpl implements BoardService {
 		boardListInfo.setLimit(boardLimit);
 		boardListInfo.setOffset(offset);
 		
-		log.info("condition: {}", boardListInfo.getCondition());
-		
 		List<BoardVO> boardList = boardMapper.selectBoardList(boardListInfo);
 		
 		Map<String, Object> boards = new HashMap<String, Object>();
@@ -107,16 +107,16 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public void insertBoard(BoardInsertDTO boardInsertInfo) {
+	public Long insertBoard(BoardInsertDTO boardInsertInfo) {
 		
 		// 게시판 종류 확인
 		String type = boardInsertInfo.getType();
 		
 		checkBoardType(type);
 		
-		// 작성자 정보 토큰에서 꺼내 DTO에 삽입(나중에 작업)
-		
-		// 게시물 내용 첨부 파일 관련 편집(나중에 작업)
+		// 작성자 정보 토큰에서 꺼내 DTO에 삽입
+//		boardInsertInfo.setUserId(authService.getUserDetails().getId());
+		boardInsertInfo.setUserId(13L);
 		
 		// 게시물 정보 DB에 삽입
 		if(boardMapper.insertBoard(boardInsertInfo) != 1) {
@@ -124,19 +124,21 @@ public class BoardServiceImpl implements BoardService {
 			throw new DatabaseOperationException(ResponseCode.SERVER_ERROR, "게시물 등록에 실패 했습니다.");
 		}
 		
-		// 게시물 첨부 파일 정보 DB에 삽입
-		List<Long> files = boardInsertInfo.getFiles();
+		// 게시물 번호 가져오기
+		Long boardId = boardMapper.selectLatestBoardIdByConditions(boardInsertInfo);
 		
-		if(files != null) {
-			
-			// 게시물 번호 가져오기
-			Long boardId = boardMapper.selectLatestBoardIdByConditions(boardInsertInfo);
+		// 게시물 첨부 파일 정보 DB에 삽입
+		List<Long> files = boardInsertInfo.getImageFiles();
+		
+		if(files.size() > 0) {
 			
 			if(boardMapper.insertBoardFiles(type, boardId, files) != files.size()) {
 				
 				throw new DatabaseOperationException(ResponseCode.SERVER_ERROR, "게시물 첨부 파일 저장에 실패 했습니다.");
 			}
 		}
+		
+		return boardId;
 	}
 	
 	@Override
@@ -147,8 +149,10 @@ public class BoardServiceImpl implements BoardService {
 		
 		checkBoardType(type);
 		
+		log.info("boardDetailInfo2: {}", boardDetailInfo);
+		
 		// 게시물 정보 가져오기
-		BoardVO boardDetail = boardMapper.selectBoardDetail(type, boardDetailInfo.getBoardId());
+		BoardVO boardDetail = boardMapper.selectBoardDetail(boardDetailInfo);
 		
 		// 게시물이 존재하는지 검사
 		if(boardDetail == null) {
@@ -156,10 +160,10 @@ public class BoardServiceImpl implements BoardService {
 			throw new EntityNotFoundException(ResponseCode.SERVER_ERROR, "존재하지 않는 게시물 입니다.");
 		}
 		
-		// 게시물 기존 첨부 파일 정보 가져오기
-		Long boardId = boardDetail.getId();
+		log.info("boardDetailInfo3: {}", boardDetailInfo);
 		
-		List<Long> files = boardMapper.selectBoardFiles(type, boardId);
+		// 게시물 기존 첨부 파일 정보 가져오기
+		List<Long> files = boardMapper.selectBoardFiles(boardDetailInfo);
 		
 		Map<String, Object> boardDetailMap = new HashMap<String, Object>();
 		
@@ -189,8 +193,9 @@ public class BoardServiceImpl implements BoardService {
 		}
 		
 		// 게시물 기존 첨부 파일 정보 삭제
+		BoardDetailDTO boardDetailInfo = new BoardDetailDTO(type, boardId);
 		
-		List<Long> oldFiles = boardMapper.selectBoardFiles(type, boardId);
+		List<Long> oldFiles = boardMapper.selectBoardFiles(boardDetailInfo);
 		
 		if(boardMapper.deleteBoardFiles(type, boardId) != oldFiles.size()) {
 			
