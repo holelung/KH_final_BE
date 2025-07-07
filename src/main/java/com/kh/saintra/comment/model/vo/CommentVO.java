@@ -15,6 +15,7 @@ public class CommentVO {
 
 	private Long id;
 	private Long boardId;
+	private Long userId;
 	private String username;
 	private String realname;
 	private String content;

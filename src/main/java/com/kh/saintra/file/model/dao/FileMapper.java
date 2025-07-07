@@ -4,19 +4,22 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.kh.saintra.file.model.dto.FileDTO;
 import com.kh.saintra.file.model.vo.FileVO;
+import com.kh.saintra.file.model.vo.ProfileVO;
 
 @Mapper
 public interface FileMapper {
 
-	FileVO getProfile(Long userId);
+	ProfileVO getProfile(Long userId);
 	
-	int insertProfileInfo(FileDTO fileInfo);
+	int updateProfileInfo(FileDTO fileInfo);
 	
 	int insertFileInfo(FileDTO fileInfo);
 	
 	FileVO selectFileInfo(FileDTO fileInfo);
 	
-	FileVO selectFileInfoById(Long fileId);
+	FileVO selectFileInfoByFileId(Long fileId);
+	
+	int resetProfile(Long userId);
 	
 	int deleteFileInfo(Long fileId);
 }

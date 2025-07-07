@@ -16,6 +16,7 @@ import com.kh.saintra.auth.model.service.AuthService;
 import com.kh.saintra.file.model.dao.FileMapper;
 import com.kh.saintra.file.model.dto.FileDTO;
 import com.kh.saintra.file.model.vo.FileVO;
+import com.kh.saintra.file.model.vo.ProfileVO;
 import com.kh.saintra.global.enums.ResponseCode;
 import com.kh.saintra.global.error.exceptions.DatabaseOperationException;
 import com.kh.saintra.global.error.exceptions.FileNotAllowedException;
@@ -122,8 +123,9 @@ public class FileServiceImpl implements FileService {
 	}
 	
 	@Override
-	public FileVO getProfile() {
+	public ProfileVO getProfile() {
 		
+		// 토큰 유저 정보 추출
 		Long userId = authService.getUserDetails().getId();
 		
 		return fileMapper.getProfile(userId);
@@ -157,8 +159,11 @@ public class FileServiceImpl implements FileService {
         metadata.setContentType(file.getContentType());
         metadata.setContentLength(file.getSize());
         
+        // 기존 프로필 사진 삭제하고 새로운 프로필 사진 업로드
+        ProfileVO oldProfile = fileMapper.getProfile(userId);
+        
         try {
-        	
+        	amazonS3Client.deleteObject(bucket, oldProfile.getFilename());
         	amazonS3Client.putObject(bucket, filename, file.getInputStream(), metadata);
         	
 		} catch (IOException e) {
@@ -169,7 +174,9 @@ public class FileServiceImpl implements FileService {
 		// 파일 정보 DB에 저장
         FileDTO fileInfo = new FileDTO(userId, filename, origin, fileUrl);
         
-		if(fileMapper.insertProfileInfo(fileInfo) != 1) {
+        log.info("fileInfo: {}", fileInfo);
+        
+		if(fileMapper.updateProfileInfo(fileInfo) != 1) {
 			
 			throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "데이터베이스 오류 입니다.");
 		}
@@ -178,8 +185,8 @@ public class FileServiceImpl implements FileService {
 	@Override
 	public FileVO uploadFileforBoard(MultipartFile file) {
 		
-//		// 사용자 정보 추출
-//		Long userId = authService.getUserDetails().getId();
+		// 사용자 정보 추출
+		Long userId = authService.getUserDetails().getId();
 
 		// 빈 파일인지 검사
 		checkFileisEmpty(file);
@@ -210,7 +217,7 @@ public class FileServiceImpl implements FileService {
 	    }
         
 		// 파일 정보 DB에 저장
-        FileDTO fileInfo = new FileDTO(13L, filename, origin, fileUrl);
+        FileDTO fileInfo = new FileDTO(userId, filename, origin, fileUrl);
         
 		if(fileMapper.insertFileInfo(fileInfo) != 1) {
 			
@@ -222,30 +229,36 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public void deleteFileforProfile(Long fileId) {
+	public void deleteFileforProfile() {
+		
+		// 사용자 정보 추출
+		Long userId = authService.getUserDetails().getId();
 		
 		// DB에 저장된 파일 정보 가져오기
-		FileVO fileInfo = fileMapper.selectFileInfoById(fileId);
+		ProfileVO fileInfo = fileMapper.getProfile(userId);
 		
-		// DB에 저장된 파일 정보 삭제
-		if(fileMapper.deleteFileInfo(fileId) != 1) {
+		// 버킷에 저장한 파일 삭제 생성
+        try {
+        	
+        	amazonS3Client.deleteObject(bucket, fileInfo.getFilename());
+        	
+		} catch (RuntimeException e) {
 			
-			throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "파일 삭제에 실패 했습니다.");
-		}
-		
-		// 버킷에 저장한 url 생성(나중에 작업)
-		// String filename = fileInfo.getFilename();
-		
-		// 버킷에 업로드된 파일 삭제(나중에 작업)
+			throw new FileStreamException(ResponseCode.SERVER_ERROR, "첨부 파일 삭제 실패");
+	    }
 		
 		// 프로필 사진을 기본 이미지로 대체
+        if(fileMapper.resetProfile(userId) != 1) {
+        	
+        	throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "파일 삭제에 실패 했습니다.");
+        }
 	}
 
 	@Override
 	public void deleteFileforBoard(Long fileId) {
 		
 		// DB에 저장된 파일 정보 가져오기
-		FileVO fileInfo = fileMapper.selectFileInfoById(fileId);
+		FileVO fileInfo = fileMapper.selectFileInfoByFileId(fileId);
 		
 		// 버킷에 저장한 파일 삭제 생성
         try {

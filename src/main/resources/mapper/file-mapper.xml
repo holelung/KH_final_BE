@@ -5,36 +5,31 @@
 <mapper namespace="com.kh.saintra.file.model.dao.FileMapper">
 
 	<select id="getProfile"
-			resultType="com.kh.saintra.file.model.vo.FileVO">
+			parameterType="long"
+			resultType="com.kh.saintra.file.model.vo.ProfileVO">
 		SELECT
-			USER_ID,
-			FILENAME,
-			ORIGIN,
-			URL
+			USER_ID userId,
+			FILENAME filename,
+			ORIGIN origin,
+			URL url
 		FROM
 			TB_PROFILE
 		WHERE
 			USER_ID = #{userId}
 	</select>
 
-	<insert id="insertProfileInfo"
+	<update id="updateProfileInfo"
 			parameterType="com.kh.saintra.file.model.dto.FileDTO">
-		INSERT INTO
+			
+		UPDATE
 			TB_PROFILE
-			(
-				USER_ID,
-				FILENAME,
-				ORIGIN,
-				URL
-			)
-		VALUES
-			(
-				#{userId},
-				#{filename},
-				#{origin},
-				#{url}
-			)
-	</insert>
+		SET
+			FILENAME = #{filename},
+			ORIGIN = #{origin},
+			URL = #{url}
+		WHERE
+			USER_ID = #{userId}
+	</update>
 
 	<insert id="insertFileInfo"
 			parameterType="com.kh.saintra.file.model.dto.FileDTO">
@@ -74,8 +69,8 @@
 			URL = #{url}
 	</select>
 	
-	<select id="selectFileInfoById"
-			parameterType="string"
+	<select id="selectFileInfoByFileId"
+			parameterType="long"
 			resultType="com.kh.saintra.file.model.vo.FileVO">
 		SELECT
 			ID fileId,
@@ -88,6 +83,18 @@
 		WHERE
 			ID = #{fileId}
 	</select>
+	
+	<update id="resetProfile"
+			parameterType="long">
+		UPDATE
+			TB_PROFILE
+		SET
+			FILENAME = DEFAULT,
+			ORIGIN = DEFAULT,
+			URL = DEFAULT
+		WHERE
+			USER_ID = #{userId}
+	</update>
 	
 	<delete id="deleteFileInfo"
 			parameterType="long">

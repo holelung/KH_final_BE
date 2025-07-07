@@ -3,16 +3,17 @@ package com.kh.saintra.file.model.service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.saintra.file.model.vo.FileVO;
+import com.kh.saintra.file.model.vo.ProfileVO;
 
 public interface FileService {
 
-	FileVO getProfile();
+	ProfileVO getProfile();
 	
 	void uploadFileforProfile(MultipartFile file);
 	
 	FileVO uploadFileforBoard(MultipartFile file);
 	
-	void deleteFileforProfile(Long fileId);
+	void deleteFileforProfile();
 	
 	void deleteFileforBoard(Long fileId);
 }

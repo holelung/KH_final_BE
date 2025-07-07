@@ -37,8 +37,6 @@ public class CommentController {
 	@Transactional
 	public ResponseEntity<?> getCommentList(@ModelAttribute @Valid CommentListDTO commentListInfo) {
 		
-		log.info("commentListInfo: {}", commentListInfo);
-		
 		Map<String, Object> commentMap = commentService.getCommentList(commentListInfo);
 		
 		return ResponseEntity.ok(ApiResponse.success(ResponseCode.GET_SUCCESS, commentMap, "댓글 목록 응답 성공"));

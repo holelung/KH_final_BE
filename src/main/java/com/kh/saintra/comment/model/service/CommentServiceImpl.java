@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.kh.saintra.auth.model.service.AuthService;
 import com.kh.saintra.board.model.dao.BoardMapper;
 import com.kh.saintra.board.model.dto.BoardDetailDTO;
 import com.kh.saintra.board.model.service.BoardService;
@@ -29,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CommentServiceImpl implements CommentService {
 
 	private final BoardService boardService;
+	private final AuthService authService;
 	private final BoardMapper boardMapper;
 	private final CommentMapper commentMapper;
 
@@ -45,16 +47,12 @@ public class CommentServiceImpl implements CommentService {
 		
 		BoardDetailDTO boardDetailInfo = new BoardDetailDTO(type, boardId);
 		
-		log.info("commentListInfo2: {}", commentListInfo);
-		
 		BoardVO board = boardMapper.selectBoardDetail(boardDetailInfo);
 		
 		if(board == null) {
 			
 			throw new EntityNotFoundException(ResponseCode.SERVER_ERROR, "존재하지 않는 게시물 입니다.");
 		}
-		
-		log.info("commentListInfo3: {}", commentListInfo);
 		
 		// 페이지네이션 후, 댓글 목록 가져오기
 		int page = commentListInfo.getPage();
@@ -69,11 +67,7 @@ public class CommentServiceImpl implements CommentService {
 		commentListInfo.setLimit(commentLimit);
 		commentListInfo.setOffset(offset);
 		
-		log.info("commentListInfo4: {}", commentListInfo);
-		
 		List<CommentVO> commentList = commentMapper.selectCommentList(commentListInfo);
-		
-		log.info("commentListInfo5: {}", commentListInfo);
 		
 		// 반환 맵 생성
 		Map<String, Object> commentMap = new HashMap<String, Object>();
@@ -94,7 +88,7 @@ public class CommentServiceImpl implements CommentService {
 	public void insertComment(CommentInsertDTO commentInsertInfo) {
 		
 		// 토큰에서 인증 정보 확인
-		commentInsertInfo.setUserId(13L);
+		commentInsertInfo.setUserId(authService.getUserDetails().getId());
 		
 		// 게시판 종류 확인
 		String type = commentInsertInfo.getType();
@@ -112,6 +106,7 @@ public class CommentServiceImpl implements CommentService {
 	public void updateComment(CommentUpdateDTO commentUpdateInfo) {
 
 		// 토큰에서 인증 정보 확인
+		commentUpdateInfo.setUserId(authService.getUserDetails().getId());
 		
 		// 게시판 종류 확인
 		String type = commentUpdateInfo.getType();
@@ -129,6 +124,7 @@ public class CommentServiceImpl implements CommentService {
 	public void deleteComment(CommentDeleteDTO commentDeleteInfo) {
 		
 		// 토큰에서 인증 정보 확인
+		commentDeleteInfo.setUserId(authService.getUserDetails().getId());
 		
 		// 게시판 종류 확인
 		String type = commentDeleteInfo.getType();
