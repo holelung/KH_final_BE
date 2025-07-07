@@ -2,6 +2,7 @@ package com.kh.saintra.board.model.dto;
 
 import java.util.List;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -22,7 +23,7 @@ public class BoardUpdateDTO {
 	@Pattern(regexp = "^(bulletin|free|anonymous|\\d+)$", message = "허용되지 않은 게시판 식별값 입니다.")
 	private String type;
 	
-	@NotBlank
+	@Min(1)
 	private Long boardId;
 	
 	@Size(min = 5, max = 20, message = "게시물 제목의 길이가 너무 짧거나 깁니다.")
