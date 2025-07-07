@@ -21,6 +21,7 @@ import com.kh.saintra.global.enums.ResponseCode;
 import com.kh.saintra.global.response.ApiResponse;
 import com.kh.saintra.user.model.dto.Attendance;
 import com.kh.saintra.user.model.dto.AttendanceRequest;
+import com.kh.saintra.user.model.dto.ListRequest;
 import com.kh.saintra.user.model.dto.UserDTO;
 import com.kh.saintra.user.model.dto.UserPasswordDTO;
 import com.kh.saintra.user.model.dto.UserProfileDTO;
@@ -57,7 +58,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<UserDTO>> getUserByMe() {
+    public ResponseEntity<ApiResponse<UserDTO>> getUserByMe(@ModelAttribute ListRequest request) {
         
         return ResponseEntity.ok(userService.getUserByMe());
     }
@@ -68,6 +69,13 @@ public class UserController {
     public ResponseEntity<ApiResponse<List<UserDTO>>> getUserList(@ModelAttribute UserSearchDTO search){
         
         return ResponseEntity.ok(userService.getUserList(search));
+    }
+
+    // 사용자 목록 조회(관리자용)
+    @GetMapping("/admin")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getUserListByAdmin(@ModelAttribute UserSearchDTO search){
+        
+        return ResponseEntity.ok(userService.getUserListByAdmin(search));
     }
 
     // 사용자 정보 변경
@@ -101,9 +109,9 @@ public class UserController {
 
     // 회원탈퇴
     @DeleteMapping("/mypage")
-    public ResponseEntity<ApiResponse<Void>> dropUser(@RequestBody Map<String, String> password){
+    public ResponseEntity<ApiResponse<Void>> dropUser(){
 
-        return ResponseEntity.ok(userService.deleteUser(password.get("password")));
+        return ResponseEntity.ok(userService.deleteUser());
     }
 
     // 회원 강퇴

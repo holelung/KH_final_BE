@@ -32,7 +32,6 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor{
                 .build();
         
         attributes.put("LogInfo", log);
-        System.out.println("핸드셰이크 흔들흔들");
         return true;
         
     }

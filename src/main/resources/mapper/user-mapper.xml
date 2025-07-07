@@ -139,6 +139,88 @@
             ID DESC
     </select>
 
+    <!-- 회원정보 조회 관리자용 -->
+    <select id="getUserListByAdmin"
+            parameterType="UserSearchDTO"
+            resultType="UserDTO">
+         SELECT
+            U.ID,
+            U.USERNAME,
+            U.PASSWORD,
+            U.REALNAME,
+            U.EMAIL,
+            CRYPTO.DECRYPT_AES(U.PHONE) AS phone,
+            U.ENROLL_DATE enrollDate,
+            U.ROLE,
+            CRYPTO.DECRYPT_AES(U.SSN) AS ssn,
+            U.ADDRESS_1 address1,
+            CRYPTO.DECRYPT_AES(U.ADDRESS_2) AS address2,
+            U.JOB_ID jobId,
+            J.JOB_NAME jobName,
+            U.DEPT_ID deptId,
+            D.DEPT_NAME deptName,
+            U.TEAM_ID teamId,
+            T.TEAM_NAME teamName,
+            U.IS_ACTIVE isActive
+        FROM
+            TB_USER U
+        LEFT JOIN
+            TB_DEPARTMENT D ON(U.DEPT_ID = D.ID)
+        LEFT JOIN
+            TB_JOB J ON(U.JOB_ID = J.ID)
+        LEFT JOIN
+            TB_TEAM T ON(U.TEAM_ID = T.ID)
+        <if test="search != null || search != ''">
+        WHERE 
+            U.REALNAME LIKE '%'||#{search}||'%'
+        OR
+            T.TEAM_NAME LIKE '%'||#{search}||'%' 
+        OR
+            J.JOB_NAME LIKE '%'||#{search}||'%' 
+        OR 
+            D.DEPT_NAME LIKE '%'||#{search}||'%'
+        </if>
+        ORDER BY
+            ID DESC
+        OFFSET #{currentPage} ROWS FETCH NEXT #{rowsPerPage} ROWS ONLY
+    </select>
+        <!-- WHERE
+            1=1 
+            <if test="deptId != null">
+        AND
+            DEPT_ID = #{deptId}
+        </if>
+        <if test="jobId != null">
+        AND
+            JOB_ID = #{jobId}
+        </if> -->
+
+    <select id="getUserListTotalCount"
+            parameterType="UserSearchDTO"
+            resultType="_long">
+        SELECT
+            COUNT(*)
+        FROM
+            TB_USER U
+        LEFT JOIN
+            TB_DEPARTMENT D ON(U.DEPT_ID = D.ID)
+        LEFT JOIN
+            TB_JOB J ON(U.JOB_ID = J.ID)
+        LEFT JOIN
+            TB_TEAM T ON(U.TEAM_ID = T.ID)
+        <if test="search != null || search != ''">
+        WHERE 
+            U.REALNAME LIKE '%'||#{search}||'%'
+        OR
+            T.TEAM_NAME LIKE '%'||#{search}||'%' 
+        OR
+            J.JOB_NAME LIKE '%'||#{search}||'%' 
+        OR 
+            D.DEPT_NAME LIKE '%'||#{search}||'%'
+        </if>
+    </select>
+    
+
     <!-- 회원 정보 조회(유저 본인) -->
     <select id="getUserByMe"
             parameterType="_long"
@@ -213,9 +295,9 @@
         WHERE
             USER_ID = #{id}
         AND
-            TIME &gt; #{startDate}
+            TIME &gt;= #{startDate}
         AND
-            TIME &lt; #{endDate}
+            TIME &lt;= #{endDate}
         ORDER BY
             TIME DESC
     </select>

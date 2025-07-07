@@ -1,6 +1,8 @@
 package com.kh.saintra.user.model.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -16,6 +18,7 @@ import com.kh.saintra.global.response.ApiResponse;
 import com.kh.saintra.user.model.dao.UserMapper;
 import com.kh.saintra.user.model.dto.Attendance;
 import com.kh.saintra.user.model.dto.AttendanceRequest;
+import com.kh.saintra.user.model.dto.ListRequest;
 import com.kh.saintra.user.model.dto.UserDTO;
 import com.kh.saintra.user.model.dto.UserPasswordDTO;
 import com.kh.saintra.user.model.dto.UserProfileDTO;
@@ -101,6 +104,26 @@ public class UserServiceImpl implements UserService {
 
         return ApiResponse.success(ResponseCode.GET_SUCCESS, result, "유저 목록 조회 성공");
     }
+
+    
+
+    @Override
+    public ApiResponse<Map<String, Object>> getUserListByAdmin(UserSearchDTO request) {
+        request.setCurrentPage( request.getCurrentPage() * request.getRowsPerPage());
+
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            result.put("list", userMapper.getUserListByAdmin(request));
+            result.put("total", userMapper.getUserListTotalCount(request));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "유저목록 조회 실패");
+        }
+
+        return ApiResponse.success(ResponseCode.GET_SUCCESS, result, "유저목록 조회 성공");
+    }
+
 
     @Override
     @Transactional
@@ -194,10 +217,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public ApiResponse<Void> deleteUser(String password) {
-        // 비밀번호 맞는지 확인
-        Long id = authService.checkPassword(password);
+    public ApiResponse<Void> deleteUser() {
         
+        Long id = authService.getUserDetails().getId();
+
         try {
             userMapper.deleteUser(id);
         } catch (Exception e) {

@@ -39,6 +39,8 @@ public class LoggingAspect {
     @Around("httpControllerMethods()")
     public Object logExecution(ProceedingJoinPoint joinPoint) throws Throwable {
 
+        log.info("AOP 진입 확인");
+
         long start = System.currentTimeMillis();
         Object result = null;
 
@@ -51,9 +53,6 @@ public class LoggingAspect {
 
         // CustomUserDetails user = (CustomUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Long userId = getUserSafely();
-        if( userId == null) {
-            return result;
-        }
 
         LogDTO logDto = LogDTO.builder()
                 .userId(userId)

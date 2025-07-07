@@ -2,7 +2,7 @@ package com.kh.saintra.auth.model.service;
 
 import java.util.List;
 import java.util.Map;
-
+import com.kh.saintra.auth.model.dto.ApproveRequest;
 import com.kh.saintra.auth.model.dto.ChangePasswordDTO;
 import com.kh.saintra.auth.model.dto.FindPasswordDTO;
 import com.kh.saintra.auth.model.dto.LoginFormDTO;
@@ -42,7 +42,7 @@ public interface AuthService {
      * 확인 할 수 있도록 List를 반환한다.
      * @return List<User>
      */
-    ApiResponse<List<ApproveUser>> getApproveList();
+    ApiResponse<Map<String, Object>> getApproveList(ApproveRequest request);
 
     /**
      * <pre>

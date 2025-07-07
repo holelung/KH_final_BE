@@ -18,6 +18,9 @@ import lombok.ToString;
 public class LogRequest {
 
     
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private String startDate;
+    private String endDate;
+    private Long currentPage;
+    private Long rowsPerPage;
+    private String search;
 }

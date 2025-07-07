@@ -2,6 +2,7 @@ package com.kh.saintra.auth.model.dao;
 
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
+import com.kh.saintra.auth.model.dto.ApproveRequest;
 import com.kh.saintra.auth.model.dto.LoginFormDTO;
 import com.kh.saintra.auth.model.vo.ApproveUser;
 import com.kh.saintra.auth.model.vo.ChangePassword;
@@ -69,7 +70,15 @@ public interface AuthMapper {
      * 
      * @return List<User>
      */
-    List<ApproveUser> getApproveList();
+    List<ApproveUser> getApproveList(ApproveRequest request);
+
+    /**
+     * 가입 요청 목록 전체 개수 조회
+     * 
+     * @param request 현재 페이지, 페이지당 ROW개수, 검색어
+     * @return Long 전체 개수
+     */
+    Long getApproveListTotalCount(ApproveRequest request);
 
     /**
      * <pre>
