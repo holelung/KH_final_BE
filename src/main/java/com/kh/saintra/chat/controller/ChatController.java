@@ -3,7 +3,6 @@ package com.kh.saintra.chat.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,7 +26,6 @@ public class ChatController {
 		
 		
 		@GetMapping
-		@MessageMapping("/chat")
 		public ResponseEntity<ApiResponse<List<MessageDTO>>> findMessagesByRoomId(@RequestParam(name="teamId") String teamId,
 																 @RequestParam(name="lastTimeStamp", required = false) String lastTimeStamp){
 			log.info("📨 메시지 목록 조회 요청: teamId={}, lastTimeStamp={}", teamId, lastTimeStamp);
@@ -39,7 +37,7 @@ public class ChatController {
 					ApiResponse.success(ResponseCode.GET_SUCCESS, messages, "메세지 목록 조회 성공"));
 		}
 		
-		@GetMapping("/api/chat/rooms")
+		@GetMapping("/rooms")
 		public ResponseEntity<ApiResponse<List<TeamDTO>>> getChatRooms() {
 		    List<TeamDTO> rooms = chatService.getAllChatRooms();
 
