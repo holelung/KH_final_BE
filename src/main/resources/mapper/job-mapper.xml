@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.kh.saintra.job.model.dao.JobMapper">
+
+  <select id="getJobList" resultType="com.kh.saintra.job.model.dto.JobDTO">
+    SELECT
+    	ID			AS id,
+    	JOB_NAME   AS jobName
+    FROM
+    	TB_JOB
+    ORDER BY
+        ID DESC
+  </select>
+
+</mapper>

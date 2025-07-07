@@ -18,7 +18,7 @@ import lombok.ToString;
 public class UserCompanyInfoDTO {
 
     private Long id;
-    private String userRole;
+    private String role;
     private Long deptId;
     private Long jobId;
     private Long teamId;
