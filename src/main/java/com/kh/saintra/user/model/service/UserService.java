@@ -36,7 +36,7 @@ public interface UserService {
      * @param userSearch 검색을 하는데 필요한 정보들이 들어있음(검색어, 오름/내림차순, 부서, 직급)
      * @return ApiResponse(ResponseCode code, <T> data, String message)
      */
-    ApiResponse<List<UserDTO>> getUserList(UserSearchDTO userSearch);
+    ApiResponse<List<UserDTO>> getUserList();
 
     ApiResponse<Map<String,Object>> getUserListByAdmin(UserSearchDTO userSearch);
 

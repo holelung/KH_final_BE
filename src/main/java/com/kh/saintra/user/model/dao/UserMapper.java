@@ -64,7 +64,7 @@ public interface UserMapper {
      * @param userSearch 검색어, 검색기간
      * @return List<User>
      */
-    List<UserDTO> getUserList(UserSearchDTO userSearch);
+    List<UserDTO> getUserList();
     
     List<UserDTO> getUserListByAdmin(UserSearchDTO request);
 

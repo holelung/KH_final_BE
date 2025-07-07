@@ -18,9 +18,6 @@ import lombok.ToString;
 public class UserSearchDTO {
     
     private String search;
-    // private String deptName;
-    // private String jobName;
-    // private String teamName;
     private Long rowsPerPage;
     private Long currentPage;
 }

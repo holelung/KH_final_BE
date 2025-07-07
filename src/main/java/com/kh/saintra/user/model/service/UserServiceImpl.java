@@ -93,14 +93,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ApiResponse<List<UserDTO>> getUserList(UserSearchDTO userSearch) {
+    public ApiResponse<List<UserDTO>> getUserList() {
         
         // 부서 확인
         // if(!authService.getUserDetails().getDeptId().equals("1")){
         //     throw new InvalidAccessException(ResponseCode.INVALID_ACCESS, "접근 권한이 없습니다.");
         // }
 
-        List<UserDTO> result = userMapper.getUserList(userSearch);
+        List<UserDTO> result = userMapper.getUserList();
 
         return ApiResponse.success(ResponseCode.GET_SUCCESS, result, "유저 목록 조회 성공");
     }

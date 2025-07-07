@@ -66,9 +66,9 @@ public class UserController {
 
     // 사용자 목록 조회
     @GetMapping
-    public ResponseEntity<ApiResponse<List<UserDTO>>> getUserList(@ModelAttribute UserSearchDTO search){
+    public ResponseEntity<ApiResponse<List<UserDTO>>> getUserList(){
         
-        return ResponseEntity.ok(userService.getUserList(search));
+        return ResponseEntity.ok(userService.getUserList());
     }
 
     // 사용자 목록 조회(관리자용)

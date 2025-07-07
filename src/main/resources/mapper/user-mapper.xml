@@ -118,23 +118,10 @@
 
     <!-- 회원 목록 불러오기 -->
     <select id="getUserList"
-            parameterType="UserSearchDTO"
             resultType="UserDTO">
         <include refid="selectUser" />
-        WHERE 
-            1=1
-        <if test="search != null">
-        AND
-            REALNAME = #{search}
-        </if>
-        <if test="deptId != null">
-        AND
-            DEPT_ID = #{deptId}
-        </if>
-        <if test="jobId != null">
-        AND
-            JOB_ID = #{jobId}
-        </if>
+        WHERE
+            IS_ACTIVE = 'Y'
         ORDER BY
             ID DESC
     </select>
