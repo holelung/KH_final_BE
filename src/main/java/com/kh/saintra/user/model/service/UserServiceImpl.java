@@ -10,11 +10,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import com.kh.saintra.auth.model.dao.AuthMapper;
 import com.kh.saintra.auth.model.service.AuthService;
+import com.kh.saintra.department.model.dao.DepartmentMapper;
 import com.kh.saintra.duplication.model.service.DuplicationCheckService;
 import com.kh.saintra.global.enums.ResponseCode;
 import com.kh.saintra.global.error.exceptions.DatabaseOperationException;
 import com.kh.saintra.global.error.exceptions.InvalidAccessException;
 import com.kh.saintra.global.response.ApiResponse;
+import com.kh.saintra.job.model.dao.JobMapper;
+import com.kh.saintra.team.model.dao.TeamMapper;
 import com.kh.saintra.user.model.dao.UserMapper;
 import com.kh.saintra.user.model.dto.Attendance;
 import com.kh.saintra.user.model.dto.AttendanceRequest;
@@ -40,6 +43,9 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final AuthMapper authMapper;
     private final AuthService authService;
+    private final TeamMapper teamMapper;
+    private final DepartmentMapper departmentMapper;
+    private final JobMapper jobMapper;
 
     @Override
     @Transactional
@@ -374,4 +380,23 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    @Override
+    @Transactional
+    public ApiResponse<Map<String, Object>> getCompanyInfo() {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            result.put("team", teamMapper.selectAllTeams());
+            result.put("dept", departmentMapper.selectDepartmentList());
+            result.put("job", jobMapper.getJobList());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "부서정보 조회 실패");
+        }
+
+        return ApiResponse.success(ResponseCode.GET_SUCCESS, result, "회사 부서정보 조회성공");
+    }
+
+
+    
 }

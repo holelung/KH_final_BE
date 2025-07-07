@@ -50,11 +50,11 @@ public class UserDTO {
     @Pattern(regexp = Regexp.SSN, message = "주민번호 형식에 맞지 않습니다.")
     private String ssn;
 
-    private String jobId;
+    private Long jobId;
     private String jobName;
-    private String deptId;
+    private Long deptId;
     private String deptName;
-    private String teamId;
+    private Long teamId;
     private String teamName;
     private String role;
     private LocalDateTime enrollDate;

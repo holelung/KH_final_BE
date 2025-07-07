@@ -234,6 +234,17 @@
     </update>
 
 
+    <update id="updateUserByAdmin">
+        UPDATE
+            TB_USER
+        SET
+            DEPT_ID = #{deptId},
+            JOB_ID = #{jobId},
+            TEAM_ID = #{teamId}
+        WHERE
+            ID = #{id}
+    </update>
+
 
     <!-- 이메일 업데이트 -->
     <update id="updateEmail"

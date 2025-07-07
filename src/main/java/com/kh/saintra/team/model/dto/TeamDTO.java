@@ -7,6 +7,8 @@ import lombok.Data;
 @AllArgsConstructor
 public class TeamDTO {
 	
-    private String id;
+    private Long id;
     private String teamName;
+    private Long deptId;
+    private String isActive;
 }

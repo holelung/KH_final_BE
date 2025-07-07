@@ -10,5 +10,9 @@ public class LoginInfo {
     private String username;
     private String realname;
     private String email;
+    private final String role;
+    private final Long jobId;
+    private final Long deptId;
+    private final Long teamId;
     private String isActive;
 }

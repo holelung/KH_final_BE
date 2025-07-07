@@ -60,6 +60,8 @@ public interface UserService {
      */
     ApiResponse<UserDTO> getUserByMe();
 
+    ApiResponse<Map<String, Object>> getCompanyInfo();
+
     /**
      * <pre>
      * 회원 정보 수정(관리자) -> 직급/부서/팀/권한 변경

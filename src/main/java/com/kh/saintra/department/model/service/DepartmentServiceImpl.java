@@ -127,7 +127,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 			throw new InvalidAccessException(ResponseCode.AUTH_FAIL, "해당 부서 소속이 아닙니다.");
 		}
 		
-		if(Integer.parseInt(userInfo.getJobId()) < 5) {
+		if(userInfo.getJobId() < 5) {
 			
 			throw new InvalidAccessException(ResponseCode.AUTH_FAIL, "관리 직급이 아닙니다.");
 		}
@@ -208,12 +208,12 @@ public class DepartmentServiceImpl implements DepartmentService {
 		}
 		
 		// 사용자가 해당 부서 소속이며 일정 직급 이상인지 확인
-		if(!(userInfo.getDeptId()).equals(Long.toString(deptId))) {
+		if(!(userInfo.getDeptId() == deptId)) {
 			
 			throw new InvalidAccessException(ResponseCode.AUTH_FAIL, "해당 부서 소속이 아닙니다.");
 		}
 		
-		if(Integer.parseInt(userInfo.getJobId()) < 5) {
+		if(userInfo.getJobId() < 5) {
 			
 			throw new InvalidAccessException(ResponseCode.AUTH_FAIL, "관리 직급이 아닙니다.");
 		}

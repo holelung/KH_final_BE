@@ -8,10 +8,13 @@
   <select id="selectAllTeams" resultType="com.kh.saintra.team.model.dto.TeamDTO">
     SELECT
     	ID			AS teamId,
-    	TEAM_NAME   AS teamName
+    	TEAM_NAME   AS teamName,
+      DEPT_ID AS deptId,
+      IS_ACTIVE AS isActive
     FROM
     	TB_TEAM
+    ORDER BY
+      ID DESC
   </select>
 
 </mapper>
-
