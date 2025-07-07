@@ -22,6 +22,7 @@ import com.kh.saintra.global.response.ApiResponse;
 import com.kh.saintra.user.model.dto.Attendance;
 import com.kh.saintra.user.model.dto.AttendanceRequest;
 import com.kh.saintra.user.model.dto.ListRequest;
+import com.kh.saintra.user.model.dto.UserCompanyInfoDTO;
 import com.kh.saintra.user.model.dto.UserDTO;
 import com.kh.saintra.user.model.dto.UserPasswordDTO;
 import com.kh.saintra.user.model.dto.UserProfileDTO;
@@ -31,8 +32,9 @@ import com.kh.saintra.user.model.service.UserService;
 import com.kh.saintra.user.model.vo.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-
+@Slf4j
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -84,6 +86,15 @@ public class UserController {
         System.out.println("User정보 업데이트 컨트롤러");
         return ResponseEntity.ok(userService.updateUser(userProfile));
     }
+
+    // 사용자 정보변경 ( 관리자 )
+    @PutMapping("/admin")
+    public ResponseEntity<ApiResponse<Void>> updateUserByAdmin(@RequestBody UserCompanyInfoDTO request){
+        log.info("관리자의 사용자 정보 변경(부서)");
+        return ResponseEntity.ok(userService.updateUserByAdmin(request));
+    }
+
+    
 
     // 사용자 프로필 사진 변경
     @PatchMapping("/mypage")
@@ -146,6 +157,12 @@ public class UserController {
     public ResponseEntity<ApiResponse<Void>> checkOut() {
 
         return ResponseEntity.ok(userService.checkOut());
+    }
+
+    @GetMapping("/company")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getAllCompany() {
+        log.info("부서, 팀, 직급 리스트 조회");
+        return ResponseEntity.ok(userService.getCompanyInfo());
     }
     
 }

@@ -20,9 +20,9 @@ public class CustomUserDetails implements UserDetails{
     private final String realname;
     private final String email;
     private final String role;
-    private final String jobId;
-    private final String deptId;
-    private final String teamId;
+    private final Long jobId;
+    private final Long deptId;
+    private final Long teamId;
     private final String isActive;
     private final Collection<? extends GrantedAuthority> authorities;
 
