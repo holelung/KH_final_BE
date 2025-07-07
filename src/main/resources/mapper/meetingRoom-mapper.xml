@@ -9,7 +9,7 @@
 	<!-- 1. 주간 예약 조회 -->
 	<select id="getWeeklyReservations" resultType="com.kh.saintra.meetingroom.model.dto.MeetingRoomResponseDTO">
 	  SELECT
-	    r.ID         			 AS Id,
+	    r.ID         			 AS reservationId,
 	    r.ROOM_ID                AS roomId,
 	    mr.ROOM_NAME             AS roomName,
 	    mr.ROOM_LOCATION         AS roomLocation,
@@ -21,6 +21,7 @@
 	    rr.RESERVER_TYPE         AS reserverType,
 	    r.IS_ACTIVE              AS isActive,
 	    r.RESERVER_ID			 AS reserverId,
+	    r.CREATED_BY			 AS createdBy,
 	    
 	    CASE
 	      WHEN rr.RESERVER_TYPE = 'USER' THEN u.REALNAME
