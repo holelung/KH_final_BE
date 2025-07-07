@@ -223,22 +223,12 @@ public class FileServiceImpl implements FileService {
 
 	@Override
 	public void deleteFileforProfile(Long fileId) {
-		// fileId를 Long 자료형으로 파싱
-		Long id = (long)0;
-		
-		try {
-			id = Long.parseLong(fileId);
-			
-		} catch (RuntimeException e) {
-			
-			throw new InvalidValueException(ResponseCode.INVALID_VALUE, "잘못된 파일 ID 입니다.");
-		}
 		
 		// DB에 저장된 파일 정보 가져오기
-		FileVO fileInfo = fileMapper.selectFileInfoById(id);
+		FileVO fileInfo = fileMapper.selectFileInfoById(fileId);
 		
 		// DB에 저장된 파일 정보 삭제
-		if(fileMapper.deleteFileInfo(id) != 1) {
+		if(fileMapper.deleteFileInfo(fileId) != 1) {
 			
 			throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "파일 삭제에 실패 했습니다.");
 		}
