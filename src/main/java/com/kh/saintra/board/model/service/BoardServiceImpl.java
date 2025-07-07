@@ -115,8 +115,7 @@ public class BoardServiceImpl implements BoardService {
 		checkBoardType(type);
 		
 		// 작성자 정보 토큰에서 꺼내 DTO에 삽입
-//		boardInsertInfo.setUserId(authService.getUserDetails().getId());
-		boardInsertInfo.setUserId(13L);
+		boardInsertInfo.setUserId(authService.getUserDetails().getId());
 		
 		// 게시물 정보 DB에 삽입
 		if(boardMapper.insertBoard(boardInsertInfo) != 1) {
@@ -181,8 +180,10 @@ public class BoardServiceImpl implements BoardService {
 		
 		checkBoardType(type);
 		
-		// 작성자 정보 토큰에서 꺼내 DTO에 삽입(나중에 작업)
-		Long userId = boardUpdateInfo.getUserId();
+		// 작성자 정보 토큰에서 꺼내 DTO에 삽입
+		Long userId = authService.getUserDetails().getId();
+		
+		boardUpdateInfo.setUserId(userId);
 		
 		// 게시물의 작성자가 맞는지 확인
 		Long boardId = boardUpdateInfo.getBoardId();
@@ -210,8 +211,6 @@ public class BoardServiceImpl implements BoardService {
 			throw new DatabaseOperationException(ResponseCode.SERVER_ERROR, "게시물 첨부 파일 새로운 정보 저장에 실패 했습니다.");
 		}
 		
-		// 게시물 내용 첨부 파일 관련 편집(나중에 작업)
-		
 		// 게시물 DB 업데이트
 		if(boardMapper.updateBoard(boardUpdateInfo) != 1) {
 			
@@ -227,8 +226,10 @@ public class BoardServiceImpl implements BoardService {
 		
 		checkBoardType(type);
 		
-		// 작성자 정보 토큰에서 꺼내 DTO에 삽입(나중에 작업)
-		Long userId = boardDeleteInfo.getUserId();
+		// 작성자 정보 토큰에서 꺼내 DTO에 삽입
+		Long userId = authService.getUserDetails().getId();
+		
+		boardDeleteInfo.setUserId(userId);
 		
 		// 게시물의 작성자가 맞는지 확인
 		Long boardId = boardDeleteInfo.getBoardId();

@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.saintra.file.model.service.FileService;
 import com.kh.saintra.file.model.vo.FileVO;
+import com.kh.saintra.file.model.vo.ProfileVO;
 import com.kh.saintra.global.enums.ResponseCode;
 import com.kh.saintra.global.response.ApiResponse;
 
@@ -30,7 +31,7 @@ public class FileController {
 	@Transactional
 	public ResponseEntity<?> getProfile() {
 		
-		FileVO profile = fileService.getProfile();
+		ProfileVO profile = fileService.getProfile();
 		
 		return ResponseEntity.ok(ApiResponse.success(ResponseCode.INSERT_SUCCESS, profile, "프로필 가져오기 성공"));
 	}
@@ -68,9 +69,9 @@ public class FileController {
 	 * @return
 	 */
 	@DeleteMapping("/users")
-	public ResponseEntity<?> deleteFileforProfile(@RequestParam(name = "fileId") Long fileId) {
+	public ResponseEntity<?> deleteFileforProfile() {
 		
-		fileService.deleteFileforProfile(fileId);
+		fileService.deleteFileforProfile();
 		
 		return ResponseEntity.ok(ApiResponse.success(ResponseCode.DELETE_SUCCESS, "프로필 사진 삭제 성공"));
 	}
