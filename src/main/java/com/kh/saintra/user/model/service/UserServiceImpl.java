@@ -50,7 +50,6 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public ApiResponse<Void> join(UserDTO user) {
-
         // 아이디 중복검사
         duplicationService.isIdDuplicate(user.getUsername());
         // 이메일 중복검사
@@ -67,13 +66,13 @@ public class UserServiceImpl implements UserService {
                 .ssn(user.getSsn())
                 .build();
         
-
         try {
             userMapper.join(userValue);
         } catch (Exception e) {
-            throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "회원가입 정보 입력 실패"+e.getStackTrace());
+            e.getStackTrace();
+            throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "회원가입 정보 입력 실패");
         }
-
+        
         Long userId = getUserByUsernameForApprove(userValue.getUsername()).getId();
 
         // 가입신청 테이블 삽입
@@ -82,10 +81,8 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "가입신청 실패..");
         }
-
         return ApiResponse.success(ResponseCode.INSERT_SUCCESS, "회원가입 요청 성공");
     }
-
 
     @Override
     @Transactional
