@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.saintra.global.logging.model.dao.LogMapper">
+
+    <insert id="insertLog">
+        INSERT
+        INTO
+        TB_LOG(
+            USER_ID,
+            ACTION_AREA,
+            ACTION_TYPE,
+            ACTION_RESULT,
+            ACTION_TIME,
+            CLIENT_IP,
+            REFERER
+        )
+        VALUES(
+            #{userId},
+            #{actionArea},
+            #{actionType},
+            #{actionResult},
+            SYSDATE,
+            #{clientIp},
+            #{referer}
+        )
+    </insert>
+    
+    <select id="selectLogList"
+            parameterType="LogRequest"
+            resultType="LogDTO">
+        SELECT
+            L.ID,
+            L.USER_ID userId,
+            U.USERNAME,
+            U.REALNAME,
+            L.ACTION_AREA actionArea,
+            L.ACTION_TIME actionTime,
+            L.ACTION_RESULT actionResult,
+            L.ACTION_TYPE actionType,
+            L.CLIENT_IP clientIp,
+            L.REFERER referer
+        FROM(
+            SELECT
+                *
+            FROM
+                TB_LOG
+            WHERE
+                ACTION_TIME &gt;= #{startDate}
+            AND
+                ACTION_TIME &lt;= #{endDate}
+        ) L
+        LEFT JOIN
+            TB_USER U ON(U.ID = L.USER_ID)
+        <if test="search != null">
+            WHERE
+                U.USERNAME LIKE '%'||#{search}||'%' 
+        </if>
+        ORDER BY
+            ACTION_TIME DESC
+        OFFSET #{currentPage} ROWS FETCH NEXT #{rowsPerPage} ROWS ONLY
+    </select>
+
+    <select id="selectTotalCount"
+            parameterType="LogRequest"
+            resultType="_long">
+        SELECT
+            COUNT(*)
+        FROM(
+            SELECT
+                *
+            FROM
+                TB_LOG
+            WHERE
+                ACTION_TIME &gt;= #{startDate}
+            AND
+                ACTION_TIME &lt;= #{endDate}
+        ) L
+        LEFT JOIN
+            TB_USER U ON(U.ID = L.USER_ID)
+        <if test="search != null">
+            WHERE
+                U.USERNAME LIKE '%'||#{search}||'%' 
+        </if>
+    </select>
+
+</mapper>

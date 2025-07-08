@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.kh.saintra.meetingroom.model.dao.MeetingRoomMapper">
+
+
+	<!-- 1. 주간 예약 조회 -->
+	<select id="getWeeklyReservations" resultType="com.kh.saintra.meetingroom.model.dto.MeetingRoomResponseDTO">
+	  SELECT
+	    r.ID         			 AS reservationId,
+	    r.ROOM_ID                AS roomId,
+	    mr.ROOM_NAME             AS roomName,
+	    mr.ROOM_LOCATION         AS roomLocation,
+	    mr.CAPACITY              AS capacity,
+	    r.RESERVE_DATE           AS reserveDate,
+	    r.START_TIME             AS startTime,
+	    r.END_TIME               AS endTime,
+	    r.PURPOSE                AS purpose,
+	    rr.RESERVER_TYPE         AS reserverType,
+	    r.IS_ACTIVE              AS isActive,
+	    r.RESERVER_ID			 AS reserverId,
+	    r.CREATED_BY			 AS createdBy,
+	    
+	    CASE
+	      WHEN rr.RESERVER_TYPE = 'USER' THEN u.REALNAME
+	      WHEN rr.RESERVER_TYPE = 'TEAM' THEN t.TEAM_NAME
+	      ELSE NULL
+	    END                      AS reserverName
+	  FROM
+	    TB_RESERVATION r
+	  LEFT JOIN
+	    TB_MEETING_ROOM mr ON (r.ROOM_ID = mr.ID)
+	  LEFT JOIN
+	    TB_RESERVER rr ON(r.RESERVER_ID = rr.ID)
+	  LEFT JOIN
+	    TB_USER_RESERVER ur ON rr.RESERVER_TYPE = 'USER' AND (rr.ID = ur.RESERVER_ID)
+	  LEFT JOIN
+	    TB_USER u ON ur.USER_ID = u.ID
+	  LEFT JOIN
+	    TB_TEAM_RESERVER tr ON rr.RESERVER_TYPE = 'TEAM' AND (rr.ID = tr.RESERVER_ID)
+	  LEFT JOIN
+	    TB_TEAM t ON tr.TEAM_ID = t.ID
+	  WHERE
+	    r.RESERVE_DATE BETWEEN #{startDate} AND #{endDate}
+	    AND r.IS_ACTIVE = 'Y'
+	  ORDER BY
+	    r.RESERVE_DATE, r.START_TIME
+	</select>
+	
+    <!-- 회의실 존재 여부 확인 -->
+    <select id="existsMeetingRoom" resultType="int">
+        SELECT COUNT(*)
+        FROM TB_MEETING_ROOM
+        WHERE ID = #{roomId}
+    </select>
+
+    <!-- 중복 예약 검사 (시간 겹침 여부 확인) -->
+    <select id="existsDuplicateReservation" resultType="int">
+        SELECT COUNT(*)
+        FROM TB_RESERVATION
+        WHERE ROOM_ID = #{dto.roomId}
+          AND RESERVE_DATE = TO_DATE(#{dto.reserveDate}, 'YYYY-MM-DD')
+          AND IS_ACTIVE = 'Y'          
+      	  AND TO_DATE(#{dto.reserveDate} || ' ' || #{dto.startTime}, 'YYYY-MM-DD HH24:MI') &lt; END_TIME
+          AND TO_DATE(#{dto.reserveDate} || ' ' || #{dto.endTime}, 'YYYY-MM-DD HH24:MI') &gt; START_TIME
+    </select>
+   
+    <!-- 예약자 유형 등록 -->
+    <insert id="insertReserver"
+            parameterType="com.kh.saintra.meetingroom.model.vo.MeetingRoom">
+        <selectKey keyProperty="id" resultType="long" order="AFTER">
+            SELECT ID
+            FROM (
+                SELECT ID
+                FROM TB_RESERVER
+                ORDER BY ID DESC
+            )
+            WHERE ROWNUM = 1
+        </selectKey>
+        INSERT INTO TB_RESERVER (
+            RESERVER_TYPE
+        ) VALUES (
+            #{reserverType}
+        )
+    </insert>
+
+    <!-- 개인 예약자 등록 -->
+    <insert id="insertUserReserver">
+        INSERT INTO TB_USER_RESERVER (
+            RESERVER_ID,
+            USER_ID
+        ) VALUES (
+            #{reserverId},
+            #{userId}
+        )
+    </insert>
+
+    <!-- 팀 예약자 등록 -->
+    <insert id="insertTeamReserver">
+        INSERT INTO TB_TEAM_RESERVER (
+            RESERVER_ID,
+            TEAM_ID
+        ) VALUES (
+            #{reserverId},
+            #{teamId}
+        )
+    </insert>
+
+    <!-- 2. 예약 등록 -->
+    <insert id="insertReservation" parameterType="map">
+        INSERT INTO TB_RESERVATION (
+            ROOM_ID,
+            RESERVER_ID,
+            CREATED_BY,
+            RESERVE_DATE,
+            START_TIME,
+            END_TIME,
+            PURPOSE,
+            IS_ACTIVE
+        )
+        VALUES (
+            #{dto.roomId},
+            #{reserverId},
+            #{createdBy},
+            TO_DATE(#{dto.reserveDate}, 'YYYY-MM-DD'),
+            TO_DATE(#{dto.reserveDate} || '' || #{dto.startTime}, 'YYYY-MM-DDHH24:MI'),
+            TO_DATE(#{dto.reserveDate} || '' || #{dto.endTime}, 'YYYY-MM-DDHH24:MI'),
+            #{dto.purpose},
+            'Y'
+        )
+    </insert>
+
+    <!-- 기존 예약 정보 조회 -->
+    <select id="findReservationById" resultType="com.kh.saintra.meetingroom.model.vo.MeetingRoom">
+        SELECT
+            ID                          AS id,
+            ROOM_ID                     AS roomId,
+            TO_CHAR(RESERVE_DATE, 'YYYY-MM-DD') AS reserveDate,
+            TO_CHAR(START_TIME, 'HH24:MI')      AS startTime,
+            TO_CHAR(END_TIME, 'HH24:MI')        AS endTime,
+            PURPOSE                     AS purpose,
+            RESERVER_ID                 AS reserverId,
+            IS_ACTIVE                   AS isActive,
+            CREATED_BY                  AS createdBy
+        FROM TB_RESERVATION
+        WHERE ID = #{reservationId}
+    </select>
+
+    <!-- 수정용 중복 예약 검사 (자기 자신 제외) -->
+    <select id="duplicateForUpdate"
+            resultType="int"
+            parameterType="com.kh.saintra.meetingroom.model.dto.MeetingRoomRequestDTO">
+        SELECT COUNT(*)
+        FROM TB_RESERVATION
+        WHERE ROOM_ID = #{roomId}
+          AND RESERVE_DATE = TO_DATE(#{reserveDate}, 'YYYY-MM-DD')
+      	  AND TO_DATE(#{reserveDate} || ' ' || #{startTime}, 'YYYY-MM-DD HH24:MI') &lt; END_TIME
+          AND TO_DATE(#{reserveDate} || ' ' || #{endTime}, 'YYYY-MM-DD HH24:MI') &gt; START_TIME
+          AND ID != #{reservationId}
+          AND IS_ACTIVE = 'Y'
+    </select>
+
+    <!-- 3. 회의실 예약 수정 -->
+    <update id="updateReservation">
+        UPDATE TB_RESERVATION
+        SET ROOM_ID      = #{roomId},
+            RESERVE_DATE = TO_DATE(#{reserveDate}, 'YYYY-MM-DD'),
+            START_TIME   = TO_DATE(#{reserveDate} || '' || #{startTime}, 'YYYY-MM-DDHH24:MI'),
+            END_TIME     = TO_DATE(#{reserveDate} || '' || #{endTime}, 'YYYY-MM-DDHH24:MI'),
+            PURPOSE      = #{purpose}
+        WHERE ID = #{reservationId}
+    </update>
+
+    <!-- 4. 회의실 예약 삭제 (소프트 삭제: IS_ACTIVE = 'N') -->
+    <update id="deleteReservation">
+        UPDATE TB_RESERVATION
+        SET IS_ACTIVE = 'N'
+        WHERE ID = #{reservationId}
+    </update>
+
+
+    <!-- 5. 회의실 목록 조회  -->
+	<select id="selectAllRooms" resultType="com.kh.saintra.meetingroom.model.dto.MeetingRoomResponseDTO">
+    SELECT 
+        ID AS roomId,
+        ROOM_NAME AS roomName,
+        ROOM_LOCATION AS roomLocation,
+        CAPACITY AS capacity
+    FROM 
+        TB_MEETING_ROOM
+	</select>
+
+</mapper>

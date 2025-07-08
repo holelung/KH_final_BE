@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.kh.saintra.team.model.dao.TeamMapper">
+
+  <select id="selectAllTeams" resultType="com.kh.saintra.team.model.dto.TeamDTO">
+    SELECT
+    	ID			AS teamId,
+    	TEAM_NAME   AS teamName,
+      DEPT_ID AS deptId,
+      IS_ACTIVE AS isActive
+    FROM
+    	TB_TEAM
+    ORDER BY
+      ID DESC
+  </select>
+
+</mapper>

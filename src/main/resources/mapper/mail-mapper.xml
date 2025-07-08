@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.saintra.mail.model.dao.MailMapper">
+
+    <insert id="insertVerifyCode"
+            parameterType="EmailDTO">
+        INSERT
+        INTO
+            TB_VERIFY_CODE(
+                EMAIL,
+                VERIFY_CODE,
+                ISSUE_DATE    
+            )
+        VALUES(
+            #{email},
+            #{verifyCode},
+            SYSDATE
+        )
+    </insert>
+
+    <select id="selectVerifyCode"
+            parameterType="EmailDTO"
+            resultType="_int">
+        SELECT
+            COUNT(*)
+        FROM(
+            SELECT
+                EMAIL,
+                VERIFY_CODE,
+                ISSUE_DATE
+            FROM
+                TB_VERIFY_CODE
+            WHERE
+                EMAIL = #{email}
+            ORDER BY
+                ISSUE_DATE DESC
+            FETCH FIRST 1 ROW ONLY
+        )
+        WHERE
+            ISSUE_DATE + 1/24/12 > SYSDATE
+        AND
+            VERIFY_CODE = #{verifyCode}
+    </select>
+
+
+    <!-- 비밀번호 변경 엑세스키 저장 -->
+    <insert id="insertAccessKey"
+            parameterType="FindPasswordDTO">
+        INSERT 
+        INTO
+            TB_ACCESS_KEY(
+                USER_ID,
+                ACCESS_KEY,
+                ISSUE_DATE
+            )
+        VALUES(
+            #{id},
+            #{accessKey},
+            SYSDATE
+        )
+    </insert>
+</mapper>

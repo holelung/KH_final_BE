@@ -1,6 +1,9 @@
 HELP.md
 .gradle
+.metadata
 build/
+settings.gradle
+settings.gradle.kts
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
