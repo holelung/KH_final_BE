@@ -28,7 +28,7 @@ public class LoggingAspect {
     
     private final LogService logService;
     
-    @Pointcut("!execution(* com.kh.saintra..controller..*(..))"
+    @Pointcut("execution(* com.kh.saintra..controller..*(..))"
         + " && !within(com.kh.saintra..controller.UserStatusController)"
         + " && !within(com.kh.saintra..controller.MailController)"
         + " && !execution(* com.kh.saintra..controller.UserController.join(..))"
