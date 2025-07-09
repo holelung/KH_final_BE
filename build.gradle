@@ -5,7 +5,12 @@ plugins {
 }
 
 group = 'com.kh'
-version = '0.0.1'
+version = '1.0.0'
+bootJar{
+	archiveBaseName = 'saintra'
+	archiveVersion = '1.0.0'
+}
+
 
 java {
 	toolchain {
