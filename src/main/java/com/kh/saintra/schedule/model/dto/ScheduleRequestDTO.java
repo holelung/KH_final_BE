@@ -30,11 +30,8 @@ public class ScheduleRequestDTO {
     @Pattern(regexp = Regexp.TEXT, message = "내용은 한글, 영문, 숫자, 공백, 특수문자만 입력 가능합니다.")
     private String content;
     
-	@NotBlank(message = "시작일은 필수입니다.")
-    @Pattern(regexp = Regexp.DATE, message = "시작일 형식은 yyyy-MM-dd 형식이어야 합니다.")
     private LocalDate startDate; 
-    
-	@Pattern(regexp = Regexp.DATE, message = "종료일 형식은 yyyy-MM-dd 형식이어야 합니다.")
+ 
     private LocalDate endDate;   
 	
     @Pattern(regexp = Regexp.COLOR, message = "색상 코드는 #으로 시작하는 6자리 16진수여야 합니다.")

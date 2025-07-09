@@ -61,10 +61,10 @@
         SELECT COUNT(*)
         FROM TB_RESERVATION
         WHERE ROOM_ID = #{dto.roomId}
-          AND RESERVE_DATE = TO_DATE(#{dto.reserveDate}, 'YYYY-MM-DD')
-          AND IS_ACTIVE = 'Y'          
-      	  AND TO_DATE(#{dto.reserveDate} || ' ' || #{dto.startTime}, 'YYYY-MM-DD HH24:MI') &lt; END_TIME
-          AND TO_DATE(#{dto.reserveDate} || ' ' || #{dto.endTime}, 'YYYY-MM-DD HH24:MI') &gt; START_TIME
+          AND RESERVE_DATE = #{dto.reserveDate}
+          AND IS_ACTIVE = 'Y'
+          AND #{dto.startTime} NOT BETWEEN (START_TIME) AND (END_TIME)
+          AND #{dto.endTime} NOT BETWEEN (START_TIME) AND (END_TIME)
     </select>
    
     <!-- 예약자 유형 등록 -->
@@ -124,9 +124,9 @@
             #{dto.roomId},
             #{reserverId},
             #{createdBy},
-            TO_DATE(#{dto.reserveDate}, 'YYYY-MM-DD'),
-            TO_DATE(#{dto.reserveDate} || '' || #{dto.startTime}, 'YYYY-MM-DDHH24:MI'),
-            TO_DATE(#{dto.reserveDate} || '' || #{dto.endTime}, 'YYYY-MM-DDHH24:MI'),
+            #{dto.reserveDate},
+            #{startTime},
+            #{endTime},
             #{dto.purpose},
             'Y'
         )

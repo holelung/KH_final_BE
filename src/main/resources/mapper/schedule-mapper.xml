@@ -95,8 +95,8 @@
 	        #{dto.content},
 	        #{reserverId},
 	        #{createdBy},
-	        TO_DATE(#{dto.startDate}, 'YYYY-MM-DD'),
-	        TO_DATE(#{dto.endDate}, 'YYYY-MM-DD'),
+	        #{dto.startDate},
+	        #{dto.endDate},
 	        #{dto.colorCode},
 	        'Y'
 	    )

@@ -23,7 +23,7 @@ import com.kh.saintra.global.response.ApiResponse;
 import com.kh.saintra.schedule.model.dto.ScheduleRequestDTO;
 import com.kh.saintra.schedule.model.dto.ScheduleResponseDTO;
 import com.kh.saintra.schedule.model.service.ScheduleService;
-
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -61,7 +61,7 @@ public class ScheduleController {
      */
     @PostMapping("/write")
     public ResponseEntity<ApiResponse<Long>> createSchedule(
-            @Validated @RequestBody ScheduleRequestDTO dto) {
+            @Valid @RequestBody ScheduleRequestDTO dto) {
 
     	CustomUserDetails userDetails = authService.getUserDetails();
 
