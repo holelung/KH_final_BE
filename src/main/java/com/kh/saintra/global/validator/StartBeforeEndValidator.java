@@ -3,6 +3,7 @@ package com.kh.saintra.global.validator;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
@@ -43,8 +44,8 @@ public class StartBeforeEndValidator implements ConstraintValidator<StartBeforeE
                 return false;
             }
 
-            LocalDate startDate = LocalDate.parse((String) startObj, formatter);
-            LocalDate endDate = LocalDate.parse((String) endObj, formatter);
+            LocalDateTime startDate = LocalDateTime.parse((String) startObj, formatter);
+            LocalDateTime endDate = LocalDateTime.parse((String) endObj, formatter);
 
             return !startDate.isAfter(endDate);
 

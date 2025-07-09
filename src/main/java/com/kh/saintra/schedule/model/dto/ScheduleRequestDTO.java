@@ -1,5 +1,6 @@
 package com.kh.saintra.schedule.model.dto;
 
+import java.time.LocalDate;
 import com.kh.saintra.global.annotation.StartBeforeEnd;
 import com.kh.saintra.global.util.Regexp;
 
@@ -18,8 +19,6 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@StartBeforeEnd(start = "startDate", end = "endDate", 
-				message = "종료일은 시작일과 같거나 이후여야 합니다.")
 public class ScheduleRequestDTO {
 
 	@NotBlank(message = "제목은 필수입니다.")
@@ -33,10 +32,10 @@ public class ScheduleRequestDTO {
     
 	@NotBlank(message = "시작일은 필수입니다.")
     @Pattern(regexp = Regexp.DATE, message = "시작일 형식은 yyyy-MM-dd 형식이어야 합니다.")
-    private String startDate; 
+    private LocalDate startDate; 
     
 	@Pattern(regexp = Regexp.DATE, message = "종료일 형식은 yyyy-MM-dd 형식이어야 합니다.")
-    private String endDate;   
+    private LocalDate endDate;   
 	
     @Pattern(regexp = Regexp.COLOR, message = "색상 코드는 #으로 시작하는 6자리 16진수여야 합니다.")
     private String colorCode;

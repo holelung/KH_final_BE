@@ -45,9 +45,11 @@
             FROM
                 TB_LOG
             WHERE
-                ACTION_TIME &gt;= #{startDate}
+                ACTION_TIME
+            BETWEEN
+                #{startDate}
             AND
-                ACTION_TIME &lt;= #{endDate}
+                #{endDate}
         ) L
         LEFT JOIN
             TB_USER U ON(U.ID = L.USER_ID)

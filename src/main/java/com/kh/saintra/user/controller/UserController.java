@@ -133,14 +133,14 @@ public class UserController {
 
     // 근태조회(유저)
     @GetMapping("/attendance")
-    public ResponseEntity<ApiResponse<List<Attendance>>> getAttendance(@ModelAttribute @Valid AttendanceRequest request){
+    public ResponseEntity<ApiResponse<List<Attendance>>> getAttendance(@ModelAttribute AttendanceRequest request){
     
         return ResponseEntity.ok(userService.getAttendance(request));
     }
 
     // 근태조회(관리자)
     @GetMapping("/admin/attendance")
-    public ResponseEntity<ApiResponse<List<Attendance>>> getAttendanceByAdmin(@RequestBody @Valid AttendanceRequest request){
+    public ResponseEntity<ApiResponse<List<Attendance>>> getAttendanceByAdmin(@RequestBody AttendanceRequest request){
 
         return ResponseEntity.ok(userService.getAttendanceByAdmin(request));
     }

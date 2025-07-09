@@ -1,5 +1,6 @@
 package com.kh.saintra.schedule.model.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import com.kh.saintra.schedule.model.dto.ScheduleRequestDTO;
@@ -13,7 +14,7 @@ public interface ScheduleService {
      * @param endDate 종료일 (yyyy-MM-dd)
      * @return 일정 리스트
      */
-    List<ScheduleResponseDTO> getSchedules(String startDate, String endDate);
+    List<ScheduleResponseDTO> getSchedules(LocalDate startDate, LocalDate endDate);
 
     /**
      * 일정 등록 

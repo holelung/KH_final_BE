@@ -1,5 +1,6 @@
 package com.kh.saintra.schedule.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -43,8 +44,8 @@ public class ScheduleController {
      */
     @GetMapping
     public ResponseEntity<ApiResponse<List<ScheduleResponseDTO>>> getSchedules(
-            @RequestParam(name = "startDate") String startDate,
-            @RequestParam(name = "endDate") String endDate) {
+            @RequestParam(name = "startDate") LocalDate startDate,
+            @RequestParam(name = "endDate") LocalDate endDate) {
 
         List<ScheduleResponseDTO> scheduleList = scheduleService.getSchedules(startDate, endDate);
 

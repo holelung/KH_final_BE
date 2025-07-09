@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import com.kh.saintra.global.logging.model.dto.LogDTO;
 import com.kh.saintra.global.logging.model.dto.LogRequest;
 import com.kh.saintra.global.logging.model.vo.Log;
+import com.kh.saintra.global.logging.model.vo.LogVo;
 
 @Mapper
 public interface LogMapper {
