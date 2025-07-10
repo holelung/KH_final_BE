@@ -5,12 +5,16 @@ plugins {
 }
 
 group = 'com.kh'
-version = '0.0.1'
+version = '1.0.0'
 
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(21)
 	}
+}
+
+bootJar {
+        archivesBaseName = 'saintra' // 원하는 JAR 파일의 기본 이름
 }
 
 configurations {
