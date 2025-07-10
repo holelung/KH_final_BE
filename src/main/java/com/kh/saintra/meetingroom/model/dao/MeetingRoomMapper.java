@@ -1,5 +1,7 @@
 package com.kh.saintra.meetingroom.model.dao;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -15,8 +17,8 @@ public interface MeetingRoomMapper {
 
 	
 	// 1. 주간 예약 조회
-	List<MeetingRoomResponseDTO> getWeeklyReservations(@Param("startDate") String startDate,
-												  	   @Param("endDate") String endDate);
+	List<MeetingRoomResponseDTO> getWeeklyReservations(@Param("startDate") LocalDate startDate,
+												  	   @Param("endDate") LocalDate endDate);
 	
 	// 2. 회의실 예약 등록 
 	
@@ -39,7 +41,9 @@ public interface MeetingRoomMapper {
     // 2-7. 예약 등록 
     int insertReservation(@Param("dto") MeetingRoomRequestDTO dto,
             			  @Param("reserverId") Long reserverId,
-            			  @Param("createdBy") Long createdBy);
+            			  @Param("createdBy") Long createdBy,
+						  @Param("startTime") LocalDateTime startDateTime,
+						  @Param("endTime") LocalDateTime endDateTime);
 	
 	// 3. 회의실 예약 수정 
     int updateReservation(MeetingRoomRequestDTO dto);

@@ -1,6 +1,7 @@
 package com.kh.saintra.global.logging.model.dto;
 
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.kh.saintra.global.annotation.StartBeforeEnd;
 import lombok.AllArgsConstructor;
@@ -14,12 +15,11 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@StartBeforeEnd(start = "startDate", end = "endDate")
 public class LogRequest {
 
     
-    private String startDate;
-    private String endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private Long currentPage;
     private Long rowsPerPage;
     private String search;

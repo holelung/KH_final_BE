@@ -1,5 +1,6 @@
 package com.kh.saintra.schedule.model.dao;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -13,8 +14,8 @@ import com.kh.saintra.schedule.model.dto.ScheduleResponseDTO;
 public interface ScheduleMapper {
 	
 	// 1. 일정 조회 
-    List<ScheduleResponseDTO> getSchedules(@Param("startDate") String startDate,
-                                                  @Param("endDate") String endDate);
+    List<ScheduleResponseDTO> getSchedules(@Param("startDate") LocalDate startDate,
+                                                  @Param("endDate") LocalDate endDate);
 
     // 2. 일정 등록
     int insertSchedule(@Param("dto") ScheduleRequestDTO dto, 

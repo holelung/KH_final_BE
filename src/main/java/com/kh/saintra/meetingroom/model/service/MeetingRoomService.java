@@ -1,5 +1,6 @@
 package com.kh.saintra.meetingroom.model.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import com.kh.saintra.meetingroom.model.dto.MeetingRoomRequestDTO;
@@ -13,7 +14,7 @@ public interface MeetingRoomService {
      * @param endDate   조회 종료 날짜 (형식: yyyy-MM-dd)
      * @return 예약 응답 DTO 리스트
      */
-	List<MeetingRoomResponseDTO> getWeeklyReservations(String startDate, String endDate); 
+	List<MeetingRoomResponseDTO> getWeeklyReservations(LocalDate startDate, LocalDate endDate); 
 
     /**
      * 회의실 예약 등록

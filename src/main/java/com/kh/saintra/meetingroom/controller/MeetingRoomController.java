@@ -1,5 +1,6 @@
 package com.kh.saintra.meetingroom.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ import com.kh.saintra.global.response.ApiResponse;
 import com.kh.saintra.meetingroom.model.dto.MeetingRoomRequestDTO;
 import com.kh.saintra.meetingroom.model.dto.MeetingRoomResponseDTO;
 import com.kh.saintra.meetingroom.model.service.MeetingRoomService;
-
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,8 +46,8 @@ public class MeetingRoomController {
 	 */
 	@GetMapping
 	public ResponseEntity<ApiResponse<List<MeetingRoomResponseDTO>>> getWeeklyReservations(
-			@RequestParam(name = "startDate") String startDate,
-			@RequestParam(name = "endDate") String endDate
+			@RequestParam(name = "startDate") LocalDate startDate,
+			@RequestParam(name = "endDate") LocalDate endDate
 			){
 		List<MeetingRoomResponseDTO> reservations = meetingRoomService.getWeeklyReservations(startDate, endDate);
 		
@@ -62,7 +63,7 @@ public class MeetingRoomController {
 	 */
     @PostMapping("/write")
     public ResponseEntity<ApiResponse<Long>> createReservation(
-            @Validated @RequestBody MeetingRoomRequestDTO dto){
+            @Valid @RequestBody MeetingRoomRequestDTO dto){
     	
     	CustomUserDetails userDetails = authService.getUserDetails();
     	

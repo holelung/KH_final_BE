@@ -1,5 +1,6 @@
 package com.kh.saintra.schedule.model.dto;
 
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,9 +20,9 @@ public class ScheduleResponseDTO {
 
     private String content;
 
-    private String startDate;
+    private LocalDate startDate;
 
-    private String endDate;
+    private LocalDate endDate;
 
     private String colorCode;
 

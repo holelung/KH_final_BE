@@ -1,5 +1,6 @@
 package com.kh.saintra.schedule.model.service;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ public class ScheduleServiceImpl implements ScheduleService{
 
 	// 1. 일정 조회 
     @Override
-    public List<ScheduleResponseDTO> getSchedules(String startDate, String endDate) {
+    public List<ScheduleResponseDTO> getSchedules(LocalDate startDate, LocalDate endDate) {
         return executeWithExceptionHandling("일정 조회", () -> scheduleMapper.getSchedules(startDate, endDate));
     }
     
@@ -160,7 +161,7 @@ public class ScheduleServiceImpl implements ScheduleService{
 
     // 종료일이 없을 경우 시작일로 설정
     private void DefaultEndDate(ScheduleRequestDTO dto) {
-        if (dto.getEndDate() == null || dto.getEndDate().isBlank()) {
+        if (dto.getEndDate() == null ) {
             dto.setEndDate(dto.getStartDate());
         }
     }

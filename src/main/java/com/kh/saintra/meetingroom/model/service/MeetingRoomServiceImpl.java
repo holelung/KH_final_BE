@@ -1,5 +1,7 @@
 package com.kh.saintra.meetingroom.model.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
@@ -33,7 +35,8 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
     
     // 1. 회의실 주간 예약 조회
     @Override
-    public List<MeetingRoomResponseDTO> getWeeklyReservations(String startDate, String endDate) {
+    public List<MeetingRoomResponseDTO> getWeeklyReservations(LocalDate startDate, 
+            LocalDate endDate) {
         return executeWithExceptionHandling("예약 목록 조회", () -> {
             List<MeetingRoomResponseDTO> list = meetingRoomMapper.getWeeklyReservations(startDate, endDate);
             log.debug("예약 결과 리스트: {}", list);
@@ -53,7 +56,9 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 
             Long reserverId = registerReserver(dto.getReserverType());
             insertReserverMappingByType(dto, reserverId);
-            insertReservation(dto, reserverId, createdBy);
+            LocalDateTime startDateTime = dto.getReserveDate().atTime(dto.getStartTime());
+            LocalDateTime endDateTime = dto.getReserveDate().atTime(dto.getEndTime());
+            insertReservation(dto, reserverId, createdBy, startDateTime, endDateTime);
 
             return dto.getReservationId();
         });
@@ -117,10 +122,9 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
     }
 
     // 시간 유효성 검사
-    private void validateTime(String startTime, String endTime) {
-        LocalTime start = LocalTime.parse(startTime);
-        LocalTime end = LocalTime.parse(endTime);
-        if (!start.isBefore(end)) {
+    private void validateTime(LocalTime startTime, LocalTime endTime) {
+        
+        if (!startTime.isBefore(endTime)) {
             throw new InvalidValueException(ResponseCode.INVALID_VALUE, "시작 시간은 종료 시간보다 이전이어야 합니다.");
         }
     }
@@ -192,8 +196,8 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
     }
     
     // 예약 등록
-    private void insertReservation(MeetingRoomRequestDTO dto, Long reserverId, Long createdBy) {
-        int result = meetingRoomMapper.insertReservation(dto, reserverId, createdBy);
+    private void insertReservation(MeetingRoomRequestDTO dto, Long reserverId, Long createdBy, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        int result = meetingRoomMapper.insertReservation(dto, reserverId, createdBy, startDateTime, endDateTime );
         if (result != 1) {
             throw new DataAccessException(ResponseCode.DB_CONNECT_ERROR, "회의실 예약 등록에 실패했습니다.");
         }

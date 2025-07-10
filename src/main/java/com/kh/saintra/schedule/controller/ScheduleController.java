@@ -1,5 +1,6 @@
 package com.kh.saintra.schedule.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ import com.kh.saintra.global.response.ApiResponse;
 import com.kh.saintra.schedule.model.dto.ScheduleRequestDTO;
 import com.kh.saintra.schedule.model.dto.ScheduleResponseDTO;
 import com.kh.saintra.schedule.model.service.ScheduleService;
-
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,8 +44,8 @@ public class ScheduleController {
      */
     @GetMapping
     public ResponseEntity<ApiResponse<List<ScheduleResponseDTO>>> getSchedules(
-            @RequestParam(name = "startDate") String startDate,
-            @RequestParam(name = "endDate") String endDate) {
+            @RequestParam(name = "startDate") LocalDate startDate,
+            @RequestParam(name = "endDate") LocalDate endDate) {
 
         List<ScheduleResponseDTO> scheduleList = scheduleService.getSchedules(startDate, endDate);
 
@@ -60,7 +61,7 @@ public class ScheduleController {
      */
     @PostMapping("/write")
     public ResponseEntity<ApiResponse<Long>> createSchedule(
-            @Validated @RequestBody ScheduleRequestDTO dto) {
+            @Valid @RequestBody ScheduleRequestDTO dto) {
 
     	CustomUserDetails userDetails = authService.getUserDetails();
 
