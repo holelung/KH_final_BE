@@ -43,9 +43,8 @@ public class SecurityConfigure {
         return http.securityMatcher("/ws/**","/ws")
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
-                .authorizeHttpRequests(a -> a.requestMatchers(
-                        HttpMethod.GET, "/ws/**", "/ws"
-                    ).permitAll()
+                .authorizeHttpRequests(a -> a
+                    .requestMatchers(HttpMethod.GET, "/ws/**", "/ws").permitAll()
                     .anyRequest().authenticated()
                 )
                 .build();
