@@ -1,5 +1,6 @@
 package com.kh.saintra.global.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -17,12 +18,15 @@ public class WebSocketConfigure implements WebSocketMessageBrokerConfigurer{
 
     private final WebSocketHandshakeInterceptor handshakeInterceptor;
     private final StompAuthAndLoggingInterceptor stompInterceptor;
+    
+    @Value("${url.origin-patterns}")
+    private String originPatterns;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
     
         registry.addEndpoint("/ws")
-            .setAllowedOriginPatterns("*")
+            .setAllowedOriginPatterns(originPatterns)
             .addInterceptors(handshakeInterceptor)
             .withSockJS(); //WebSocket 연결 엔드포인트
     }
