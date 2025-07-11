@@ -4,6 +4,7 @@ import java.util.Arrays;
 import com.kh.saintra.global.config.filter.CoopFilter;
 import com.kh.saintra.global.config.filter.JwtFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -31,6 +32,9 @@ public class SecurityConfigure {
 
     private final JwtFilter jwtFilter;
     private final CoopFilter coopFilter;
+
+    @Value("${url.origin-patterns}")
+    private String originPatterns;
 
 
     @Bean
@@ -76,7 +80,7 @@ public class SecurityConfigure {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        configuration.setAllowedOriginPatterns(Arrays.asList(originPatterns));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
