@@ -6,9 +6,11 @@ import com.kh.saintra.auth.model.dto.ApproveRequest;
 import com.kh.saintra.auth.model.dto.ChangePasswordDTO;
 import com.kh.saintra.auth.model.dto.FindPasswordDTO;
 import com.kh.saintra.auth.model.dto.LoginFormDTO;
+import com.kh.saintra.auth.model.dto.TokenDTO;
 import com.kh.saintra.auth.model.vo.ApproveUser;
 import com.kh.saintra.auth.model.vo.CustomUserDetails;
 import com.kh.saintra.global.response.ApiResponse;
+import com.kh.saintra.global.util.token.model.vo.Tokens;
 import com.kh.saintra.user.model.dto.UserDTO;
 import com.kh.saintra.user.model.vo.User;
 
@@ -24,6 +26,14 @@ public interface AuthService {
      * @return Map<String, Object> : CustomUserDetails, Tokens
      */
     ApiResponse<Map<String,Object>> login(LoginFormDTO login);
+
+    /**
+     * Refresh 토큰 검증 후
+     * AccessToken 재발급 서비스
+     * @param token refreshToken
+     * @return token accessToken
+     */
+    ApiResponse<Tokens> refresh(String refreshToken);
 
     /**
      * <pre>
