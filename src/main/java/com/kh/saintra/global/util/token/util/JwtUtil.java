@@ -29,7 +29,7 @@ public class JwtUtil {
                 .subject(username)
                 .claim("type", "access")
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + Duration.ofSeconds(10).toMillis())) // 1시간
+                .expiration(new Date(System.currentTimeMillis() + Duration.ofHours(1).toMillis())) // 1시간
                 .signWith(key)
                 .compact();
     }
