@@ -6,6 +6,8 @@ import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.stereotype.Service;
+import com.kh.saintra.global.enums.ResponseCode;
+import com.kh.saintra.global.error.exceptions.InvalidAccessException;
 import com.kh.saintra.global.util.token.model.dao.TokenMapper;
 import com.kh.saintra.global.util.token.model.vo.RefreshToken;
 import com.kh.saintra.global.util.token.model.vo.Tokens;
@@ -76,9 +78,17 @@ public class TokenServiceImpl implements TokenService{
     }
 
     @Override
-    public Tokens refreshToken(String refreshToken) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'refreshToken'");
+    public Tokens refreshToken(String refreshToken, String username) {
+         if(tokenMapper.getRefreshToken(refreshToken)!= 1){
+            throw new InvalidAccessException(ResponseCode.INVALID_TOKEN, "유효한 토큰이 아닙니다. 재로그인이 필요합니다.");
+        }
+
+        String newAccessToken = jwtUtil.getAccessToken(username);
+        Tokens tokens = Tokens.builder()
+                        .refreshToken(refreshToken)
+                        .accessToken(newAccessToken)
+                        .build();
+        return tokens;
     }
     
     

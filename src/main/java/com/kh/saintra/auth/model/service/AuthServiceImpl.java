@@ -1,7 +1,6 @@
 package com.kh.saintra.auth.model.service;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,9 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kh.saintra.auth.model.dao.AuthMapper;
 import com.kh.saintra.auth.model.dto.ApproveRequest;
 import com.kh.saintra.auth.model.dto.ChangePasswordDTO;
-import com.kh.saintra.auth.model.dto.FindPasswordDTO;
 import com.kh.saintra.auth.model.dto.LoginFormDTO;
-import com.kh.saintra.auth.model.vo.ApproveUser;
+import com.kh.saintra.auth.model.dto.TokenDTO;
 import com.kh.saintra.auth.model.vo.ChangePassword;
 import com.kh.saintra.auth.model.vo.CustomUserDetails;
 import com.kh.saintra.auth.model.vo.LoginInfo;
@@ -27,6 +25,8 @@ import com.kh.saintra.global.error.exceptions.InvalidAccessException;
 import com.kh.saintra.global.error.exceptions.InvalidValueException;
 import com.kh.saintra.global.response.ApiResponse;
 import com.kh.saintra.global.util.token.model.service.TokenService;
+import com.kh.saintra.global.util.token.model.vo.Tokens;
+import com.kh.saintra.global.util.token.util.JwtUtil;
 import com.kh.saintra.mail.model.service.MailService;
 import com.kh.saintra.user.model.dao.UserMapper;
 import com.kh.saintra.user.model.dto.UserDTO;
@@ -190,6 +190,14 @@ public class AuthServiceImpl implements AuthService{
         }
 
         return user.getId();
+    }
+
+    @Override
+    public ApiResponse<Tokens> refresh(String refreshToken) {
+        
+        Tokens tokens = tokenService.refreshToken(refreshToken, getUserDetails().getUsername());
+
+        return ApiResponse.success(ResponseCode.GET_SUCCESS, tokens, "토큰 재발급 완료");
     }
     
     
