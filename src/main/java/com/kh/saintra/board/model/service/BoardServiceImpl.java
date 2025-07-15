@@ -29,9 +29,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class BoardServiceImpl implements BoardService {
 	
+	private final AuthService authService;
 	private final BoardMapper boardMapper;
 	private final FileMapper fileMapper;
-	private final AuthService authService;
 	
 	/**
 	 * 게시판 종류를 확인하여 존재하는 게시판인지 확인하고 아닐 경우 예외처리하는 메서드
@@ -44,7 +44,7 @@ public class BoardServiceImpl implements BoardService {
 		if("bulletin".equals(type) || "free".equals(type) || "anonymous".equals(type)) {
 			
 			return;
-		}
+		} 
 		
 		// 숫자가 아닌 다른 값이 왔는지 확인
 		int id = 0;
@@ -108,35 +108,24 @@ public class BoardServiceImpl implements BoardService {
 
 	@Override
 	public Long insertBoard(BoardInsertDTO boardInsertInfo) {
-		
 		// 게시판 종류 확인
 		String type = boardInsertInfo.getType();
-		
 		checkBoardType(type);
-		
 		// 작성자 정보 토큰에서 꺼내 DTO에 삽입
 		boardInsertInfo.setUserId(authService.getUserDetails().getId());
-		
 		// 게시물 정보 DB에 삽입
 		if(boardMapper.insertBoard(boardInsertInfo) != 1) {
-			
 			throw new DatabaseOperationException(ResponseCode.SERVER_ERROR, "게시물 등록에 실패 했습니다.");
 		}
-		
 		// 게시물 번호 가져오기
 		Long boardId = boardMapper.selectLatestBoardIdByConditions(boardInsertInfo);
-		
 		// 게시물 첨부 파일 정보 DB에 삽입
 		List<Long> files = boardInsertInfo.getImageFiles();
-		
 		if(files.size() > 0) {
-			
 			if(boardMapper.insertBoardFiles(type, boardId, files) != files.size()) {
-				
 				throw new DatabaseOperationException(ResponseCode.SERVER_ERROR, "게시물 첨부 파일 저장에 실패 했습니다.");
 			}
 		}
-		
 		return boardId;
 	}
 	

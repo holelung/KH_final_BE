@@ -13,7 +13,8 @@ import lombok.Value;
 @ToString
 public class BoardVO {
 
-	private Long id;
+	private Long boardId;
+	private Long userId;
 	private String username;
 	private String realname;
 	private String title;

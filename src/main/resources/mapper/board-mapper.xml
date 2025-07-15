@@ -72,7 +72,8 @@
 			parameterType="com.kh.saintra.board.model.dto.BoardListDTO"
 			resultType="com.kh.saintra.board.model.vo.BoardVO">
 		SELECT
-			B.ID id,
+			B.ID boardId,
+			U.ID userId,
 			U.USERNAME username,
 			U.REALNAME realname,
 			B.TITLE title,
@@ -133,7 +134,8 @@
 			parameterType="com.kh.saintra.board.model.dto.BoardDetailDTO"
 			resultType="com.kh.saintra.board.model.vo.BoardVO">
 		SELECT
-			B.ID id,
+			B.ID boardId,
+			U.ID userId,
 			U.USERNAME username,
 			U.REALNAME realname,
 			B.TITLE title,
