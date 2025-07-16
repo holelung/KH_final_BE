@@ -31,7 +31,7 @@ public interface BoardMapper {
 	
 	int insertBoardFiles(@Param("type") String type, @Param("boardId") Long boardId, @Param("files") List<Long> files);
 	
-	int selectBoardCountByUserId(String type, Long boardId, Long userId);
+	int selectBoardCountByUserId(@Param("type") String type, @Param("boardId") Long boardId, @Param("userId") Long userId);
 	
 	int deleteBoardFiles(String type, Long boardId);
 	

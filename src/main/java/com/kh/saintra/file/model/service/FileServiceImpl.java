@@ -184,46 +184,31 @@ public class FileServiceImpl implements FileService {
 	
 	@Override
 	public FileVO uploadFileforBoard(MultipartFile file) {
-		
 		// 사용자 정보 추출
 		Long userId = authService.getUserDetails().getId();
-
 		// 빈 파일인지 검사
 		checkFileisEmpty(file);
-		
 		// 파일 원본명 추출
 		String origin = file.getOriginalFilename();
-		
 		// 파일 확장자 검사
 		String extension = checkFileExtension(origin);
-		
 		// 서버에 저장할 고유한 파일 이름 생성
 		String filename = createFilename(extension);
-		
 		// 파일 버킷에 업로드
         String fileUrl = "https://" + bucket + ".s3." + region + ".amazonaws.com/" + filename;
-        
         ObjectMetadata metadata= new ObjectMetadata();
         metadata.setContentType(file.getContentType());
         metadata.setContentLength(file.getSize());
-        
         try {
-        	
         	amazonS3Client.putObject(bucket, filename, file.getInputStream(), metadata);
-        	
 		} catch (IOException e) {
-			
 			throw new FileStreamException(ResponseCode.SERVER_ERROR, "첨부 파일 업로드 실패");
 	    }
-        
 		// 파일 정보 DB에 저장
         FileDTO fileInfo = new FileDTO(userId, filename, origin, fileUrl);
-        
 		if(fileMapper.insertFileInfo(fileInfo) != 1) {
-			
 			throw new DatabaseOperationException(ResponseCode.SQL_ERROR, "데이터베이스 오류 입니다.");
 		}
-		
 		// 유니크한 파일 번호가 포함된 파일 정보 가져와서 반환
 		return fileMapper.selectFileInfo(fileInfo);
 	}

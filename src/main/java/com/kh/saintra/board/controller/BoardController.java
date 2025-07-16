@@ -34,14 +34,7 @@ public class BoardController {
     
 	private final BoardService boardService;
 	
-	/**
-	 * 조건에 맞는 게시물 목록 정보를 페이지네이션 정보와 함께 반환
-	 * 
-	 * @param boardListInfo 게시판, 페이지 번호, 
-	 * @return 페이지네이션 규칙에 맞는 게시물 목록
-	 */
 	@GetMapping
-	@Transactional
 	public ResponseEntity<?> getBoardList(@ModelAttribute @Valid BoardListDTO boardListInfo) {
 		
 		Map<String, Object> boardMap = boardService.getBoards(boardListInfo);
@@ -50,7 +43,6 @@ public class BoardController {
 	}
 	
 	@PostMapping
-	@Transactional
 	public ResponseEntity<?> insertBoard(@RequestBody @Valid BoardInsertDTO boardInsertInfo) {
 		
 		Long boardId = boardService.insertBoard(boardInsertInfo);
@@ -59,10 +51,7 @@ public class BoardController {
 	}
 	
 	@GetMapping("/detail")
-	@Transactional
 	public ResponseEntity<?> getBoardDetail(@ModelAttribute @Valid BoardDetailDTO boardDetailInfo) {
-		
-		log.info("boardDetailInfo: {}", boardDetailInfo);
 		
 		Map<String, Object> boardDetail = boardService.getBoardDetail(boardDetailInfo);
 		
@@ -70,20 +59,18 @@ public class BoardController {
 	}
 	
 	@PutMapping
-	@Transactional
 	public ResponseEntity<?> updateBoard(@RequestBody @Valid BoardUpdateDTO boardUpdateInfo) {
-		
+
 		boardService.updateBoard(boardUpdateInfo);
 		
 		return ResponseEntity.ok(ApiResponse.success(ResponseCode.UPDATE_SUCCESS, "게시물 수정 성공"));
 	}
 	
 	@DeleteMapping
-	@Transactional
-	public ResponseEntity<?> deleteBoard(@RequestBody @Valid BoardDeleteDTO boardDeleteInfo) {
-		
+	public ResponseEntity<?> deleteBoard(@ModelAttribute @Valid BoardDeleteDTO boardDeleteInfo) {
+
 		boardService.deleteBoard(boardDeleteInfo);
-		
+
 		return ResponseEntity.ok(ApiResponse.success(ResponseCode.DELETE_SUCCESS, "게시물 삭제 성공"));
 	}
 }

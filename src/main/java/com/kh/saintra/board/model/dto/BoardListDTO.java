@@ -1,8 +1,8 @@
 package com.kh.saintra.board.model.dto;
 
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,7 +21,7 @@ public class BoardListDTO {
 	@Pattern(regexp = "^(bulletin|free|anonymous|\\d+)$", message = "허용되지 않은 게시판 식별값 입니다.")
 	private String type;
 	
-	@Min(1)
+	@Positive
 	private int page;
 	
 	@Pattern(regexp = "^(title|content|writer)$", message = "허용되지 않은 검색 조건 입니다.")

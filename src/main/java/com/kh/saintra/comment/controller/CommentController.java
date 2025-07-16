@@ -62,10 +62,10 @@ public class CommentController {
 	
 	@DeleteMapping
 	@Transactional
-	public ResponseEntity<?> deleteComment(@RequestBody @Valid CommentDeleteDTO commentDeleteInfo) {
-		
+	public ResponseEntity<?> deleteComment(@ModelAttribute @Valid CommentDeleteDTO commentDeleteInfo) {
+
 		commentService.deleteComment(commentDeleteInfo);
-		
+
 		return ResponseEntity.ok(ApiResponse.success(ResponseCode.DELETE_SUCCESS, "댓글 삭제 성공"));
 	}
 }
