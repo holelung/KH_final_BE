@@ -262,7 +262,8 @@
 			ROWNUM = 1
 	</select>
 	
-	<insert id="insertBoardFiles" parameterType="list">
+	<insert id="insertBoardFiles" 
+			parameterType="list">
  		INSERT ALL
   		<foreach collection="files" item="file">
     	INTO 
@@ -295,7 +296,7 @@
   		SELECT * FROM DUAL
 	</insert>
 	
-	<select id="selectBoardCountByUserId">
+	<select id="selectBoardCountByUserId" parameterType="map">
 		SELECT
 			COUNT(*)
 		FROM

@@ -137,8 +137,6 @@ public class BoardServiceImpl implements BoardService {
 		
 		checkBoardType(type);
 		
-		log.info("boardDetailInfo2: {}", boardDetailInfo);
-		
 		// 게시물 정보 가져오기
 		BoardVO boardDetail = boardMapper.selectBoardDetail(boardDetailInfo);
 		
@@ -147,8 +145,6 @@ public class BoardServiceImpl implements BoardService {
 			
 			throw new EntityNotFoundException(ResponseCode.SERVER_ERROR, "존재하지 않는 게시물 입니다.");
 		}
-		
-		log.info("boardDetailInfo3: {}", boardDetailInfo);
 		
 		// 게시물 기존 첨부 파일 정보 가져오기
 		List<Long> files = boardMapper.selectBoardFiles(boardDetailInfo);
@@ -169,35 +165,12 @@ public class BoardServiceImpl implements BoardService {
 		
 		checkBoardType(type);
 		
-		// 작성자 정보 토큰에서 꺼내 DTO에 삽입
+		// 작성자 정보 토큰에서 꺼내 요청 데이터의 작성자 정보와 비교
 		Long userId = authService.getUserDetails().getId();
 		
-		boardUpdateInfo.setUserId(userId);
-		
-		// 게시물의 작성자가 맞는지 확인
-		Long boardId = boardUpdateInfo.getBoardId();
-		
-		if(boardMapper.selectBoardCountByUserId(type, boardId, userId) != 1) {
+		if(userId != boardUpdateInfo.getUserId()) {
 			
 			throw new InvalidAccessException(ResponseCode.SERVER_ERROR, "게시물 수정 권한이 없습니다.");
-		}
-		
-		// 게시물 기존 첨부 파일 정보 삭제
-		BoardDetailDTO boardDetailInfo = new BoardDetailDTO(type, boardId);
-		
-		List<Long> oldFiles = boardMapper.selectBoardFiles(boardDetailInfo);
-		
-		if(boardMapper.deleteBoardFiles(type, boardId) != oldFiles.size()) {
-			
-			throw new DatabaseOperationException(ResponseCode.SERVER_ERROR, "게시물 첨부 파일 기존 정보 삭제에 실패 했습니다.");
-		}
-		
-		// 새로운 게시물 첨부 파일 정보 저장
-		List<Long> newFiles = boardUpdateInfo.getFiles();
-		
-		if(boardMapper.insertBoardFiles(type, boardId, newFiles) != newFiles.size()) {
-			
-			throw new DatabaseOperationException(ResponseCode.SERVER_ERROR, "게시물 첨부 파일 새로운 정보 저장에 실패 했습니다.");
 		}
 		
 		// 게시물 DB 업데이트
@@ -215,38 +188,15 @@ public class BoardServiceImpl implements BoardService {
 		
 		checkBoardType(type);
 		
-		// 작성자 정보 토큰에서 꺼내 DTO에 삽입
+		// 작성자 정보 토큰에서 꺼내 요청 데이터의 작성자 정보와 비교
 		Long userId = authService.getUserDetails().getId();
 		
-		boardDeleteInfo.setUserId(userId);
-		
-		// 게시물의 작성자가 맞는지 확인
-		Long boardId = boardDeleteInfo.getBoardId();
-		
-		if(boardMapper.selectBoardCountByUserId(type, boardId, userId) != 1) {
+		if(userId != boardDeleteInfo.getUserId()) {
 			
-			throw new InvalidAccessException(ResponseCode.SERVER_ERROR, "게시물 수정 권한이 없습니다.");
+			throw new InvalidAccessException(ResponseCode.SERVER_ERROR, "게시물 삭제 권한이 없습니다.");
 		}
 		
-		// 게시물 첨부 파일 버킷에서 삭제(나중에 작업)
-		List<Long> files = boardDeleteInfo.getFiles();
-		
-		// 게시물 첨부 파일 정보 삭제 1
-		for(Long fileId : files) {
-			
-			if(fileMapper.deleteFileInfo(fileId) != 1) {
-				
-				throw new DatabaseOperationException(ResponseCode.SERVER_ERROR, "게시물 첨부 파일 정보 삭제에 실패 했습니다.");
-			}
-		}
-		
-		// 게시물 첨부 파일 정보 삭제 2
-		if(boardMapper.deleteBoardFiles(type, boardId) != files.size()) {
-			
-			throw new DatabaseOperationException(ResponseCode.SERVER_ERROR, "게시물 첨부 파일 정보 삭제에 실패 했습니다.");
-		}
-		
-		// 게시물 삭제
+		// 게시물 비활성화
 		if (boardMapper.disableBoard(boardDeleteInfo) != 1) {
 			
 			throw new DatabaseOperationException(ResponseCode.SERVER_ERROR, "게시물 삭제에 실패 했습니다.");

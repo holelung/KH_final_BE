@@ -60,17 +60,17 @@ public class BoardController {
 	
 	@PutMapping
 	public ResponseEntity<?> updateBoard(@RequestBody @Valid BoardUpdateDTO boardUpdateInfo) {
-		
+
 		boardService.updateBoard(boardUpdateInfo);
 		
 		return ResponseEntity.ok(ApiResponse.success(ResponseCode.UPDATE_SUCCESS, "게시물 수정 성공"));
 	}
 	
 	@DeleteMapping
-	public ResponseEntity<?> deleteBoard(@RequestBody @Valid BoardDeleteDTO boardDeleteInfo) {
-		
+	public ResponseEntity<?> deleteBoard(@ModelAttribute @Valid BoardDeleteDTO boardDeleteInfo) {
+
 		boardService.deleteBoard(boardDeleteInfo);
-		
+
 		return ResponseEntity.ok(ApiResponse.success(ResponseCode.DELETE_SUCCESS, "게시물 삭제 성공"));
 	}
 }

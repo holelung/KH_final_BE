@@ -20,6 +20,7 @@ import com.kh.saintra.comment.model.vo.CommentVO;
 import com.kh.saintra.global.enums.ResponseCode;
 import com.kh.saintra.global.error.exceptions.DatabaseOperationException;
 import com.kh.saintra.global.error.exceptions.EntityNotFoundException;
+import com.kh.saintra.global.error.exceptions.InvalidAccessException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -123,13 +124,18 @@ public class CommentServiceImpl implements CommentService {
 	@Override
 	public void deleteComment(CommentDeleteDTO commentDeleteInfo) {
 		
-		// 토큰에서 인증 정보 확인
-		commentDeleteInfo.setUserId(authService.getUserDetails().getId());
-		
 		// 게시판 종류 확인
 		String type = commentDeleteInfo.getType();
 		
 		boardService.checkBoardType(type);
+		
+		// 토큰 정보와 사용자 정보 비교
+		Long userId = authService.getUserDetails().getId();
+		
+		if(userId != commentDeleteInfo.getUserId()) {
+			
+			throw new InvalidAccessException(ResponseCode.SERVER_ERROR, "댓글 삭제 권한이 없습니다.");
+		}
 		
 		// 댓글 삭제
 		if(commentMapper.deleteComment(commentDeleteInfo) != 1) {
