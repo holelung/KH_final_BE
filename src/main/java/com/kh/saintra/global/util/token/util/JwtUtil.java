@@ -1,6 +1,7 @@
 package com.kh.saintra.global.util.token.util;
 
 import java.util.Date;
+import java.time.Duration;
 import java.util.Base64;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,8 +27,9 @@ public class JwtUtil {
     public String getAccessToken(String username){
         return Jwts.builder()
                 .subject(username)
+                .claim("type", "access")
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + (3600000L*24*5)))
+                .expiration(new Date(System.currentTimeMillis() + Duration.ofHours(1).toMillis())) // 1시간
                 .signWith(key)
                 .compact();
     }
@@ -35,8 +37,9 @@ public class JwtUtil {
     public String getRefreshToken(String username){
         return Jwts.builder()
                 .subject(username)
+                .claim("type", "refresh")
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + (3600000L*24*7)))
+                .expiration(new Date(System.currentTimeMillis() + Duration.ofDays(30).toMillis())) // 30일
                 .signWith(key)
                 .compact();
     }

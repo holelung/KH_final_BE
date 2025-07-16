@@ -23,9 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class LoggingAspect {
     
-    // 목적 사용자가 무엇을 했는지 알고자함
-    // 그럼 컨트롤러 단에서만 로그를찍으면 되지않나?
-    
     private final LogService logService;
     
     @Pointcut("execution(* com.kh.saintra..controller..*(..))"
@@ -34,13 +31,14 @@ public class LoggingAspect {
         + " && !execution(* com.kh.saintra..controller.UserController.join(..))"
         + " && !execution(* com.kh.saintra..controller.AuthController.findPassword(..))"
         + " && !execution(* com.kh.saintra..controller.AuthController.login(..))"
-        + " && !execution(* com.kh.saintra..controller.AuthController.changePassword(..))")
+        + " && !execution(* com.kh.saintra..controller.AuthController.changePassword(..))"
+        + " && !execution(* com.kh.saintra..controller.AuthController.refresh(..))")
     public void httpControllerMethods() {}
 
     @Around("httpControllerMethods()")
     public Object logExecution(ProceedingJoinPoint joinPoint) throws Throwable {
 
-        log.info("AOP 진입 확인");
+        log.info("AOP 진입");
 
         long start = System.currentTimeMillis();
         Object result = null;
@@ -52,8 +50,10 @@ public class LoggingAspect {
         String referer = request != null ? request.getHeader("Referer") : "NONE";
         String httpMethod = request != null ? request.getMethod() : "UNKNOWN";
 
-        // CustomUserDetails user = (CustomUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Long userId = getUserSafely();
+        if( userId == null) {
+            return joinPoint.proceed();
+        }
 
         LogDTO logDto = LogDTO.builder()
                 .userId(userId)

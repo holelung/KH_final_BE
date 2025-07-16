@@ -16,4 +16,15 @@
             #{expiration}
         )
     </insert>
+
+    <select id="getRefreshToken"
+        parameterType="String"
+        resultType="int">
+        SELECT
+            COUNT(*)
+        FROM
+            TB_TOKEN
+        WHERE
+            TOKEN = #{refreshToken}
+    </select>
 </mapper>

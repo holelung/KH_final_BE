@@ -8,4 +8,6 @@ public interface TokenMapper {
     void saveToken(RefreshToken token);
 
     RefreshToken findByToken(RefreshToken token);
+
+    int getRefreshToken(String refreshToken);
 }

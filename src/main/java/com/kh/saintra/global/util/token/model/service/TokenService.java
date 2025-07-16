@@ -21,8 +21,8 @@ public interface TokenService {
      * 리프레시 토큰을 받아서 검증한다.
      * 검증에 성공한다면 새로운 accessToken을 리턴한다.
      * </pre>
-     * @param refreshToken 리프레시 토큰
+     * @param refreshToken 리프레시 토큰, username 유저 ID
      * @return Tokens 새로만든 토큰 세트
      */
-    Tokens refreshToken(String refreshToken);
+    Tokens refreshToken(String refreshToken, String username);
 }
