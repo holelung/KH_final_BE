@@ -10,7 +10,6 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import com.kh.saintra.auth.model.vo.CustomUserDetails;
@@ -20,15 +19,17 @@ import com.kh.saintra.global.error.exceptions.AuthenticateTimeOutException;
 import com.kh.saintra.global.error.exceptions.InvalidAccessException;
 import com.kh.saintra.global.logging.model.dto.LogDTO;
 import com.kh.saintra.global.logging.model.service.LogService;
-import com.kh.saintra.global.logging.model.service.LogServiceImpl;
 import com.kh.saintra.global.util.token.util.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
+@SuppressWarnings("null")
 public class StompAuthAndLoggingInterceptor implements ChannelInterceptor {
 
     private final LogService logService;
@@ -39,14 +40,12 @@ public class StompAuthAndLoggingInterceptor implements ChannelInterceptor {
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
         //StompHeaderAccessor.wrap(message);
-        System.out.println("▶ preSend command=" + accessor.getCommand() + ", destination="
-                + accessor.getDestination()    );
+        log.info("▶ preSend command={}, destination={}", accessor.getCommand(), accessor.getDestination());
         
         assert accessor != null;
 
         // STOMP CONNECT 프레임일 때만 JWT 검사
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-        	System.out.println("🟡 CONNECT 요청 들어옴");
             String authHeader = accessor.getFirstNativeHeader(HttpHeaders.AUTHORIZATION);
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 String token = authHeader.substring(7);
@@ -64,8 +63,8 @@ public class StompAuthAndLoggingInterceptor implements ChannelInterceptor {
 
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-                    System.out.println("여기는 토큰검증!"+ authenticationToken);
-                    System.out.println("프린시펄에 값이 있낭?"+ SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+                    log.info("여기는 토큰검증 {}", authenticationToken);
+                    log.info("principal 값 확인 {}", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 
                     accessor.setUser(authenticationToken);
                     

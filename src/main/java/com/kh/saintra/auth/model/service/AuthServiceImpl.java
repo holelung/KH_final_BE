@@ -46,7 +46,7 @@ public class AuthServiceImpl implements AuthService{
     @Override
     public ApiResponse<Map<String, Object>> login(LoginFormDTO user) {
         
-
+        // Authentication Provider 공부
         Authentication authentication = null;
         try {
             authentication = authenticationManager.authenticate(
@@ -58,6 +58,7 @@ public class AuthServiceImpl implements AuthService{
         CustomUserDetails loginUser = (CustomUserDetails)authentication.getPrincipal();
 
         Map<String, Object> loginResponse = new HashMap<>();
+
         loginResponse.put("tokens", tokenService.generateToken(loginUser.getUsername(), loginUser.getId()));
         LoginInfo loginInfo = LoginInfo.builder()
                 .id(String.valueOf(loginUser.getId()))
@@ -75,7 +76,7 @@ public class AuthServiceImpl implements AuthService{
 
     @Override
     public ApiResponse<Void> logout() {
-        
+        // refreshToken 테이블에서 지워야 합니다.
         throw new UnsupportedOperationException("Unimplemented method 'logout'");
     }
 

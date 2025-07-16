@@ -25,7 +25,6 @@ import com.kh.saintra.mail.model.dto.EmailContent;
 import com.kh.saintra.mail.model.dto.EmailDTO;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 
 @Service

@@ -120,7 +120,7 @@
         FROM 
             TB_ACCESS_KEY
         WHERE
-            ISSUE_DATE + 1/24/2 > SYSDATE
+            SYSDATE BETWEEN ISSUE_DATE AND ISSUE_DATE + 1/24/2
         AND
             ACCESS_KEY = #{accessKey}
     </select>
