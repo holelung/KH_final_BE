@@ -42,33 +42,77 @@ Saintra 백엔드 애플리케이션은 KH Final 프로젝트의 핵심으로, �
 
 ## Configuration
 
-`src/main/resources/application.yml` (또는 `application.properties`)에 아래 설정을 추가하세요:
+`src/main/resources/application.yml`에 아래 설정을 추가하세요:
 
 ```yaml
 spring:
+  application:
+    name: saintra
   datasource:
     url: jdbc:oracle:thin:@//<HOST>:<PORT>/<SERVICE>
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+    driver-class-name: oracle.jdbc.OracleDriver
   mail:
     host: ${MAIL_HOST}
     port: ${MAIL_PORT}
     username: ${MAIL_USERNAME}
     password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+server:
+  port: 8080
+
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    jdbc-type-for-null: VARCHAR
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: 
+    com.kh.saintra.user.model.vo
+    com.kh.saintra.user.model.dto
+    com.kh.saintra.global.util.token.model.vo
+    com.kh.saintra.auth.model.vo
+    com.kh.saintra.auth.model.dto
+    com.kh.saintra.mail.model.dto
+    com.kh.saintra.global.logging.model.dto
+    com.kh.saintra.global.logging.model.vo
+
+
+logging:
+  level:
+    org.apache.ibatis: DEBUG
+    org.apache.ibatis.excutor: TRACE
+    org.apache.ibatis.executor.SimpleExecutor: TRACE
+    org.apache.ibatis.executor.statement.RoutingStatementHandler: TRACE
+    java.sql: DEBUG
+    jdbc.sqlonly: DEBUG
+    jdbc.resultset: DEBUG
+    jdbc.audit: DEBUG
 
 jwt:
-  secret: ${JWT_SECRET}
-  expiration-ms: 3600000
+  secret: ${JWT_SECRETKEY}
+
+url:
+  find-password: "http://${DOMAIN}/authenticator/password-reset?key="
+  origin-patterns: "*"
+
 
 cloud:
   aws:
-    credentials:
-      access-key: ${AWS_ACCESS_KEY}
-      secret-key: ${AWS_SECRET_KEY}
-    region:
-      static: ${AWS_REGION}
     s3:
-      bucket: ${AWS_S3_BUCKET}
+      bucket: ${S3_BUCKET_NAME}
+    stack.auto: false
+    region.static: ap-northeast-2
+    credentials:
+      accessKey: ${AWS_ACCESSKEY}
+      secretKey: ${AWS_SECRETKEY}
+
 ```
 
 ## Build & Run
