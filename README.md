@@ -8,29 +8,29 @@ Saintra 백엔드 애플리케이션은 KH Final 프로젝트의 핵심으로, �
 
 ## Features
 
-- **JWT 기반 인증 & 인가** :contentReference[oaicite:0]{index=0}  
-- **역할 기반 접근 제어 (Spring Security)** :contentReference[oaicite:1]{index=1}  
+- **JWT 기반 인증 & 인가** 
+- **역할 기반 접근 제어 (Spring Security)** 
 - **RESTful API**를 통한 사용자·상품·주문 관리  
-- **실시간 통신**: STOMP 프로토콜 기반 WebSocket 지원 :contentReference[oaicite:2]{index=2}  
-- **이메일 알림** (Spring Boot Mail) :contentReference[oaicite:3]{index=3}  
-- **AWS S3 파일 업로드/다운로드** :contentReference[oaicite:4]{index=4}  
-- **AES 암호화** (Bouncy Castle) :contentReference[oaicite:5]{index=5}  
-- **AOP 기반 로깅**로 세부 로그 기록 :contentReference[oaicite:6]{index=6}  
-- **데이터 영속성**: Spring Data JDBC & MyBatis :contentReference[oaicite:7]{index=7}  
-- **데이터 검증** (Spring Validation) :contentReference[oaicite:8]{index=8}  
+- **실시간 통신**: STOMP 프로토콜 기반 WebSocket 지원 
+- **이메일 알림** (Spring Boot Mail) 
+- **AWS S3 파일 업로드/다운로드** 
+- **AES 암호화** (Bouncy Castle) 
+- **AOP 기반 로깅**로 세부 로그 기록 
+- **데이터 영속성**: Spring Data JDBC & MyBatis 
+- **데이터 검증** (Spring Validation) 
 
 ## Tech Stack
 
-- **Java 21** :contentReference[oaicite:9]{index=9}  
-- **Spring Boot 3.4.6** :contentReference[oaicite:10]{index=10}  
-- **Spring Security / Spring AOP / Spring Validation / Spring Web / Spring WebSocket** :contentReference[oaicite:11]{index=11}  
-- **MyBatis 3.0.4** :contentReference[oaicite:12]{index=12}  
-- **JJWT 0.12.3** :contentReference[oaicite:13]{index=13}  
-- **Bouncy Castle 1.78.1** :contentReference[oaicite:14]{index=14}  
-- **Spring Cloud AWS 2.2.6.RELEASE** :contentReference[oaicite:15]{index=15}  
-- **Oracle JDBC Driver (ojdbc11)** :contentReference[oaicite:16]{index=16}  
-- **Lombok** :contentReference[oaicite:17]{index=17}  
-- **Gradle** :contentReference[oaicite:18]{index=18}  
+- **Java 21** 
+- **Spring Boot 3.4.6** 
+- **Spring Security / Spring AOP / Spring Validation / Spring Web / Spring WebSocket** 
+- **MyBatis 3.0.4** 
+- **JJWT 0.12.3** 
+- **Bouncy Castle 1.78.1** 
+- **Spring Cloud AWS 2.2.6.RELEASE** 
+- **Oracle JDBC Driver (ojdbc11)** 
+- **Lombok** 
+- **Gradle** 
 
 ## Prerequisites
 
